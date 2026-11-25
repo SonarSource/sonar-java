@@ -1,0 +1,483 @@
+package checks;
+
+import java.io.File;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.function.IntSupplier;
+
+class IntegerSubtractionInComparisonCheckSample {
+
+  static class TimestampedEvent implements Comparable<TimestampedEvent> {
+    private long timestamp;
+
+    @Override
+    public int compareTo(TimestampedEvent other) {
+      return (int) (this.timestamp - other.timestamp); // Noncompliant {{Subtracting numeric values in compareTo can overflow; use Long.compare instead.}}
+//                                 ^
+    }
+  }
+
+  static class IntHolder implements Comparable<IntHolder> {
+    private int value;
+
+    @Override
+    public int compareTo(IntHolder other) {
+      return this.value - other.value; // Noncompliant {{Subtracting numeric values in compareTo can overflow; use Integer.compare instead.}}
+    }
+  }
+
+  static class BoxedIntHolder implements Comparable<BoxedIntHolder> {
+    private Integer value;
+
+    @Override
+    public int compareTo(BoxedIntHolder other) {
+      return this.value - other.value; // Noncompliant {{Subtracting numeric values in compareTo can overflow; use Integer.compare instead.}}
+    }
+  }
+
+  static class BoxedLongHolder implements Comparable<BoxedLongHolder> {
+    private Long value;
+
+    @Override
+    public int compareTo(BoxedLongHolder other) {
+      return (int) (this.value - other.value); // Noncompliant {{Subtracting numeric values in compareTo can overflow; use Long.compare instead.}}
+    }
+  }
+
+  static class MixedOperands implements Comparable<MixedOperands> {
+    private long longValue;
+    private int intValue;
+
+    @Override
+    public int compareTo(MixedOperands other) {
+      return (int) (this.longValue - other.intValue); // Noncompliant {{Subtracting numeric values in compareTo can overflow; use Long.compare instead.}}
+    }
+  }
+
+  static class IndexArithmetic implements Comparable<IndexArithmetic> {
+    private int[] parts;
+
+    @Override
+    public int compareTo(IndexArithmetic other) {
+      for (int i = 0; i < parts.length - 1; i++) { // Compliant - subtraction is not the comparison result
+        int cmp = Integer.compare(this.parts[i], other.parts[i]);
+        if (cmp != 0) {
+          return cmp;
+        }
+      }
+      return 0;
+    }
+  }
+
+  static class IntermediateDiff implements Comparable<IntermediateDiff> {
+    private int age;
+
+    @Override
+    public int compareTo(IntermediateDiff other) {
+      int diff = this.age - other.age; // Compliant - only a returned subtraction is reported
+      if (diff != 0) {
+        return Integer.compare(this.age, other.age);
+      }
+      return 0;
+    }
+  }
+
+  static class HashCodeCompare implements Comparable<HashCodeCompare> {
+    @Override
+    public int compareTo(HashCodeCompare other) {
+      return this.hashCode() - other.hashCode(); // Noncompliant {{Subtracting numeric values in compareTo can overflow; use Integer.compare instead.}}
+    }
+  }
+
+  static class NonIntCastCompareTo implements Comparable<NonIntCastCompareTo> {
+    private int value;
+
+    @Override
+    public int compareTo(NonIntCastCompareTo other) {
+      return (int) (short) (this.value - other.value); // Compliant - the subtraction is wrapped in a non-int cast
+    }
+  }
+
+  static class AgeComparator implements Comparator<IntHolder> {
+    @Override
+    public int compare(IntHolder left, IntHolder right) {
+      return left.value - right.value; // Noncompliant {{Subtracting numeric values in compare can overflow; use Integer.compare instead.}}
+    }
+  }
+
+  static class LongArrayComparator implements Comparator<long[]> {
+    @Override
+    public int compare(long[] a, long[] b) {
+      return (int) (a[0] - b[0]); // Noncompliant {{Subtracting numeric values in compare can overflow; use Long.compare instead.}}
+    }
+  }
+
+  static final Comparator<Number> COMPARATOR_UNBOXED_INT_CAST = new Comparator<Number>() {
+    @Override
+    public int compare(Number n1, Number n2) {
+      return (int) (n1.longValue() - n2.longValue()); // Noncompliant {{Subtracting numeric values in compare can overflow; use Long.compare instead.}}
+    }
+  };
+
+  static final Comparator<Long> COMPARATOR_BOXED_INT_CAST = new Comparator<Long>() {
+    @Override
+    public int compare(Long n1, Long n2) {
+      return (int) (n1 - n2); // Noncompliant {{Subtracting numeric values in compare can overflow; use Long.compare instead.}}
+    }
+  };
+
+  static final Comparator<File> COMPARATOR_FILE_INT_CAST = new Comparator<File>() {
+    @Override
+    public int compare(File lhs, File rhs) {
+      return (int) (rhs.lastModified() - lhs.lastModified()); // Noncompliant {{Subtracting numeric values in compare can overflow; use Long.compare instead.}}
+    }
+  };
+
+  void lambdaSubtraction(List<IntHolder> list, List<TimestampedEvent> events) {
+    list.sort((a, b) -> a.value - b.value); // Noncompliant {{Subtracting numeric values in compare can overflow; use Integer.compare instead.}}
+    events.sort((left, right) -> (int) (left.timestamp - right.timestamp)); // Noncompliant {{Subtracting numeric values in compare can overflow; use Long.compare instead.}}
+    list.sort((a, b) -> {
+      return a.value - b.value; // Noncompliant {{Subtracting numeric values in compare can overflow; use Integer.compare instead.}}
+    });
+  }
+
+  static class CorrectLongCompareTo implements Comparable<CorrectLongCompareTo> {
+    private long timestamp;
+
+    @Override
+    public int compareTo(CorrectLongCompareTo other) {
+      return Long.compare(this.timestamp, other.timestamp); // Compliant
+    }
+  }
+
+  static class CorrectIntCompareTo implements Comparable<CorrectIntCompareTo> {
+    private int value;
+
+    @Override
+    public int compareTo(CorrectIntCompareTo other) {
+      return Integer.compare(this.value, other.value); // Compliant
+    }
+  }
+
+  static class CorrectBoxedLongCompareTo implements Comparable<CorrectBoxedLongCompareTo> {
+    private Long value;
+
+    @Override
+    public int compareTo(CorrectBoxedLongCompareTo other) {
+      return value.compareTo(other.value); // Compliant
+    }
+  }
+
+  static class IntegerRelational implements Comparable<IntegerRelational> {
+    private int value;
+
+    @Override
+    public int compareTo(IntegerRelational other) {
+      if (this.value < other.value) { // Compliant
+        return -1;
+      }
+      return this.value > other.value ? 1 : 0; // Compliant
+    }
+  }
+
+  static class FloatingPointCompareTo implements Comparable<FloatingPointCompareTo> {
+    private double latitude;
+
+    @Override
+    public int compareTo(FloatingPointCompareTo other) {
+      return (int) (this.latitude - other.latitude); // Compliant - handled by S9148
+    }
+  }
+
+  static class ByteCompareTo implements Comparable<ByteCompareTo> {
+    private byte value;
+
+    @Override
+    public int compareTo(ByteCompareTo other) {
+      return this.value - other.value; // Compliant - difference fits in int
+    }
+  }
+
+  static class ShortCompareTo implements Comparable<ShortCompareTo> {
+    private short value;
+
+    @Override
+    public int compareTo(ShortCompareTo other) {
+      return this.value - other.value; // Compliant - difference fits in int
+    }
+  }
+
+  static class CharCompareTo implements Comparable<CharCompareTo> {
+    private char value;
+
+    @Override
+    public int compareTo(CharCompareTo other) {
+      return this.value - other.value; // Compliant - difference fits in int
+    }
+  }
+
+  static class BoxedShortCompareTo implements Comparable<BoxedShortCompareTo> {
+    private Short value;
+
+    @Override
+    public int compareTo(BoxedShortCompareTo other) {
+      return this.value - other.value; // Compliant - difference fits in int
+    }
+  }
+
+  static class ArrayLengthComparator implements Comparator<int[]> {
+    @Override
+    public int compare(int[] left, int[] right) {
+      return left.length - right.length; // Compliant - both operands are array lengths, bounded in [0, Integer.MAX_VALUE]
+    }
+  }
+
+  static class StringLengthComparator implements Comparator<String> {
+    @Override
+    public int compare(String left, String right) {
+      return left.length() - right.length(); // Compliant - both operands are String.length(), bounded in [0, Integer.MAX_VALUE]
+    }
+  }
+
+  static class CollectionSizeComparator implements Comparator<List<Object>> {
+    @Override
+    public int compare(List<Object> left, List<Object> right) {
+      return left.size() - right.size(); // Compliant - both operands are Collection.size(), bounded in [0, Integer.MAX_VALUE]
+    }
+  }
+
+  static class MapSizeComparator implements Comparator<Map<Object, Object>> {
+    @Override
+    public int compare(Map<Object, Object> left, Map<Object, Object> right) {
+      return left.size() - right.size(); // Compliant - both operands are Map.size(), bounded in [0, Integer.MAX_VALUE]
+    }
+  }
+
+  enum Suit {
+    CLUBS, DIAMONDS, HEARTS, SPADES
+  }
+
+  static class OrdinalComparator implements Comparator<Suit> {
+    @Override
+    public int compare(Suit left, Suit right) {
+      return left.ordinal() - right.ordinal(); // Compliant - both operands are Enum.ordinal(), bounded in [0, Integer.MAX_VALUE]
+    }
+  }
+
+  static class BitCountComparator implements Comparator<Integer> {
+    @Override
+    public int compare(Integer left, Integer right) {
+      return Integer.bitCount(left) - Integer.bitCount(right); // Compliant - both operands are bounded in [0, 32]
+    }
+  }
+
+  static class LongBitCountComparator implements Comparator<Long> {
+    @Override
+    public int compare(Long left, Long right) {
+      return Long.bitCount(left) - Long.bitCount(right); // Compliant - both operands are bounded in [0, 64]
+    }
+  }
+
+  static class MaskedByteComparator implements Comparator<byte[]> {
+    @Override
+    public int compare(byte[] left, byte[] right) {
+      int a = left[0] & 0xff;
+      int b = right[0] & 0xff;
+      return a - b; // Compliant - both operands are masked to [0, 255]
+    }
+  }
+
+  static class DirectMaskedByteComparator implements Comparator<byte[]> {
+    @Override
+    public int compare(byte[] left, byte[] right) {
+      return (left[0] & 0xff) - (right[0] & 0xff); // Compliant - both operands are masked to [0, 255]
+    }
+  }
+
+  static class IndirectLengthComparator implements Comparator<String> {
+    @Override
+    public int compare(String left, String right) {
+      int len1 = left.length();
+      int len2 = right.length();
+      return len1 - len2; // Compliant - len1 and len2 are single-write locals holding String.length()
+    }
+  }
+
+  static class LiteralConstantComparator implements Comparator<Object> {
+    @Override
+    public int compare(Object left, Object right) {
+      return 0 - 1; // Compliant - both operands are compile-time constants
+    }
+  }
+
+  static class MixedBoundedAndUnboundedComparator implements Comparable<MixedBoundedAndUnboundedComparator> {
+    private int value;
+
+    @Override
+    public int compareTo(MixedBoundedAndUnboundedComparator other) {
+      // Noncompliant@+1 {{Subtracting numeric values in compareTo can overflow; use Integer.compare instead.}}
+      return this.value - other.getClass().getName().length();
+    }
+  }
+
+  static class MixedUnboundedAndBoundedComparator implements Comparator<String> {
+    @Override
+    public int compare(String left, String right) {
+      // Noncompliant@+1 {{Subtracting numeric values in compare can overflow; use Integer.compare instead.}}
+      return left.length() - right.hashCode();
+    }
+  }
+
+  static class BoundedButUnsafeComparator implements Comparator<byte[]> {
+    @Override
+    public int compare(byte[] left, byte[] right) {
+      int a = left[0] & 0xff;
+      // Noncompliant@+1 {{Subtracting numeric values in compare can overflow; use Integer.compare instead.}}
+      return a - Integer.MIN_VALUE;
+    }
+  }
+
+  static class SignBitLiteralComparator implements Comparator<String> {
+    @Override
+    public int compare(String left, String right) {
+      // 0x80000000 is the int literal for Integer.MIN_VALUE; left.length() is bounded but this still overflows.
+      // Noncompliant@+1 {{Subtracting numeric values in compare can overflow; use Integer.compare instead.}}
+      return left.length() - 0x80000000;
+    }
+  }
+
+  static class MaskedByUnresolvedMaskComparator implements Comparator<Integer> {
+    @Override
+    public int compare(Integer left, Integer right) {
+      int mask = computeMask(left);
+      // mask does not resolve to a constant, so the mask range - and therefore this subtraction - is unknown.
+      // Noncompliant@+1 {{Subtracting numeric values in compare can overflow; use Integer.compare instead.}}
+      return (left & mask) - 0;
+    }
+
+    private static int computeMask(int seed) {
+      return seed > 0 ? 0xff : 0x0f;
+    }
+  }
+
+  static class DeeplyChainedLocalsComparator implements Comparator<String> {
+    @Override
+    public int compare(String left, String right) {
+      int a = left.length();
+      int b = a;
+      int c = b;
+      int d = c;
+      int e = d;
+      int f = e;
+      int g = f;
+      int h = g;
+      // The single-write resolution depth cap keeps this conservative: h is not traced all the way back to
+      // left.length(), so it is treated as unbounded even though it provably isn't.
+      // Noncompliant@+1 {{Subtracting numeric values in compare can overflow; use Integer.compare instead.}}
+      return h - right.length();
+    }
+  }
+
+  static class IncrementedCounterComparator implements Comparator<String[]> {
+    @Override
+    public int compare(String[] left, String[] right) {
+      int leftCount = 0;
+      for (String s : left) {
+        leftCount++;
+      }
+      int rightCount = 0;
+      for (String s : right) {
+        rightCount++;
+      }
+      // leftCount and rightCount are mutated with ++, not a single assignment, so they are not resolved to a
+      // bounded range even though both loops only ever increment their counter.
+      // Noncompliant@+1 {{Subtracting numeric values in compare can overflow; use Integer.compare instead.}}
+      return leftCount - rightCount;
+    }
+  }
+
+  static class UnknownRangeComparator implements Comparable<UnknownRangeComparator> {
+    @Override
+    public int compareTo(UnknownRangeComparator other) {
+      return this.hashCode() - other.hashCode(); // Noncompliant {{Subtracting numeric values in compareTo can overflow; use Integer.compare instead.}}
+    }
+  }
+
+  int subtract(int a, int b) {
+    return a - b; // Compliant - not in a comparison method
+  }
+
+  static class DoubleUtils {
+    int compare(int a, int b) {
+      return a - b; // Compliant - not in a Comparator
+    }
+  }
+
+  static class NonComparableTest {
+    private final long value = 0;
+
+    public int compareTo(NonComparableTest other) {
+      return (int) (this.value - other.value); // Compliant - class is not Comparable
+    }
+  }
+
+  static final Object COMPARATOR_LIKE_INT_CAST = new Object() {
+    public int compare(Long n1, Long n2) {
+      return (int) (n1 - n2); // Compliant - not a Comparator
+    }
+  };
+
+  static class LookAlikeMethods {
+    double compareTo(Object other) {
+      return other.hashCode() - 1; // Compliant - does not return an int
+    }
+
+    int compareTo(Object a, Object b) {
+      return a.hashCode() - b.hashCode(); // Compliant - compareTo takes exactly one parameter
+    }
+
+    int compare(IntHolder a) {
+      return a.value - 1; // Compliant - compare takes exactly two parameters
+    }
+  }
+
+  static class NestedLambda implements Comparable<NestedLambda> {
+    private int value;
+
+    @Override
+    public int compareTo(NestedLambda other) {
+      IntSupplier difference = () -> this.value - other.value; // Compliant - not a Comparator
+      return Integer.compare(difference.getAsInt(), 0); // Compliant
+    }
+  }
+
+  static class LocalClassInCompareTo implements Comparable<LocalClassInCompareTo> {
+    private int value;
+
+    @Override
+    public int compareTo(LocalClassInCompareTo other) {
+      class Difference {
+        int between(int a, int b) {
+          return a - b; // Compliant - not in a comparison method
+        }
+      }
+      return Integer.compare(new Difference().between(this.value, other.value), 0); // Compliant
+    }
+  }
+
+  interface CustomComparable<T> {
+    int compareTo(T other); // Compliant - abstract method, no body
+  }
+
+  abstract static class AbstractIntComparator implements Comparator<Integer> {
+    @Override
+    public abstract int compare(Integer a, Integer b); // Compliant - abstract method, no body
+  }
+
+  void lambdaCorrect(List<IntHolder> list, List<TimestampedEvent> events) {
+    list.sort((a, b) -> Integer.compare(a.value, b.value)); // Compliant
+    events.sort((left, right) -> Long.compare(left.timestamp, right.timestamp)); // Compliant
+  }
+
+}

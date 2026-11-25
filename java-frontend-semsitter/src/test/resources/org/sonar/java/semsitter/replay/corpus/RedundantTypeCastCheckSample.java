@@ -1,0 +1,512 @@
+package checks;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.Predicate;
+
+class Outer {
+  class Nested {
+  }
+  class ExtendedNested extends Nested { }
+  List list;
+  List<String> foo() {
+    Object obj = null;
+    Object o1 = (List<String>) foo(); // Noncompliant {{Remove this unnecessary cast to "List".}} [[quickfixes=qf1]]
+//              ^^^^^^^^^^^^^^
+                                      // fix@qf1 {{Remove the cast to "List"}}
+                                      // edit@qf1 [[sc=17;ec=32]] {{}}
+    Object o2 = (List<? extends String>) foo(); // Noncompliant {{Remove this unnecessary cast to "List".}}
+    Object o3 = (List<? super String>) foo(); // Noncompliant {{Remove this unnecessary cast to "List".}}
+    String s1 = (String) obj; // Compliant
+    String s2 = (String) s1; // Noncompliant {{Remove this unnecessary cast to "String".}}
+    Nested a = (Nested) new ExtendedNested(); // Noncompliant {{Remove this unnecessary cast to "Nested".}}
+    Nested[][] as = (Nested[][]) new ExtendedNested[1][1]; // Noncompliant {{Remove this unnecessary cast to "Nested[][]".}}
+    ExtendedNested b = null;
+    fun(b);
+
+    fun((ExtendedNested) b); // Noncompliant
+    fun(((ExtendedNested) b)); // Noncompliant
+    fun((((ExtendedNested) b))); // Noncompliant
+    fun((Nested) a, (ExtendedNested) a); // Noncompliant
+//      ^^^^^^^^
+    fun((Nested) b); // Compliant - exception to distinguish the method to call
+    List<ExtendedNested> bees = new java.util.ArrayList<ExtendedNested>();
+    List<Nested> aaas = (List) bees;
+    C c = new C((Nested) null); // Compliant - exception to distinguish the constructor to call
+    foo((List<List<Nested>>) (List<?>) foo2()); // compliant
+
+    String[] stringList = (String[]) list.toArray(new String[0]); // Compliant
+    return null;
+  }
+
+  List<String> foo2() {
+
+    int a = 1;
+    int b = 2;
+    double d = (double) a / (double) b;
+    int c = (int)a; // Noncompliant {{Remove this unnecessary cast to "int".}}
+    int e = (int) d;
+    return null;
+  }
+
+  void lossyWideningCasts(int intVar, long longVar) {
+    float f1 = (float) intVar; // Compliant: documents potential precision loss, required by S9395
+    float f2 = (float) longVar; // Compliant
+    double d1 = (double) longVar; // Compliant
+    float f3 = (float) (intVar); // Compliant
+    double d2 = (double) intVar; // Noncompliant {{Remove this unnecessary cast to "double".}}
+    float f4 = (float) 42; // Noncompliant {{Remove this unnecessary cast to "float".}}
+    double d3 = (double) 42L; // Noncompliant {{Remove this unnecessary cast to "double".}}
+    float f5 = (float) (intVar * intVar); // Noncompliant {{Remove this unnecessary cast to "float".}}
+    float f6 = (float) (intVar + intVar); // Noncompliant
+    double d4 = (double) (longVar / longVar); // Noncompliant
+    float f7 = (float) intVar * intVar; // Compliant
+  }
+
+  private static int charConversion(char c) {
+    return (char) ((c | 0x20) - 'a'); // Compliant
+  }
+
+  void foo(List<List<Nested>> a) {}
+
+  void castInArguments(List<String> p) {
+    Collection<String> v1 = Collections.emptyList();
+    List<String> v2 = Collections.emptyList();
+    castInArguments((List<String>) v1); // Compliant - cast needed
+    castInArguments((List<String>) v2); // Noncompliant
+  }
+
+  List<List<ExtendedNested>> foo3() {
+    return null;
+  }
+  void fun(Nested a) {
+  }
+
+  void fun(Nested a, ExtendedNested b) {
+  }
+
+  void fun(ExtendedNested b) {
+  }
+
+  void funBParameter(ExtendedNested b) {
+  }
+
+  class C {
+    C(Nested a) {}
+    C(ExtendedNested a) throws Exception {
+      Object o = (Object) fun().newInstance(); // Noncompliant {{Remove this unnecessary cast to "Object".}}
+    }
+    Class fun() { return null;}
+    public <T> T[] toArray(T[] a) {
+      Object[] elementData = new Object[0];
+      // Make a new array of a's runtime type, but my contents:
+      return (T[]) Arrays.copyOf(elementData, 12, a.getClass()); // Compliant - The cast is mandatory!
+    }
+    String[] fun2(){
+      return (String[]) null; // Noncompliant {{Remove this unnecessary cast to "String[]".}}
+    }
+  }
+}
+
+class RedundantTypeCastCheckSample_D {
+  <T> List<T> genericCast() {
+    List<Object> objectList = null;
+    return (List<T>) objectList;
+  }
+}
+
+class RedundantTypeCastCheckSample_E<T> {
+  <K, V> Map<K, Set<V>> secondTypeChangeCast(Map<K, V> multimap) {
+    return (Map<K, Set<V>>) (Map<K, ?>) multimap; // Compliant
+  }
+  RedundantTypeCastCheckSample_E<List<Object>> typeChangeCast(RedundantTypeCastCheckSample_E<List<String>> list) {
+    return (RedundantTypeCastCheckSample_E<List<Object>>) (RedundantTypeCastCheckSample_E<?>) list; // Compliant
+  }
+}
+interface Dto<T> {}
+interface Index<DOMAIN, DTO extends Dto<KEY>, KEY extends java.io.Serializable> {}
+class CastToRawType {
+  void fun() {
+    Object o1  = (Object) Object[].class; // Noncompliant
+    Class o2  = (Class) Object[].class; // Noncompliant
+  }
+  private final Map<Class<?>, Index<?,?,?>> indexComponents = null;
+  public <K extends Index> K get(Class<K> clazz){
+    return (K) this.indexComponents.get(clazz);
+  }
+
+}
+
+class RedundantTypeCastCheckSample_F<T, K, V> {
+  class Inner<J> {
+    J fun(T t) {
+      return (J) t;
+    }
+  }
+  public <T> T[] toArray(T[] a) {
+    int size = size();
+    if (a.length < size)
+      a = (T[])java.lang.reflect.Array
+        .newInstance(a.getClass().getComponentType(), size);
+    java.util.Iterator<Map.Entry<K,V>> it = iterator();
+    for (int i = 0; i < size; i++)
+      a[i] = (T) new java.util.AbstractMap.SimpleEntry<K,V>(it.next());
+    if (a.length > size)
+      a[size] = null;
+    return a;
+  }
+  public int size() {
+    return 42;
+  }
+  public java.util.Iterator<Map.Entry<K,V>> iterator() {
+    return null;
+  }
+}
+class RedundantTypeCastCheckSample_G<T> {
+
+  private RedundantTypeCastCheckSample_G<?> resolveSupertype() {
+    return null;
+  }
+
+  void foo() {
+    RedundantTypeCastCheckSample_G<? super T> plop = (RedundantTypeCastCheckSample_G<? super T>) resolveSupertype(); // this works but there is an issue in the returned type of resolveSupertype which returns raw type RedundantTypeCastCheckSample_G instead of RedundantTypeCastCheckSample_G<?>
+  }
+
+  private int unsafeCompare(Object k1, Object k2) {
+    Comparator<? super T> comparator = null;
+    if (comparator == null) {
+      return ((Comparable<Object>) k1).compareTo(k2);
+    } else {
+      return ((Comparator<Object>) comparator).compare(k1, k2);
+    }
+  }
+
+  String foo(Object a) {
+    return a == null ? (String) null : a.toString(); // Noncompliant
+  }
+
+  static class H {
+    java.util.concurrent.Callable<H> c0 = () -> {
+      return (H) getValue();
+    };
+
+    private Object getValue() {
+      return null;
+    }
+
+    public <T> T getInstance(Runtime runtime, Object o, Class<T> clazz) throws Exception {
+      String name = clazz.getName();
+      Class<T> c = (Class<T>) Class.forName(name, true, o.getClass().getClassLoader());
+      return null;
+    }
+
+    public String supportSpecificTypeReturnedByGetClass(Object obj) {
+      // "getClass()" does not respect its method signature, instead of returning "Class<?>", it returns "Class<? extends String>"
+      Class<? extends String> cls1 = ((String) obj).getClass(); // Compliant, without the "(String)" cast, the code does not compile
+      Class<? extends Object> cls3 = ((Object) obj).getClass(); // false-negative, limitation of the rule which is more permissive there is a ".getClass()" method invocation
+
+      // coverage
+      Class<? extends String> cls2 = ((H) obj).getClass((String) obj); // not an "Object#getClass()" method invocation
+      class CornerCase{
+        int getClass;
+      }
+      ((CornerCase) obj).getClass = 42; // not a method invocation but a field
+      return cls1.getName();
+    }
+
+    public <T> Class<? extends T> getClass(T obj) {
+      return (Class<? extends T>) obj.getClass();
+    }
+
+    public static Number choose(Integer i, Float f, boolean takeFirst) {
+      return takeFirst ? (Number) i : f;
+    }
+
+    public static Number choose2(Integer i, Float f, boolean takeFirst) {
+      return takeFirst ? (int) i : f;
+    }
+
+    public static float choose3(int i, double f, boolean takeFirst) {
+      return takeFirst ? i : (float)f;
+    }
+  }
+
+  class I {
+    <K> K getValue(K s) {
+      return s;
+    }
+    String foo() {
+      // FN introduced due to ECJ 3.44
+      return (String) getValue(""); // Compliant
+    }
+  }
+
+  void fun() {
+    Object test = new Object[]{"1"};
+    String[] test2 = new String[]{"1"};
+    Object[] test3 = new String[]{"1"};
+    System.out.println(((Object[])test)[0]); // compliant : target type is array access
+    System.out.println(((Object[])test2)[0]); // Noncompliant
+    System.out.println(((String[])test3)[0]); // compliant
+  }
+}
+
+interface RedundantTypeCastCheckSample_J {
+  default void foo() { }
+  default void bar() { }
+
+  interface K extends RedundantTypeCastCheckSample_J {
+    void foo();
+  }
+
+  interface L extends RedundantTypeCastCheckSample_J {
+    void foobar();
+  }
+
+  static void test() {
+    RedundantTypeCastCheckSample_J j1 = (K) () -> { }; // compliant : cast is needed for it to be used as a lambda expression
+    RedundantTypeCastCheckSample_J j2 = (L) () -> { }; // compliant : cast is needed for it to be used as a lambda expression
+  }
+}
+
+interface RedundantTypeCastCheckSample_M {
+  default void foo() { }
+  default void bar() { }
+  void foobar();
+
+  interface N extends RedundantTypeCastCheckSample_M {
+    default void foobar() { }
+    void foo();
+  }
+
+  interface O extends RedundantTypeCastCheckSample_M { }
+
+  interface P extends RedundantTypeCastCheckSample_M {
+    void foobar();
+  }
+
+  interface Q extends RedundantTypeCastCheckSample_M {
+    default void foo() { }
+  }
+
+  static void test() {
+    RedundantTypeCastCheckSample_M m1 = () -> { };
+    RedundantTypeCastCheckSample_M m2 = (RedundantTypeCastCheckSample_M) () -> { }; // FN because we now allow all casts on lambdas to avoid FPs
+    RedundantTypeCastCheckSample_M m3 = (N) () -> { }; // compliant : cast changes method associated to lambda expression
+    RedundantTypeCastCheckSample_M m6 = (Q) () -> { }; // compliant : cast changes default definition of method foo
+  }
+}
+
+class RedundantTypeCastCheckSample_T {
+  Predicate<Object> methodReferenceCastNeeded() {
+    return ((Predicate<Object>) Objects::nonNull).negate(); // Compliant : cannot call Predicate#negate() without casting it first
+  }
+
+  Comparator<Integer> methodReferenceCastNeeded2() {
+    return (((Comparator<Integer>) Integer::compare)).reversed();   // Compliant : cannot call Comparator#reversed() without casting it first
+  }
+
+  Predicate<Object> methodReferenceCastNotNeeded() {
+    return (((Predicate<Object>) Objects::nonNull)); // FN because we now allow all casts on method references to avoid FPs
+  }
+
+  Comparator<Integer> methodReferenceCastNotNeeded2() {
+    return (Comparator<Integer>) Integer::compare; // FN because we now allow all casts on method references to avoid FPs
+  }
+}
+
+abstract class MyClass {
+  public String field;
+  abstract <U extends MyClass> U foo();
+
+  String qix() {
+    return ((MyOtherClass) foo()).field; // Compliant - FN
+  }
+
+  String qix0() {
+    return ((MyOtherClass) foo()).otherField; // Compliant
+  }
+
+  String qix1() {
+    return ((MyOtherClass) foo()).bar(); // Compliant
+  }
+
+  MyClass qix3() {
+    return ((MyOtherClass) foo()); // Noncompliant
+  }
+}
+abstract class MyOtherClass extends MyClass {
+  public String otherField;
+  abstract String bar();
+}
+
+class AWT {
+  private static java.awt.event.AWTEventListener deProxyAWTEventListener(java.awt.event.AWTEventListener l) {
+    java.awt.event.AWTEventListener localL = l;
+
+    if (localL == null) {
+      return null;
+    }
+    if (l instanceof java.awt.event.AWTEventListenerProxy) {
+      localL = (java.awt.event.AWTEventListener) // Noncompliant
+        ((java.awt.event.AWTEventListenerProxy) l).getListener(); // Compliant
+    }
+    return localL;
+  }
+
+  void foo() {
+    byte a = 42;
+    a = (byte) -a; // Compliant - cast is required
+  }
+}
+
+class CastIntersectionType {
+  public static final Comparator<Object> UNIQUE_ID_COMPARATOR =  (Comparator<Object> & java.io.Serializable) (o1, o2) -> o1.toString().compareTo(o2.toString());
+}
+
+abstract class Discuss {
+
+  abstract <M> M getMeta();
+
+  void foo() {
+    int  i = ((String) getMeta()).length(); // Compliant - generic method correctly handled
+  }
+}
+
+class ClassWithAnnotation {
+  @MyAnnotation((int) (0L + 42))
+  Object field;
+
+  @interface MyAnnotation {
+    int value() default 42;
+  }
+}
+
+class ClassWithVariadicFunction {
+  public ClassWithVariadicFunction(int i) {
+
+  }
+
+  void variadicFunction(int ... p) {}
+  void fun() {
+    variadicFunction(1, 2, (int) 3.4);
+    variadicFunction(1, 2, ((int) 3.4));
+    variadicFunction((int) 1, 2, 3); // Noncompliant
+    variadicFunction(((int) 1), 2, 3); // Noncompliant
+    variadicFunction(1, 2, 3, (int) 4); // Noncompliant
+
+    ClassWithVariadicFunction c = new ClassWithVariadicFunction((int) 3.4); // recovered constructor
+  }
+}
+
+class GenericClass<T> {
+  private GenericClass<?> type() {
+    return null;
+  }
+
+  void foo() {
+    GenericClass<? super T> g = (GenericClass<? super T>) type(); // type of the method invocation is well-handled
+  }
+}
+
+class CastRawType {
+  public static void paramsErrorMessage(Class clazz) {
+    Outer.Nested r = (Outer.Nested) clazz.getAnnotation(Outer.Nested.class); // Handle cast of raw types
+  }
+}
+
+class PrecisionLossCasts {
+  static final int SMALL_INT = 42;
+  static final long SMALL_LONG = 42L;
+
+  PrecisionLossCasts(float first, float second, double third) {}
+
+  void conversions(int intValue, long longValue) {
+    float fromInt = (float) intValue;
+    float fromLong = (float) longValue;
+    double doubleFromLong = (double) longValue;
+
+    fromInt = (float) intValue;
+    fromLong = (float) longValue;
+    doubleFromLong = (double) longValue;
+
+    fromInt += (float) intValue;
+    fromLong += (float) longValue;
+    doubleFromLong += (double) longValue;
+
+    takeFloat((float) intValue);
+    takeFloat((float) longValue);
+    takeDouble((double) longValue);
+    new PrecisionLossCasts((float) intValue, (float) longValue, (double) longValue);
+
+    takeFloat(((float) (intValue)));
+    takeFloat(((float) (longValue)));
+    takeDouble(((double) (longValue)));
+  }
+
+  float returnInt(int value) {
+    return (float) value;
+  }
+
+  float returnLong(long value) {
+    return (float) value;
+  }
+
+  double returnLongAsDouble(long value) {
+    return (double) value;
+  }
+
+  void safeConstants() {
+    float zero = (float) 0; // Noncompliant
+    float fromInt = (float) 1; // Noncompliant
+    float fromLong = (float) 1L; // Noncompliant
+    double doubleFromLong = (double) 1L; // Noncompliant
+
+    float namedInt = (float) SMALL_INT; // Noncompliant
+    float namedLong = (float) SMALL_LONG; // Noncompliant
+    double namedDouble = (double) SMALL_LONG; // Noncompliant
+    float folded = (float) (20 + 22); // Noncompliant
+
+    float intUpperBound = (float) 16_777_216; // Noncompliant
+    float intLowerBound = (float) -16_777_216; // Noncompliant
+    float longUpperBound = (float) 16_777_216L; // Noncompliant
+    float longLowerBound = (float) -16_777_216L; // Noncompliant
+    double doubleUpperBound = (double) 9_007_199_254_740_992L; // Noncompliant
+    double doubleLowerBound = (double) -9_007_199_254_740_992L; // Noncompliant
+
+    takeFloat(((float) (1))); // Noncompliant
+    takeFloat((float) 1L); // Noncompliant
+    takeDouble((double) 1L); // Noncompliant
+    new PrecisionLossCasts((float) 1, (float) 1L, (double) 1L); // Noncompliant 3
+  }
+
+  void lossyConstants() {
+    float fromInt = (float) 16_777_217;
+    float negativeInt = (float) -16_777_217;
+    float fromLong = (float) 16_777_217L;
+    float negativeLong = (float) -16_777_217L;
+    double doubleFromLong = (double) 9_007_199_254_740_993L;
+    double negativeDouble = (double) -9_007_199_254_740_993L;
+  }
+
+  void redundantCasts(int intValue, long longValue, float floatValue, byte byteValue, short shortValue, char charValue) {
+    int sameInt = (int) intValue; // Noncompliant
+    long sameLong = (long) longValue; // Noncompliant
+    float sameFloat = (float) floatValue; // Noncompliant
+    long widerInteger = (long) intValue; // Noncompliant
+    double fromInt = (double) intValue; // Noncompliant
+    double fromFloat = (double) floatValue; // Noncompliant
+    float fromByte = (float) byteValue; // Noncompliant
+    float fromShort = (float) shortValue; // Noncompliant
+    float fromChar = (float) charValue; // Noncompliant
+  }
+
+  void takeFloat(float value) {}
+  void takeDouble(double value) {}
+}
