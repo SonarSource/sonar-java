@@ -148,7 +148,9 @@ public final class SpringUtils {
       if (attrs != null) {
         Optional<String> name = attrs.stream()
           .filter(v -> VALUE_ATTRIBUTE.equals(v.name()) || "name".equals(v.name()))
-          .map(v -> (String) v.value())
+          .map(SymbolMetadata.AnnotationValue::value)
+          .filter(String.class::isInstance)
+          .map(String.class::cast)
           .filter(s -> !s.isBlank())
           .findFirst();
         if (name.isPresent()) {
@@ -194,7 +196,9 @@ public final class SpringUtils {
     }
     return attrs.stream()
       .filter(v -> VALUE_ATTRIBUTE.equals(v.name()))
-      .map(v -> (String) v.value())
+      .map(SymbolMetadata.AnnotationValue::value)
+      .filter(String.class::isInstance)
+      .map(String.class::cast)
       .filter(s -> !s.isBlank())
       .findFirst()
       .orElse(null);
