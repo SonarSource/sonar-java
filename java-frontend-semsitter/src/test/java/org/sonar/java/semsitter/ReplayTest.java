@@ -37,6 +37,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  */
 class ReplayTest {
 
+
   private static JsonObject types;
   private static JsonObject packages;
 

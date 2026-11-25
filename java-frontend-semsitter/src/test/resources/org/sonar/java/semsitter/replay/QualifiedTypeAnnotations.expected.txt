@@ -61,12 +61,12 @@ TYPE_PARAMETERS
 LIST
 LIST
 TOKEN @7:12
-ANNOTATION_TYPE @8:3 class Tags.Tag [t static package interface] : annotated.Tags$Tag super java.lang.Object interfaces [java.lang.annotation.Annotation]
-  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Tags flags [static, package, interface] members [] lookupToString 0 outermost Tags annotation true subtypeOf [java.lang.Object, java.lang.annotation.Annotation] superTypes [java.lang.Object, java.lang.annotation.Annotation] numerical false wrapper false raw false declaring Tag
+ANNOTATION_TYPE @8:3 class Tags.Tag [t static package interface] : annotated.Tags$Tag @java.lang.annotation.Target super java.lang.Object interfaces [java.lang.annotation.Annotation]
+  details declared true usages 1 metadata [java.lang.annotation.Target(value={ElementType.TYPE_USE})] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [java.lang.annotation.Target tree true values 1 annotated true] typeArguments [] enclosing Tags flags [static, package, interface] members [] lookupToString 0 outermost Tags annotation true subtypeOf [java.lang.Object, java.lang.annotation.Annotation] superTypes [java.lang.Object, java.lang.annotation.Annotation] numerical false wrapper false raw false declaring Tag
 MODIFIERS @8:3
 ANNOTATION @8:3 : java.lang.annotation.Target
 TOKEN @8:3
-IDENTIFIER @8:4 id Target java.lang.annotation.Target [t public interface] : java.lang.annotation.Target : java.lang.annotation.Target
+IDENTIFIER @8:4 id Target java.lang.annotation.Target [t public interface] : java.lang.annotation.Target @java.lang.annotation.Documented,java.lang.annotation.Retention,java.lang.annotation.Target : java.lang.annotation.Target
 TOKEN @8:4
 ARGUMENTS @8:10
 TOKEN @8:10
@@ -79,7 +79,7 @@ TOKEN @8:23
 TOKEN @8:31
 TOKEN @9:3
 TOKEN @9:4
-IDENTIFIER @9:14 id Tag Tags.Tag [t static package interface] : annotated.Tags$Tag : annotated.Tags$Tag
+IDENTIFIER @9:14 id Tag Tags.Tag [t static package interface] : annotated.Tags$Tag @java.lang.annotation.Target : annotated.Tags$Tag
 TOKEN @9:14
 TYPE_PARAMETERS
 LIST
@@ -110,7 +110,7 @@ LIST
 TOKEN @14:15
 TOKEN @15:3
 METHOD @17:3 method QualifiedTypeAnnotations.m [m abstract package] : ? () returns annotated.QualifiedTypeAnnotations$Inner throws [] sig annotated.QualifiedTypeAnnotations#m()Lannotated/QualifiedTypeAnnotations$Inner; overrides false
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing QualifiedTypeAnnotations flags [abstract, package] overridden [] overridable true generic true default false synchronized false varargs false native false parameters [] parameterMetadata []
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing QualifiedTypeAnnotations flags [abstract, package] overridden [] overridable true generic true default false synchronized false varargs false native false parameters [] parameterMetadata []
 MODIFIERS @17:3
 TOKEN @17:3
 TYPE_PARAMETERS @17:12
@@ -123,7 +123,7 @@ MEMBER_SELECT @17:16 : annotated.QualifiedTypeAnnotations$Inner
 IDENTIFIER @17:16 id QualifiedTypeAnnotations annotated.QualifiedTypeAnnotations [t abstract package] : annotated.QualifiedTypeAnnotations : annotated.QualifiedTypeAnnotations
 ANNOTATION @17:16 : annotated.Tags$Tag
 TOKEN @17:16
-IDENTIFIER @17:17 id Tag Tags.Tag [t static package interface] : annotated.Tags$Tag : annotated.Tags$Tag
+IDENTIFIER @17:17 id Tag Tags.Tag [t static package interface] : annotated.Tags$Tag @java.lang.annotation.Target : annotated.Tags$Tag
 TOKEN @17:17
 ARGUMENTS
 TOKEN @17:21

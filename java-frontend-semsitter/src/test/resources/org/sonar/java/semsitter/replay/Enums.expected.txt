@@ -56,15 +56,15 @@ IDENTIFIER @5:34 id Enums .Enums [t package enum] : Enums : Enums
 TOKEN @5:34
 TOKEN @5:39
 TOKEN @5:40
-IDENTIFIER @5:42 id Runnable java.lang.Runnable [t public interface] : java.lang.Runnable : java.lang.Runnable
+IDENTIFIER @5:42 id Runnable java.lang.Runnable [t public interface] : java.lang.Runnable @java.lang.FunctionalInterface : java.lang.Runnable
 TOKEN @5:42
 LIST
 TOKEN @5:51
 ENUM_CONSTANT @6:3 var Enums.PLUS [v static final public enum] : Enums
-  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Enums flags [static, final, public, enum] local false parameter false effectivelyFinal true constant null
+  details declared true usages 2 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Enums flags [static, final, public, enum] local false parameter false effectivelyFinal true constant null
 MODIFIERS
 NEW_CLASS @6:3 new Enums.<init> [m private] : ? (java.lang.String,int) returns void throws [] sig Enums#<init>(Ljava/lang/String;ILjava/lang/String;I)V : ?
-  details declared true usages 3 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Enums flags [private] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [symbol, priority] parameterMetadata []
+  details declared true usages 3 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Enums flags [private] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [symbol, priority] parameterMetadata []
 IDENTIFIER @6:3 id PLUS Enums.<init> [m private] : ? (java.lang.String,int) returns void throws [] sig Enums#<init>(Ljava/lang/String;ILjava/lang/String;I)V : Enums
 TOKEN @6:3
 ARGUMENTS @6:7
@@ -82,22 +82,22 @@ TYPE_PARAMETERS
 LIST
 LIST
 TOKEN @6:16
-METHOD @7:5 method .apply [m package] : ? (int,int) returns int throws [] sig Enums$1#apply(II)I overrides true
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing  flags [package] overridden [Enums.apply[]] overridable true generic false default false synchronized false varargs false native false parameters [a, b] parameterMetadata []
+METHOD @7:5 method .apply [m package] : ? @java.lang.Override (int,int) returns int throws [] sig Enums$1#apply(II)I overrides true
+  details declared true usages 0 metadata [java.lang.Override()] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [java.lang.Override tree true values 0 annotated true] typeArguments [] enclosing  flags [package] overridden [Enums.apply[]] overridable true generic false default false synchronized false varargs false native false parameters [a, b] parameterMetadata []
 MODIFIERS @7:5
 ANNOTATION @7:5 : java.lang.Override
 TOKEN @7:5
-IDENTIFIER @7:6 id Override java.lang.Override [t public interface] : java.lang.Override : java.lang.Override
+IDENTIFIER @7:6 id Override java.lang.Override [t public interface] : java.lang.Override @java.lang.annotation.Retention,java.lang.annotation.Target : java.lang.Override
 TOKEN @7:6
 ARGUMENTS
 TYPE_PARAMETERS
 PRIMITIVE_TYPE @8:5 : int
 TOKEN @8:5
-IDENTIFIER @8:9 id apply .apply [m package] : ? (int,int) returns int throws [] sig Enums$1#apply(II)I : int
+IDENTIFIER @8:9 id apply .apply [m package] : ? @java.lang.Override (int,int) returns int throws [] sig Enums$1#apply(II)I : int
 TOKEN @8:9
 TOKEN @8:14
 VARIABLE @8:15 var apply.a [v package] : int
-  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing  flags [package] local true parameter true effectivelyFinal true constant null owner apply Enums$1#apply(II)I [package] returns int parameters 2 thrown 0 overridden 1 declared true usages 0 metadata 0 enclosing  type true kinds truefalsefalse other falsefalsefalsefalsetruefalse2falsefalse
+  details declared true usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing  flags [package] local true parameter true effectivelyFinal true constant null owner apply Enums$1#apply(II)I [package] returns int parameters 2 thrown 0 overridden 1 declared true usages 0 metadata 1 enclosing  type true kinds truefalsefalse other falsefalsefalsefalsetruefalse2falsefalse
 MODIFIERS
 PRIMITIVE_TYPE @8:15 : int
 TOKEN @8:15
@@ -105,7 +105,7 @@ IDENTIFIER @8:19 id a apply.a [v package] : int : int
 TOKEN @8:19
 TOKEN @8:20
 VARIABLE @8:22 var apply.b [v package] : int
-  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing  flags [package] local true parameter true effectivelyFinal true constant null owner apply Enums$1#apply(II)I [package] returns int parameters 2 thrown 0 overridden 1 declared true usages 0 metadata 0 enclosing  type true kinds truefalsefalse other falsefalsefalsefalsetruefalse2falsefalse
+  details declared true usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing  flags [package] local true parameter true effectivelyFinal true constant null owner apply Enums$1#apply(II)I [package] returns int parameters 2 thrown 0 overridden 1 declared true usages 0 metadata 1 enclosing  type true kinds truefalsefalse other falsefalsefalsefalsetruefalse2falsefalse
 MODIFIERS
 PRIMITIVE_TYPE @8:22 : int
 TOKEN @8:22
@@ -127,10 +127,10 @@ TOKEN @10:5
 TOKEN @11:3
 TOKEN @11:4
 ENUM_CONSTANT @12:3 var Enums.MINUS [v static final public enum] : Enums
-  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Enums flags [static, final, public, enum] local false parameter false effectivelyFinal true constant null
+  details declared true usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Enums flags [static, final, public, enum] local false parameter false effectivelyFinal true constant null
 MODIFIERS
 NEW_CLASS @12:3 new Enums.<init> [m private] : ? (java.lang.String,int) returns void throws [] sig Enums#<init>(Ljava/lang/String;ILjava/lang/String;I)V : ?
-  details declared true usages 3 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Enums flags [private] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [symbol, priority] parameterMetadata []
+  details declared true usages 3 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Enums flags [private] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [symbol, priority] parameterMetadata []
 IDENTIFIER @12:3 id MINUS Enums.<init> [m private] : ? (java.lang.String,int) returns void throws [] sig Enums#<init>(Ljava/lang/String;ILjava/lang/String;I)V : Enums
 TOKEN @12:3
 ARGUMENTS @12:8
@@ -148,22 +148,22 @@ TYPE_PARAMETERS
 LIST
 LIST
 TOKEN @12:17
-METHOD @13:5 method .apply [m package] : ? (int,int) returns int throws [] sig Enums$2#apply(II)I overrides true
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing  flags [package] overridden [Enums.apply[]] overridable true generic false default false synchronized false varargs false native false parameters [a, b] parameterMetadata []
+METHOD @13:5 method .apply [m package] : ? @java.lang.Override (int,int) returns int throws [] sig Enums$2#apply(II)I overrides true
+  details declared true usages 0 metadata [java.lang.Override()] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [java.lang.Override tree true values 0 annotated true] typeArguments [] enclosing  flags [package] overridden [Enums.apply[]] overridable true generic false default false synchronized false varargs false native false parameters [a, b] parameterMetadata []
 MODIFIERS @13:5
 ANNOTATION @13:5 : java.lang.Override
 TOKEN @13:5
-IDENTIFIER @13:6 id Override java.lang.Override [t public interface] : java.lang.Override : java.lang.Override
+IDENTIFIER @13:6 id Override java.lang.Override [t public interface] : java.lang.Override @java.lang.annotation.Retention,java.lang.annotation.Target : java.lang.Override
 TOKEN @13:6
 ARGUMENTS
 TYPE_PARAMETERS
 PRIMITIVE_TYPE @14:5 : int
 TOKEN @14:5
-IDENTIFIER @14:9 id apply .apply [m package] : ? (int,int) returns int throws [] sig Enums$2#apply(II)I : int
+IDENTIFIER @14:9 id apply .apply [m package] : ? @java.lang.Override (int,int) returns int throws [] sig Enums$2#apply(II)I : int
 TOKEN @14:9
 TOKEN @14:14
 VARIABLE @14:15 var apply.a [v package] : int
-  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing  flags [package] local true parameter true effectivelyFinal true constant null owner apply Enums$2#apply(II)I [package] returns int parameters 2 thrown 0 overridden 1 declared true usages 0 metadata 0 enclosing  type true kinds truefalsefalse other falsefalsefalsefalsetruefalse2falsefalse
+  details declared true usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing  flags [package] local true parameter true effectivelyFinal true constant null owner apply Enums$2#apply(II)I [package] returns int parameters 2 thrown 0 overridden 1 declared true usages 0 metadata 1 enclosing  type true kinds truefalsefalse other falsefalsefalsefalsetruefalse2falsefalse
 MODIFIERS
 PRIMITIVE_TYPE @14:15 : int
 TOKEN @14:15
@@ -171,7 +171,7 @@ IDENTIFIER @14:19 id a apply.a [v package] : int : int
 TOKEN @14:19
 TOKEN @14:20
 VARIABLE @14:22 var apply.b [v package] : int
-  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing  flags [package] local true parameter true effectivelyFinal true constant null owner apply Enums$2#apply(II)I [package] returns int parameters 2 thrown 0 overridden 1 declared true usages 0 metadata 0 enclosing  type true kinds truefalsefalse other falsefalsefalsefalsetruefalse2falsefalse
+  details declared true usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing  flags [package] local true parameter true effectivelyFinal true constant null owner apply Enums$2#apply(II)I [package] returns int parameters 2 thrown 0 overridden 1 declared true usages 0 metadata 1 enclosing  type true kinds truefalsefalse other falsefalsefalsefalsetruefalse2falsefalse
 MODIFIERS
 PRIMITIVE_TYPE @14:22 : int
 TOKEN @14:22
@@ -193,10 +193,10 @@ TOKEN @16:5
 TOKEN @17:3
 TOKEN @17:4
 ENUM_CONSTANT @18:3 var Enums.TIMES [v static final public enum] : Enums
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Enums flags [static, final, public, enum] local false parameter false effectivelyFinal true constant null
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Enums flags [static, final, public, enum] local false parameter false effectivelyFinal true constant null
 MODIFIERS
 NEW_CLASS @18:3 new Enums.<init> [m private] : ? (java.lang.String) returns void throws [] sig Enums#<init>(Ljava/lang/String;ILjava/lang/String;)V : ?
-  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Enums flags [private] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [symbol] parameterMetadata []
+  details declared true usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Enums flags [private] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [symbol] parameterMetadata []
 IDENTIFIER @18:3 id TIMES Enums.<init> [m private] : ? (java.lang.String) returns void throws [] sig Enums#<init>(Ljava/lang/String;ILjava/lang/String;)V : Enums
 TOKEN @18:3
 ARGUMENTS @18:8
@@ -211,22 +211,22 @@ TYPE_PARAMETERS
 LIST
 LIST
 TOKEN @18:14
-METHOD @19:5 method .apply [m package] : ? (int,int) returns int throws [] sig Enums$3#apply(II)I overrides true
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing  flags [package] overridden [Enums.apply[]] overridable true generic false default false synchronized false varargs false native false parameters [a, b] parameterMetadata []
+METHOD @19:5 method .apply [m package] : ? @java.lang.Override (int,int) returns int throws [] sig Enums$3#apply(II)I overrides true
+  details declared true usages 0 metadata [java.lang.Override()] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [java.lang.Override tree true values 0 annotated true] typeArguments [] enclosing  flags [package] overridden [Enums.apply[]] overridable true generic false default false synchronized false varargs false native false parameters [a, b] parameterMetadata []
 MODIFIERS @19:5
 ANNOTATION @19:5 : java.lang.Override
 TOKEN @19:5
-IDENTIFIER @19:6 id Override java.lang.Override [t public interface] : java.lang.Override : java.lang.Override
+IDENTIFIER @19:6 id Override java.lang.Override [t public interface] : java.lang.Override @java.lang.annotation.Retention,java.lang.annotation.Target : java.lang.Override
 TOKEN @19:6
 ARGUMENTS
 TYPE_PARAMETERS
 PRIMITIVE_TYPE @20:5 : int
 TOKEN @20:5
-IDENTIFIER @20:9 id apply .apply [m package] : ? (int,int) returns int throws [] sig Enums$3#apply(II)I : int
+IDENTIFIER @20:9 id apply .apply [m package] : ? @java.lang.Override (int,int) returns int throws [] sig Enums$3#apply(II)I : int
 TOKEN @20:9
 TOKEN @20:14
 VARIABLE @20:15 var apply.a [v package] : int
-  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing  flags [package] local true parameter true effectivelyFinal true constant null owner apply Enums$3#apply(II)I [package] returns int parameters 2 thrown 0 overridden 1 declared true usages 0 metadata 0 enclosing  type true kinds truefalsefalse other falsefalsefalsefalsetruefalse2falsefalse
+  details declared true usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing  flags [package] local true parameter true effectivelyFinal true constant null owner apply Enums$3#apply(II)I [package] returns int parameters 2 thrown 0 overridden 1 declared true usages 0 metadata 1 enclosing  type true kinds truefalsefalse other falsefalsefalsefalsetruefalse2falsefalse
 MODIFIERS
 PRIMITIVE_TYPE @20:15 : int
 TOKEN @20:15
@@ -234,7 +234,7 @@ IDENTIFIER @20:19 id a apply.a [v package] : int : int
 TOKEN @20:19
 TOKEN @20:20
 VARIABLE @20:22 var apply.b [v package] : int
-  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing  flags [package] local true parameter true effectivelyFinal true constant null owner apply Enums$3#apply(II)I [package] returns int parameters 2 thrown 0 overridden 1 declared true usages 0 metadata 0 enclosing  type true kinds truefalsefalse other falsefalsefalsefalsetruefalse2falsefalse
+  details declared true usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing  flags [package] local true parameter true effectivelyFinal true constant null owner apply Enums$3#apply(II)I [package] returns int parameters 2 thrown 0 overridden 1 declared true usages 0 metadata 1 enclosing  type true kinds truefalsefalse other falsefalsefalsefalsetruefalse2falsefalse
 MODIFIERS
 PRIMITIVE_TYPE @20:22 : int
 TOKEN @20:22
@@ -256,7 +256,7 @@ TOKEN @22:5
 TOKEN @23:3
 TOKEN @23:4
 VARIABLE @25:3 var Enums.symbol [v final private] : java.lang.String
-  details declared true usages 3 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Enums flags [final, private] local false parameter false effectivelyFinal true constant null
+  details declared true usages 3 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Enums flags [final, private] local false parameter false effectivelyFinal true constant null
 MODIFIERS @25:3
 TOKEN @25:3
 TOKEN @25:11
@@ -266,7 +266,7 @@ IDENTIFIER @25:24 id symbol Enums.symbol [v final private] : java.lang.String : 
 TOKEN @25:24
 TOKEN @25:30
 VARIABLE @26:3 var Enums.priority [v final private] : int
-  details declared true usages 3 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Enums flags [final, private] local false parameter false effectivelyFinal true constant null
+  details declared true usages 3 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Enums flags [final, private] local false parameter false effectivelyFinal true constant null
 MODIFIERS @26:3
 TOKEN @26:3
 TOKEN @26:11
@@ -276,14 +276,14 @@ IDENTIFIER @26:21 id priority Enums.priority [v final private] : int : int
 TOKEN @26:21
 TOKEN @26:29
 CONSTRUCTOR @28:3 method Enums.<init> [m private] : ? (java.lang.String) returns void throws [] sig Enums#<init>(Ljava/lang/String;ILjava/lang/String;)V overrides false
-  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Enums flags [private] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [symbol] parameterMetadata []
+  details declared true usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Enums flags [private] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [symbol] parameterMetadata []
 MODIFIERS
 TYPE_PARAMETERS
 IDENTIFIER @28:3 id Enums Enums.<init> [m private] : ? (java.lang.String) returns void throws [] sig Enums#<init>(Ljava/lang/String;ILjava/lang/String;)V : void
 TOKEN @28:3
 TOKEN @28:8
 VARIABLE @28:9 var <init>.symbol [v package] : java.lang.String
-  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Enums flags [package] local true parameter true effectivelyFinal true constant null owner <init> Enums#<init>(Ljava/lang/String;ILjava/lang/String;)V [private] returns void parameters 1 thrown 0 overridden 0 declared true usages 1 metadata 0 enclosing Enums type true kinds truefalsefalse other falsefalsefalsefalsefalsefalse1falsefalse
+  details declared true usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Enums flags [package] local true parameter true effectivelyFinal true constant null owner <init> Enums#<init>(Ljava/lang/String;ILjava/lang/String;)V [private] returns void parameters 1 thrown 0 overridden 0 declared true usages 1 metadata 0 enclosing Enums type true kinds truefalsefalse other falsefalsefalsefalsefalsefalse1falsefalse
 MODIFIERS
 IDENTIFIER @28:9 id String java.lang.String [t final public] : java.lang.String : java.lang.String
 TOKEN @28:9
@@ -294,7 +294,7 @@ BLOCK @28:24
 TOKEN @28:24
 EXPRESSION_STATEMENT @29:5
 METHOD_INVOCATION @29:5 call Enums.<init> [m private] : ? (java.lang.String,int) returns void throws [] sig Enums#<init>(Ljava/lang/String;ILjava/lang/String;I)V : Enums
-  details declared true usages 3 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Enums flags [private] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [symbol, priority] parameterMetadata []
+  details declared true usages 3 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Enums flags [private] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [symbol, priority] parameterMetadata []
 IDENTIFIER @29:5 id this Enums.<init> [m private] : ? (java.lang.String,int) returns void throws [] sig Enums#<init>(Ljava/lang/String;ILjava/lang/String;I)V : ?
 TOKEN @29:5
 ARGUMENTS @29:9
@@ -308,14 +308,14 @@ TOKEN @29:19
 TOKEN @29:20
 TOKEN @30:3
 CONSTRUCTOR @32:3 method Enums.<init> [m private] : ? (java.lang.String,int) returns void throws [] sig Enums#<init>(Ljava/lang/String;ILjava/lang/String;I)V overrides false
-  details declared true usages 3 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Enums flags [private] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [symbol, priority] parameterMetadata []
+  details declared true usages 3 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Enums flags [private] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [symbol, priority] parameterMetadata []
 MODIFIERS
 TYPE_PARAMETERS
 IDENTIFIER @32:3 id Enums Enums.<init> [m private] : ? (java.lang.String,int) returns void throws [] sig Enums#<init>(Ljava/lang/String;ILjava/lang/String;I)V : void
 TOKEN @32:3
 TOKEN @32:8
 VARIABLE @32:9 var <init>.symbol [v package] : java.lang.String
-  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Enums flags [package] local true parameter true effectivelyFinal true constant null owner <init> Enums#<init>(Ljava/lang/String;ILjava/lang/String;I)V [private] returns void parameters 2 thrown 0 overridden 0 declared true usages 3 metadata 0 enclosing Enums type true kinds truefalsefalse other falsefalsefalsefalsefalsefalse2falsefalse
+  details declared true usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Enums flags [package] local true parameter true effectivelyFinal true constant null owner <init> Enums#<init>(Ljava/lang/String;ILjava/lang/String;I)V [private] returns void parameters 2 thrown 0 overridden 0 declared true usages 3 metadata 0 enclosing Enums type true kinds truefalsefalse other falsefalsefalsefalsefalsefalse2falsefalse
 MODIFIERS
 IDENTIFIER @32:9 id String java.lang.String [t final public] : java.lang.String : java.lang.String
 TOKEN @32:9
@@ -323,7 +323,7 @@ IDENTIFIER @32:16 id symbol <init>.symbol [v package] : java.lang.String : java.
 TOKEN @32:16
 TOKEN @32:22
 VARIABLE @32:24 var <init>.priority [v package] : int
-  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Enums flags [package] local true parameter true effectivelyFinal true constant null owner <init> Enums#<init>(Ljava/lang/String;ILjava/lang/String;I)V [private] returns void parameters 2 thrown 0 overridden 0 declared true usages 3 metadata 0 enclosing Enums type true kinds truefalsefalse other falsefalsefalsefalsefalsefalse2falsefalse
+  details declared true usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Enums flags [package] local true parameter true effectivelyFinal true constant null owner <init> Enums#<init>(Ljava/lang/String;ILjava/lang/String;I)V [private] returns void parameters 2 thrown 0 overridden 0 declared true usages 3 metadata 0 enclosing Enums type true kinds truefalsefalse other falsefalsefalsefalsefalsefalse2falsefalse
 MODIFIERS
 PRIMITIVE_TYPE @32:24 : int
 TOKEN @32:24
@@ -358,7 +358,7 @@ TOKEN @34:21
 TOKEN @34:29
 TOKEN @35:3
 METHOD @37:3 method Enums.apply [m abstract package] : ? (int,int) returns int throws [] sig Enums#apply(II)I overrides false
-  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Enums flags [abstract, package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [a, b] parameterMetadata []
+  details declared true usages 2 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Enums flags [abstract, package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [a, b] parameterMetadata []
 MODIFIERS @37:3
 TOKEN @37:3
 TYPE_PARAMETERS
@@ -368,7 +368,7 @@ IDENTIFIER @37:16 id apply Enums.apply [m abstract package] : ? (int,int) return
 TOKEN @37:16
 TOKEN @37:21
 VARIABLE @37:22 var apply.a [v package] : int
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Enums flags [package] local true parameter true effectivelyFinal true constant null owner apply Enums#apply(II)I [abstract, package] returns int parameters 2 thrown 0 overridden 0 declared true usages 2 metadata 0 enclosing Enums type true kinds truefalsefalse other falsefalsefalsefalsetruefalse2falsefalse
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Enums flags [package] local true parameter true effectivelyFinal true constant null owner apply Enums#apply(II)I [abstract, package] returns int parameters 2 thrown 0 overridden 0 declared true usages 2 metadata 0 enclosing Enums type true kinds truefalsefalse other falsefalsefalsefalsetruefalse2falsefalse
 MODIFIERS
 PRIMITIVE_TYPE @37:22 : int
 TOKEN @37:22
@@ -376,7 +376,7 @@ IDENTIFIER @37:26 id a apply.a [v package] : int : int
 TOKEN @37:26
 TOKEN @37:27
 VARIABLE @37:29 var apply.b [v package] : int
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Enums flags [package] local true parameter true effectivelyFinal true constant null owner apply Enums#apply(II)I [abstract, package] returns int parameters 2 thrown 0 overridden 0 declared true usages 2 metadata 0 enclosing Enums type true kinds truefalsefalse other falsefalsefalsefalsetruefalse2falsefalse
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Enums flags [package] local true parameter true effectivelyFinal true constant null owner apply Enums#apply(II)I [abstract, package] returns int parameters 2 thrown 0 overridden 0 declared true usages 2 metadata 0 enclosing Enums type true kinds truefalsefalse other falsefalsefalsefalsetruefalse2falsefalse
 MODIFIERS
 PRIMITIVE_TYPE @37:29 : int
 TOKEN @37:29
@@ -384,19 +384,19 @@ IDENTIFIER @37:33 id b apply.b [v package] : int : int
 TOKEN @37:33
 TOKEN @37:34
 TOKEN @37:35
-METHOD @39:3 method Enums.run [m public] : ? () returns void throws [] sig Enums#run()V overrides true
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Enums flags [public] overridden [Runnable.run[]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+METHOD @39:3 method Enums.run [m public] : ? @java.lang.Override () returns void throws [] sig Enums#run()V overrides true
+  details declared true usages 0 metadata [java.lang.Override()] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [java.lang.Override tree true values 0 annotated true] typeArguments [] enclosing Enums flags [public] overridden [Runnable.run[]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
 MODIFIERS @39:3
 ANNOTATION @39:3 : java.lang.Override
 TOKEN @39:3
-IDENTIFIER @39:4 id Override java.lang.Override [t public interface] : java.lang.Override : java.lang.Override
+IDENTIFIER @39:4 id Override java.lang.Override [t public interface] : java.lang.Override @java.lang.annotation.Retention,java.lang.annotation.Target : java.lang.Override
 TOKEN @39:4
 ARGUMENTS
 TOKEN @40:3
 TYPE_PARAMETERS
 PRIMITIVE_TYPE @40:10 : void
 TOKEN @40:10
-IDENTIFIER @40:15 id run Enums.run [m public] : ? () returns void throws [] sig Enums#run()V : void
+IDENTIFIER @40:15 id run Enums.run [m public] : ? @java.lang.Override () returns void throws [] sig Enums#run()V : void
 TOKEN @40:15
 TOKEN @40:18
 TOKEN @40:19
@@ -404,7 +404,7 @@ BLOCK @40:21
 TOKEN @40:21
 EXPRESSION_STATEMENT @41:5
 METHOD_INVOCATION @41:5 call PrintStream.println [m public] : ? (java.lang.String) returns void throws [] sig java.io.PrintStream#println(Ljava/lang/String;)V : void
-  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing PrintStream flags [public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+  details declared false usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing PrintStream flags [public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
 MEMBER_SELECT @41:5 : ?
 MEMBER_SELECT @41:5 : java.io.PrintStream
 IDENTIFIER @41:5 id System java.lang.System [t final public] : java.lang.System : java.lang.System
@@ -427,7 +427,7 @@ TOKEN @41:41
 TOKEN @41:42
 TOKEN @42:3
 METHOD @44:3 method Enums.parse [m static package] : ? (java.lang.String) returns Enums throws [] sig Enums#parse(Ljava/lang/String;)LEnums; overrides false
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Enums flags [static, package] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [text] parameterMetadata []
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Enums flags [static, package] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [text] parameterMetadata []
 MODIFIERS @44:3
 TOKEN @44:3
 TYPE_PARAMETERS
@@ -437,7 +437,7 @@ IDENTIFIER @44:16 id parse Enums.parse [m static package] : ? (java.lang.String)
 TOKEN @44:16
 TOKEN @44:21
 VARIABLE @44:22 var parse.text [v package] : java.lang.String
-  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Enums flags [package] local true parameter true effectivelyFinal true constant null owner parse Enums#parse(Ljava/lang/String;)LEnums; [static, package] returns Enums parameters 1 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Enums type true kinds truefalsefalse other falsefalsefalsefalsefalsefalse1falsefalse
+  details declared true usages 2 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Enums flags [package] local true parameter true effectivelyFinal true constant null owner parse Enums#parse(Ljava/lang/String;)LEnums; [static, package] returns Enums parameters 1 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Enums type true kinds truefalsefalse other falsefalsefalsefalsefalsefalse1falsefalse
 MODIFIERS
 IDENTIFIER @44:22 id String java.lang.String [t final public] : java.lang.String : java.lang.String
 TOKEN @44:22
@@ -450,7 +450,7 @@ FOR_EACH_STATEMENT @45:5
 TOKEN @45:5
 TOKEN @45:9
 VARIABLE @45:10 var parse.value [v package] : Enums
-  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Enums flags [package] local true parameter false effectivelyFinal true constant null owner parse Enums#parse(Ljava/lang/String;)LEnums; [static, package] returns Enums parameters 1 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Enums type true kinds truefalsefalse other falsefalsefalsefalsefalsefalse1falsefalse
+  details declared true usages 2 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Enums flags [package] local true parameter false effectivelyFinal true constant null owner parse Enums#parse(Ljava/lang/String;)LEnums; [static, package] returns Enums parameters 1 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Enums type true kinds truefalsefalse other falsefalsefalsefalsefalsefalse1falsefalse
 MODIFIERS
 IDENTIFIER @45:10 id Enums .Enums [t package enum] : Enums : Enums
 TOKEN @45:10
@@ -458,7 +458,7 @@ IDENTIFIER @45:16 id value parse.value [v package] : Enums : Enums
 TOKEN @45:16
 TOKEN @45:22
 METHOD_INVOCATION @45:24 call Enums.values [m static public] : ? () returns Enums[] throws [] sig Enums#values()[LEnums; : Enums[]
-  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Enums flags [static, public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+  details declared false usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Enums flags [static, public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
 IDENTIFIER @45:24 id values Enums.values [m static public] : ? () returns Enums[] throws [] sig Enums#values()[LEnums; : Enums[]
 TOKEN @45:24
 ARGUMENTS @45:30
@@ -471,7 +471,7 @@ IF_STATEMENT @46:7
 TOKEN @46:7
 TOKEN @46:10
 METHOD_INVOCATION @46:11 call String.equals [m public] : ? (java.lang.Object) returns boolean throws [] sig java.lang.String#equals(Ljava/lang/Object;)Z : boolean
-  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing String flags [public] overridden [Object.equals[]] overridable false generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+  details declared false usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing String flags [public] overridden [Object.equals[]] overridable false generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
 MEMBER_SELECT @46:11 : ?
 MEMBER_SELECT @46:11 : java.lang.String
 IDENTIFIER @46:11 id value parse.value [v package] : Enums : Enums
@@ -500,7 +500,7 @@ TOKEN @49:5
 RETURN_STATEMENT @50:5
 TOKEN @50:5
 METHOD_INVOCATION @50:12 call Enums.valueOf [m static public] : ? (java.lang.String) returns Enums throws [] sig Enums#valueOf(Ljava/lang/String;)LEnums; : Enums
-  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Enums flags [static, public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+  details declared false usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Enums flags [static, public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
 IDENTIFIER @50:12 id valueOf Enums.valueOf [m static public] : ? (java.lang.String) returns Enums throws [] sig Enums#valueOf(Ljava/lang/String;)LEnums; : Enums
 TOKEN @50:12
 ARGUMENTS @50:19
@@ -511,7 +511,7 @@ TOKEN @50:24
 TOKEN @50:25
 TOKEN @51:3
 METHOD @53:3 method Enums.compute [m package] : ? (int,int) returns int throws [] sig Enums#compute(II)I overrides false
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Enums flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [a, b] parameterMetadata []
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Enums flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [a, b] parameterMetadata []
 MODIFIERS
 TYPE_PARAMETERS
 PRIMITIVE_TYPE @53:3 : int
@@ -520,7 +520,7 @@ IDENTIFIER @53:7 id compute Enums.compute [m package] : ? (int,int) returns int 
 TOKEN @53:7
 TOKEN @53:14
 VARIABLE @53:15 var compute.a [v package] : int
-  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Enums flags [package] local true parameter true effectivelyFinal true constant null owner compute Enums#compute(II)I [package] returns int parameters 2 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Enums type true kinds truefalsefalse other falsefalsefalsefalsetruefalse2falsefalse
+  details declared true usages 2 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Enums flags [package] local true parameter true effectivelyFinal true constant null owner compute Enums#compute(II)I [package] returns int parameters 2 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Enums type true kinds truefalsefalse other falsefalsefalsefalsetruefalse2falsefalse
 MODIFIERS
 PRIMITIVE_TYPE @53:15 : int
 TOKEN @53:15
@@ -528,7 +528,7 @@ IDENTIFIER @53:19 id a compute.a [v package] : int : int
 TOKEN @53:19
 TOKEN @53:20
 VARIABLE @53:22 var compute.b [v package] : int
-  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Enums flags [package] local true parameter true effectivelyFinal true constant null owner compute Enums#compute(II)I [package] returns int parameters 2 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Enums type true kinds truefalsefalse other falsefalsefalsefalsetruefalse2falsefalse
+  details declared true usages 2 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Enums flags [package] local true parameter true effectivelyFinal true constant null owner compute Enums#compute(II)I [package] returns int parameters 2 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Enums type true kinds truefalsefalse other falsefalsefalsefalsetruefalse2falsefalse
 MODIFIERS
 PRIMITIVE_TYPE @53:22 : int
 TOKEN @53:22
@@ -553,7 +553,7 @@ TOKEN @55:16
 RETURN_STATEMENT @56:9
 TOKEN @56:9
 METHOD_INVOCATION @56:16 call Enums.apply [m abstract package] : ? (int,int) returns int throws [] sig Enums#apply(II)I : int
-  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Enums flags [abstract, package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [a, b] parameterMetadata []
+  details declared true usages 2 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Enums flags [abstract, package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [a, b] parameterMetadata []
 MEMBER_SELECT @56:16 : ?
 IDENTIFIER @56:16 id PLUS Enums.PLUS [v static final public enum] : Enums : Enums
 TOKEN @56:16
@@ -578,7 +578,7 @@ TOKEN @57:17
 RETURN_STATEMENT @58:9
 TOKEN @58:9
 METHOD_INVOCATION @58:16 call Enums.apply [m abstract package] : ? (int,int) returns int throws [] sig Enums#apply(II)I : int
-  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Enums flags [abstract, package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [a, b] parameterMetadata []
+  details declared true usages 2 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Enums flags [abstract, package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [a, b] parameterMetadata []
 IDENTIFIER @58:16 id apply Enums.apply [m abstract package] : ? (int,int) returns int throws [] sig Enums#apply(II)I : int
 TOKEN @58:16
 ARGUMENTS @58:21
@@ -598,10 +598,10 @@ RETURN_STATEMENT @60:9
 TOKEN @60:9
 PLUS @60:16 : int
 METHOD_INVOCATION @60:16 call String.length [m public] : ? () returns int throws [] sig java.lang.String#length()I : int
-  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing String flags [public] overridden [CharSequence.length[]] overridable false generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+  details declared false usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing String flags [public] overridden [CharSequence.length[]] overridable false generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
 MEMBER_SELECT @60:16 : ?
 METHOD_INVOCATION @60:16 call Enum.name [m final public] : ? () returns java.lang.String throws [] sig java.lang.Enum#name()Ljava/lang/String; : java.lang.String
-  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Enum flags [final, public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+  details declared false usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Enum flags [final, public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
 IDENTIFIER @60:16 id name Enum.name [m final public] : ? () returns java.lang.String throws [] sig java.lang.Enum#name()Ljava/lang/String; : java.lang.String
 TOKEN @60:16
 ARGUMENTS @60:20
@@ -615,7 +615,7 @@ TOKEN @60:29
 TOKEN @60:30
 TOKEN @60:32
 METHOD_INVOCATION @60:34 call Enum.ordinal [m final public] : ? () returns int throws [] sig java.lang.Enum#ordinal()I : int
-  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Enum flags [final, public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+  details declared false usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Enum flags [final, public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
 IDENTIFIER @60:34 id ordinal Enum.ordinal [m final public] : ? () returns int throws [] sig java.lang.Enum#ordinal()I : int
 TOKEN @60:34
 ARGUMENTS @60:41
@@ -625,7 +625,7 @@ TOKEN @60:43
 TOKEN @61:5
 TOKEN @62:3
 METHOD @64:3 method Enums.table [m static package] : ? () returns java.util.Map<Enums,java.lang.Integer> throws [] sig Enums#table()Ljava/util/Map; overrides false
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Enums flags [static, package] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [[], []] enclosing Enums flags [static, package] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [] parameterMetadata [[] nullability NO_ANNOTATION/VARIABLE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [], [] nullability NO_ANNOTATION/VARIABLE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups []]
 MODIFIERS @64:3
 TOKEN @64:3
 TYPE_PARAMETERS
@@ -637,7 +637,7 @@ TOKEN @64:13
 IDENTIFIER @64:14 id Enums .Enums [t package enum] : Enums : Enums
 TOKEN @64:14
 TOKEN @64:19
-IDENTIFIER @64:21 id Integer java.lang.Integer [t final public] : java.lang.Integer : java.lang.Integer
+IDENTIFIER @64:21 id Integer java.lang.Integer [t final public] : java.lang.Integer @jdk.internal.ValueBased : java.lang.Integer
 TOKEN @64:21
 TOKEN @64:28
 IDENTIFIER @64:30 id table Enums.table [m static package] : ? () returns java.util.Map<Enums,java.lang.Integer> throws [] sig Enums#table()Ljava/util/Map; : java.util.Map<Enums,java.lang.Integer>
@@ -647,7 +647,7 @@ TOKEN @64:36
 BLOCK @64:38
 TOKEN @64:38
 VARIABLE @65:5 var table.table [v package] : java.util.Map<Enums,java.lang.Integer>
-  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Enums flags [package] local true parameter false effectivelyFinal true constant null owner table Enums#table()Ljava/util/Map; [static, package] returns java.util.Map<Enums,java.lang.Integer> parameters 0 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Enums type true kinds truefalsefalse other falsefalsefalsefalsefalsefalse0falsefalse
+  details declared true usages 2 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [[], []] enclosing Enums flags [package] local true parameter false effectivelyFinal true constant null owner table Enums#table()Ljava/util/Map; [static, package] returns java.util.Map<Enums,java.lang.Integer> parameters 0 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Enums type true kinds truefalsefalse other falsefalsefalsefalsefalsefalse0falsefalse
 MODIFIERS
 PARAMETERIZED_TYPE @65:5 : java.util.Map<Enums,java.lang.Integer>
 IDENTIFIER @65:5 id Map java.util.Map [t public interface] : java.util.Map<Enums,java.lang.Integer> : java.util.Map<Enums,java.lang.Integer>
@@ -657,14 +657,14 @@ TOKEN @65:8
 IDENTIFIER @65:9 id Enums .Enums [t package enum] : Enums : Enums
 TOKEN @65:9
 TOKEN @65:14
-IDENTIFIER @65:16 id Integer java.lang.Integer [t final public] : java.lang.Integer : java.lang.Integer
+IDENTIFIER @65:16 id Integer java.lang.Integer [t final public] : java.lang.Integer @jdk.internal.ValueBased : java.lang.Integer
 TOKEN @65:16
 TOKEN @65:23
 IDENTIFIER @65:25 id table table.table [v package] : java.util.Map<Enums,java.lang.Integer> : java.util.Map<Enums,java.lang.Integer>
 TOKEN @65:25
 TOKEN @65:31
 NEW_CLASS @65:33 new EnumMap.<init> [m public] : ? (java.lang.Class<Enums>) returns void throws [] sig java.util.EnumMap#<init>(Ljava/lang/Class;)V : java.util.EnumMap<Enums,java.lang.Integer>
-  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing EnumMap flags [public] overridden [] overridable true generic true default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+  details declared false usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing EnumMap flags [public] overridden [] overridable true generic true default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
 TOKEN @65:33
 PARAMETERIZED_TYPE @65:37 : java.util.EnumMap<Enums,java.lang.Integer>
 IDENTIFIER @65:37 id EnumMap EnumMap.<init> [m public] : ? (java.lang.Class<Enums>) returns void throws [] sig java.util.EnumMap#<init>(Ljava/lang/Class;)V : java.util.EnumMap<Enums,java.lang.Integer>
@@ -684,10 +684,10 @@ TOKEN @65:58
 TOKEN @65:59
 EXPRESSION_STATEMENT @66:5
 METHOD_INVOCATION @66:5 call Iterable.forEach [m public] : ? (java.util.function.Consumer<java.lang.Object>) returns void throws [] sig java.lang.Iterable#forEach(Ljava/util/function/Consumer;)V : void
-  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Iterable flags [public] overridden [] overridable true generic false default true synchronized false varargs false native false parameters [arg0] parameterMetadata []
+  details declared false usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Iterable flags [public] overridden [] overridable true generic false default true synchronized false varargs false native false parameters [arg0] parameterMetadata []
 MEMBER_SELECT @66:5 : ?
 METHOD_INVOCATION @66:5 call EnumSet.allOf [m static public] : ? (java.lang.Class) returns java.util.EnumSet<Enums> throws [] sig java.util.EnumSet#allOf(Ljava/lang/Class;)Ljava/util/EnumSet; : java.util.EnumSet<Enums>
-  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing EnumSet flags [static, public] overridden [] overridable false generic true default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+  details declared false usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing EnumSet flags [static, public] overridden [] overridable false generic true default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
 MEMBER_SELECT @66:5 : ?
 IDENTIFIER @66:5 id EnumSet java.util.EnumSet [t abstract public] : java.util.EnumSet : java.util.EnumSet
 TOKEN @66:5
@@ -717,7 +717,7 @@ IDENTIFIER @66:40 id value accept.value [v package] : Enums : Enums
 TOKEN @66:40
 TOKEN @66:46
 METHOD_INVOCATION @66:49 call Map.put [m abstract public] : ? (Enums,java.lang.Integer) returns java.lang.Integer throws [] sig java.util.Map#put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object; : java.lang.Integer
-  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Map flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [arg0, arg1] parameterMetadata []
+  details declared false usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Map flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [arg0, arg1] parameterMetadata []
 MEMBER_SELECT @66:49 : ?
 IDENTIFIER @66:49 id table table.table [v package] : java.util.Map<Enums,java.lang.Integer> : java.util.Map<Enums,java.lang.Integer>
 TOKEN @66:49

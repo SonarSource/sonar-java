@@ -25,12 +25,17 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -83,6 +88,16 @@ class SemSitterTranslatorTest {
 
     assertThat(method.owner()).isSameAs(Symbol.TypeSymbol.UNKNOWN_TYPE);
     assertThat(((Symbol.TypeSymbol) method.owner()).memberSymbols()).isEmpty();
+  }
+
+  @Test
+  void annotation_values_are_constants_enum_constants_or_unknown() throws Exception {
+    Map<String, Object> values = annotationValues(translate("Routes", recordedTypes("Routes")));
+
+    assertThat(values)
+      .containsEntry("knownConstant", List.of("/local"))
+      .containsEntry("unknownConstant", Collections.singletonList(null));
+    assertThat(values.get("enumConstant")).isInstanceOfSatisfying(Symbol.VariableSymbol.class, constant -> assertThat(constant.name()).isEqualTo("A"));
   }
 
   @Test
@@ -178,5 +193,25 @@ class SemSitterTranslatorTest {
       }
     });
     return constants;
+  }
+
+  private static Map<String, Object> annotationValues(CompilationUnitTree unit) {
+    List<MethodTree> methods = new ArrayList<>();
+    unit.accept(new BaseTreeVisitor() {
+      @Override
+      public void visitMethod(MethodTree tree) {
+        methods.add(tree);
+        super.visitMethod(tree);
+      }
+    });
+    return methods.stream()
+      .filter(method -> !method.symbol().metadata().annotations().isEmpty())
+      .collect(Collectors.toMap(method -> method.simpleName().name(), SemSitterTranslatorTest::firstValue));
+  }
+
+  private static Object firstValue(MethodTree method) {
+    SymbolMetadata.AnnotationInstance annotation = method.symbol().metadata().annotations().get(0);
+    Object value = annotation.values().get(0).value();
+    return value instanceof Object[] array ? Arrays.asList(array) : value;
   }
 }

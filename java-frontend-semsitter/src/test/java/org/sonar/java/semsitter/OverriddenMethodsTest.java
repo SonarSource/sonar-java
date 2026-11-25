@@ -22,6 +22,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -100,6 +101,42 @@ class OverriddenMethodsTest {
 
     assertThat(overridden).hasSize(1);
     assertThat(overridden.get(0).owner().name()).isEqualTo("Converter");
+  }
+
+  @Test
+  void the_annotated_type_argument_of_the_supertype_is_the_result_annotation_of_the_overridden_method() {
+    Symbol.MethodSymbol library = method("lib.Converter", "convert");
+    Symbol.MethodSymbol overridden = method("lib.Impl", "convert").overriddenSymbols().get(0);
+
+    SymbolMetadata metadata = overridden.metadata();
+    assertThat(metadata.isAnnotatedWith("javax.annotation.Nullable")).isTrue();
+    assertThat(metadata.isAnnotatedWith("lib.NonNull")).isFalse();
+    assertThat(metadata.valuesForAnnotation("javax.annotation.Nullable")).isEmpty();
+    assertThat(metadata.valuesForAnnotation("lib.NonNull")).isNull();
+    assertThat(metadata.symbolAnnotations()).hasSize(1);
+    assertThat(metadata.findAnnotationTree(metadata.annotations().get(0))).isNull();
+    assertThat(metadata.parametersMetadata()).isEmpty();
+    assertThat(metadata.nullabilityData().type()).isEqualTo(SymbolMetadata.NullabilityType.WEAK_NULLABLE);
+    assertThat(metadata.nullabilityData(SymbolMetadata.NullabilityTarget.FIELD).type()).isEqualTo(SymbolMetadata.NullabilityType.WEAK_NULLABLE);
+    assertThat(overridden.name()).isEqualTo("convert");
+    assertThat(overridden).isEqualTo(library).isEqualTo(overridden);
+  }
+
+  @Test
+  void the_overriding_method_inherits_the_nullability_of_the_written_type_argument() {
+    SymbolMetadata.NullabilityData nullability = method("lib.Impl", "convert").metadata().nullabilityData();
+
+    assertThat(nullability.type()).isEqualTo(SymbolMetadata.NullabilityType.WEAK_NULLABLE);
+    assertThat(nullability.level()).isEqualTo(SymbolMetadata.NullabilityLevel.METHOD);
+  }
+
+  @Test
+  void a_type_argument_annotation_is_found_through_a_supertype() {
+    List<Symbol.MethodSymbol> overridden = method("lib.Sub", "convert", "java.lang.String").overriddenSymbols();
+
+    assertThat(overridden).extracting(method -> method.owner().name()).containsExactly("Impl", "Converter");
+    assertThat(overridden.get(0).metadata().annotations()).isEmpty();
+    assertThat(overridden.get(1).metadata().isAnnotatedWith("javax.annotation.Nullable")).isTrue();
   }
 
   @Test

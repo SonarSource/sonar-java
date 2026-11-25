@@ -19,7 +19,7 @@ TYPE_PARAMETERS
 LIST
 LIST
 VARIABLE @5:1 var ImplicitClass.counter [v package] : int
-  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing ImplicitClass flags [package] local false parameter false effectivelyFinal false constant null
+  details declared true usages 2 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing ImplicitClass flags [package] local false parameter false effectivelyFinal false constant null
 MODIFIERS
 PRIMITIVE_TYPE @5:1 : int
 TOKEN @5:1
@@ -30,7 +30,7 @@ INT_LITERAL @5:15 : int = 0
 TOKEN @5:15
 TOKEN @5:16
 METHOD @7:1 method ImplicitClass.main [m package] : ? () returns void throws [] sig ImplicitClass#main()V overrides false
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing ImplicitClass flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing ImplicitClass flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
 MODIFIERS
 TYPE_PARAMETERS
 PRIMITIVE_TYPE @7:1 : void
@@ -45,7 +45,7 @@ FOR_EACH_STATEMENT @8:3
 TOKEN @8:3
 TOKEN @8:7
 VARIABLE @8:8 var main.name [v package] : java.lang.String
-  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing ImplicitClass flags [package] local true parameter false effectivelyFinal true constant null owner main ImplicitClass#main()V [package] returns void parameters 0 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing ImplicitClass type true kinds truefalsefalse other falsefalsefalsefalsetruefalse0falsefalse
+  details declared true usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing ImplicitClass flags [package] local true parameter false effectivelyFinal true constant null owner main ImplicitClass#main()V [package] returns void parameters 0 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing ImplicitClass type true kinds truefalsefalse other falsefalsefalsefalsetruefalse0falsefalse
 MODIFIERS
 IDENTIFIER @8:8 id String java.lang.String [t final public] : java.lang.String : java.lang.String
 TOKEN @8:8
@@ -53,7 +53,7 @@ IDENTIFIER @8:15 id name main.name [v package] : java.lang.String : java.lang.St
 TOKEN @8:15
 TOKEN @8:20
 METHOD_INVOCATION @8:22 call List.of [m static public] : ? (java.lang.String,java.lang.String) returns java.util.List<java.lang.String> throws [] sig java.util.List#of(Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/List; : java.util.List<java.lang.String>
-  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing List flags [static, public] overridden [] overridable false generic true default false synchronized false varargs false native false parameters [arg0, arg1] parameterMetadata []
+  details declared false usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing List flags [static, public] overridden [] overridable false generic true default false synchronized false varargs false native false parameters [arg0, arg1] parameterMetadata []
 MEMBER_SELECT @8:22 : ?
 IDENTIFIER @8:22 id List java.util.List [t public interface] : java.util.List : java.util.List
 TOKEN @8:22
@@ -79,7 +79,7 @@ TOKEN @9:12
 TOKEN @9:14
 EXPRESSION_STATEMENT @10:5
 METHOD_INVOCATION @10:5 call PrintStream.println [m public] : ? (java.lang.String) returns void throws [] sig java.io.PrintStream#println(Ljava/lang/String;)V : void
-  details declared false usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing PrintStream flags [public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+  details declared false usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing PrintStream flags [public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
 MEMBER_SELECT @10:5 : ?
 MEMBER_SELECT @10:5 : java.io.PrintStream
 IDENTIFIER @10:5 id System java.lang.System [t final public] : java.lang.System : java.lang.System
@@ -94,7 +94,7 @@ ARGUMENTS @10:23
 TOKEN @10:23
 PLUS @10:24 : java.lang.String
 METHOD_INVOCATION @10:24 call ImplicitClass.greet [m package] : ? (java.lang.String) returns java.lang.String throws [] sig ImplicitClass#greet(Ljava/lang/String;)Ljava/lang/String; : java.lang.String
-  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing ImplicitClass flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [name] parameterMetadata []
+  details declared true usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing ImplicitClass flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [name] parameterMetadata []
 IDENTIFIER @10:24 id greet ImplicitClass.greet [m package] : ? (java.lang.String) returns java.lang.String throws [] sig ImplicitClass#greet(Ljava/lang/String;)Ljava/lang/String; : java.lang.String
 TOKEN @10:24
 ARGUMENTS @10:29
@@ -110,7 +110,7 @@ TOKEN @10:46
 TOKEN @11:3
 TOKEN @12:1
 METHOD @15:1 method ImplicitClass.greet [m package] : ? (java.lang.String) returns java.lang.String throws [] sig ImplicitClass#greet(Ljava/lang/String;)Ljava/lang/String; overrides false
-  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing ImplicitClass flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [name] parameterMetadata []
+  details declared true usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing ImplicitClass flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [name] parameterMetadata []
 MODIFIERS
 TYPE_PARAMETERS
 IDENTIFIER @15:1 id String java.lang.String [t final public] : java.lang.String : java.lang.String
@@ -119,7 +119,7 @@ IDENTIFIER @15:8 id greet ImplicitClass.greet [m package] : ? (java.lang.String)
 TOKEN @15:8
 TOKEN @15:13
 VARIABLE @15:14 var greet.name [v package] : java.lang.String
-  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing ImplicitClass flags [package] local true parameter true effectivelyFinal true constant null owner greet ImplicitClass#greet(Ljava/lang/String;)Ljava/lang/String; [package] returns java.lang.String parameters 1 thrown 0 overridden 0 declared true usages 1 metadata 0 enclosing ImplicitClass type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+  details declared true usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing ImplicitClass flags [package] local true parameter true effectivelyFinal true constant null owner greet ImplicitClass#greet(Ljava/lang/String;)Ljava/lang/String; [package] returns java.lang.String parameters 1 thrown 0 overridden 0 declared true usages 1 metadata 0 enclosing ImplicitClass type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
 MODIFIERS
 IDENTIFIER @15:14 id String java.lang.String [t final public] : java.lang.String : java.lang.String
 TOKEN @15:14

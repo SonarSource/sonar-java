@@ -98,6 +98,9 @@ class SemaAnnotationsTest {
 
     assertThat(names(declared)).containsExactly("lib.Marker");
     assertThat(declared.get(0).valuesKnown()).isFalse();
+    FactAnnotation instance = new FactAnnotation(sema, "lib.Marker", declared.get(0).values(), false);
+    assertThat(instance.symbol().name()).isEqualTo("Marker");
+    assertThat(instance.values()).extracting(AnnotationValue::name, AnnotationValue::value).containsExactly(tuple("value", null));
     assertThat(annotations.declaredAnnotations("p.Other")).isEmpty();
     assertThat(annotations.declaredAnnotations(null)).isEmpty();
   }
