@@ -120,6 +120,7 @@ final class SemSitterTranslator extends TranslatorPart {
     translator.state.deferred.forEach(Runnable::run);
     unit.setSemanticModel(sema, sema.undefinedTypes(), sema.getEnvironmentCleaner());
     setParents(unit);
+    CompilerWarnings.addTo(unit);
     EffectivelyFinalVariables.mark(unit);
     return unit;
   }
