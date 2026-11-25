@@ -131,7 +131,11 @@ final class InvocationTranslator extends TranslatorPart {
       }
     } else if (identifier.symbol() instanceof Symbol.MethodSymbol bound) {
       Set<Integer> functions = functionArguments(tree.arguments());
-      bind(identifier, sema.overloads().preferOverload(bound, names().libraryMethod(qualifier, identifier.name(), arguments, functions), arguments, functions));
+      Symbol.MethodSymbol preferred = sema.overloads().preferOverload(bound, names().libraryMethod(qualifier, identifier.name(), arguments, functions), arguments, functions);
+      if (preferred != bound && bound instanceof JSymbol from && preferred instanceof JSymbol to) {
+        sema.moveUse(from.id, to.id, identifier);
+      }
+      bind(identifier, preferred);
     }
   }
 
@@ -141,7 +145,7 @@ final class InvocationTranslator extends TranslatorPart {
       bind(identifier, Symbol.MethodSymbol.UNKNOWN_METHOD);
     }
     if (identifier.symbol() instanceof JMethodSymbol chosen) {
-      JMethodSymbol specific = sema.overloads().mostSpecificVarArgs(chosen, arguments);
+      JMethodSymbol specific = OverloadRanking.mostSpecificVarArgs(chosen, arguments);
       if (specific != chosen) {
         sema.moveUse(chosen.id, specific.id, identifier);
         bind(identifier, specific);

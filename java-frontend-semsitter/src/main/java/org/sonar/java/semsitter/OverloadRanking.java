@@ -16,6 +16,7 @@
  */
 package org.sonar.java.semsitter;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.Nullable;
@@ -23,24 +24,77 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 
 /** Ranks applicable overloads to pick the most specific one. */
-class OverloadRanking {
+final class OverloadRanking {
 
-  /**
-   * The overload that matches {@code arguments} when {@code candidate} is more specific than {@code current}.
-   * @param candidate overload to compare, used once ranking lands
-   * @param arguments types of the arguments, used once ranking lands
-   * @param functions positions of the lambda and method reference arguments, used once ranking lands
-   */
+  private final JSema sema;
+
+  OverloadRanking(JSema sema) {
+    this.sema = sema;
+  }
+
+  /** The overload that matches {@code arguments} when {@code candidate} is more specific than {@code current}. */
   Symbol.MethodSymbol preferOverload(Symbol.MethodSymbol current, @Nullable Symbol.MethodSymbol candidate, List<Type> arguments, Set<Integer> functions) {
+    if (candidate == null || candidate == current || candidate.isUnknown() || !MemberLookup.arityMatches(candidate, arguments.size())) {
+      return current;
+    }
+    if (!functions.isEmpty() && sema.lookup().takesNoFunction(candidate, functions)) {
+      return current;
+    }
+    if (!functions.isEmpty() && sema.lookup().takesNoFunction(current, functions)) {
+      return candidate;
+    }
+    return byPhase(current, candidate, arguments);
+  }
+
+  private static Symbol.MethodSymbol byPhase(Symbol.MethodSymbol current, Symbol.MethodSymbol candidate, List<Type> arguments) {
+    for (int phase = 0; phase < 3; phase++) {
+      boolean currentOk = applicable(current, arguments, phase);
+      boolean candidateOk = applicable(candidate, arguments, phase);
+      if (currentOk && !candidateOk) {
+        return current;
+      }
+      if (candidateOk && !currentOk) {
+        return candidate;
+      }
+      if (currentOk) {
+        return moreSpecific(candidate, current) && !moreSpecific(current, candidate) ? candidate : current;
+      }
+    }
     return current;
   }
 
-  /**
-   * The most specific variable-arity overload of {@code chosen} applicable to the arguments.
-   * @param arguments types of the arguments, used once ranking lands
-   */
-  JMethodSymbol mostSpecificVarArgs(JMethodSymbol chosen, List<Type> arguments) {
+  /** The most specific variable-arity overload of {@code chosen} applicable to the arguments, when no earlier phase applies to {@code chosen}. */
+  static JMethodSymbol mostSpecificVarArgs(JMethodSymbol chosen, List<Type> arguments) {
+    if (chosen.isUnknown() || !chosen.isVarArgsMethod() || !(chosen.owner() instanceof JTypeSymbol owner) || owner.isDeclaredInDocument()
+      || applicable(chosen, arguments, 0) || applicable(chosen, arguments, 1) || arguments.stream().anyMatch(Type::isUnknown)) {
+      return chosen;
+    }
+    List<JMethodSymbol> candidates = new ArrayList<>();
+    for (Symbol member : owner.lookupSymbols(chosen.name())) {
+      if (member instanceof JMethodSymbol method && !method.isUnknown() && method.isVarArgsMethod() && method.isStatic() == chosen.isStatic() && applicable(method, arguments, 2)) {
+        candidates.add(method);
+      }
+    }
+    for (JMethodSymbol candidate : candidates) {
+      if (candidates.stream().allMatch(other -> other == candidate || moreSpecificVarArgs(candidate, other, arguments.size()))) {
+        return candidate;
+      }
+    }
     return chosen;
+  }
+
+  private static boolean moreSpecificVarArgs(Symbol.MethodSymbol method, Symbol.MethodSymbol other, int count) {
+    for (int i = 0; i < Math.max(count, Math.max(method.parameterTypes().size(), other.parameterTypes().size())); i++) {
+      if (!expanded(method, i).erasure().isSubtypeOf(expanded(other, i).erasure())) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  private static Type expanded(Symbol.MethodSymbol method, int index) {
+    List<Type> parameters = method.parameterTypes();
+    return index < parameters.size() - 1 ? parameters.get(index) : ((Type.ArrayType) parameters.get(parameters.size() - 1)).elementType();
   }
 
   static boolean applicable(Symbol.MethodSymbol method, List<Type> arguments, int phase) {
