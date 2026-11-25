@@ -18,6 +18,8 @@ package org.sonar.java.semsitter;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -28,11 +30,8 @@ import org.sonar.plugins.java.api.semantic.Type;
 import static org.sonar.java.semsitter.SemaFacts.erase;
 import static org.sonar.java.semsitter.SemaFacts.text;
 
-/**
- * Binds type variables from the types they are given. Parameter and result types of lambdas and method references
- * stay unknown until inference from their functional target lands.
- */
-class FunctionalInference {
+/** Parameter and result types of lambdas and method references, inferred from their functional target. */
+final class FunctionalInference {
 
   private final JSema sema;
 
@@ -43,42 +42,83 @@ class FunctionalInference {
   /**
    * The functional interface {@code parameter} with only the type argument its method returns known, as the type a
    * function that produces {@code produced} has there, or null when {@code parameter} is not such an interface.
-   * @param parameter functional interface the function is passed as, used once lambda inference lands
-   * @param produced type the function produces, used once lambda inference lands
    */
   @Nullable
   Type functionProducing(Type parameter, Type produced) {
-    return null;
+    if (!(parameter instanceof JType declared) || !declared.isParameterized() || produced.isUnknown() || produced.isTypeVar() || Substitution.mentionsTypeVariable(produced)) {
+      return null;
+    }
+    JMethodSymbol functional = sema.lookup().functionalMethod(declared);
+    Integer position = functional == null ? null : sema.substitution().returnedClassVariable(functional, declared);
+    if (position == null || position >= declared.args.size()) {
+      return null;
+    }
+    JType boxed = sema.asJType(produced.isPrimitive() ? produced.primitiveWrapperType() : produced);
+    List<JType> arguments = new ArrayList<>();
+    for (int i = 0; i < declared.args.size(); i++) {
+      arguments.add(i == position ? boxed : JType.unknown(sema));
+    }
+    return JType.inferred(sema, declared.erasure().fullyQualifiedName(), arguments);
   }
 
-  /**
-   * Whether {@code method} returns a type variable, as the descriptor erases it or as its source declares it.
-   * @param method method to inspect, used once lambda inference lands
-   */
+  /** Whether {@code method} returns a type variable, as the descriptor erases it or as its source declares it. */
   boolean returnsClassVariable(JMethodSymbol method) {
-    return false;
+    JsonObject returned = sema.substitution().declaredReturn(method);
+    Type declared = method.returnType().type();
+    if (returned == null) {
+      return declared != null && declared.isTypeVar();
+    }
+    return "typevar".equals(text(returned, "kind"));
   }
 
   /**
    * What {@code Type::method} yields when the method returns a class type variable, read from the first
    * parameter of {@code function}, the receiver it is applied to; null when that is not known.
-   * @param method referenced method, used once lambda inference lands
-   * @param function functional interface the reference implements, used once lambda inference lands
    */
   @Nullable
   Type unboundReferenceResult(JMethodSymbol method, Type function) {
-    return null;
+    JMethodSymbol functional = sema.lookup().functionalMethod(function);
+    if (method.isStatic() || functional == null || sema.inference().declaresTypeVariables(method, false)) {
+      return null;
+    }
+    List<Type> parameters = sema.substitution().invocationParameters(functional, sema.inference().groundType(function), List.of());
+    if (parameters.isEmpty() || method.owner().type() == null) {
+      return null;
+    }
+    Type receiver = sema.inference().groundType(parameters.get(0));
+    Type declaring = receiver.isUnknown() ? null : sema.substitution().asSuperType(receiver, method.owner().type().erasure().fullyQualifiedName(), new HashSet<>());
+    if (declaring == null || !declaring.isParameterized()) {
+      return null;
+    }
+    Type result = sema.inference().invocationReturn(method, declaring, List.of());
+    return result.isUnknown() || result.isTypeVar() ? null : result;
   }
 
   /**
    * The parameter types of {@code method} when the type its call is passed as fixes the type variables of the
    * method, or null when they stay open.
-   * @param method invoked method, used once lambda inference lands
-   * @param target type the call is passed as, used once lambda inference lands
    */
   @Nullable
   List<Type> targetedParameters(JMethodSymbol method, Type target) {
-    return null;
+    JsonObject member = sema.substitution().lookupGenericMember(method);
+    JsonObject declared = sema.substitution().declaredReturn(method);
+    if (member == null || declared == null || !(member.get("typeVars") instanceof JsonArray names) || names.isEmpty()) {
+      return null;
+    }
+    Set<String> own = new HashSet<>();
+    names.forEach(name -> own.add(name.getAsString()));
+    Map<String, Type> bound = new HashMap<>();
+    bindReturnToTarget(declared, target, own, bound);
+    List<JsonObject> parameters = sema.substitution().declaredParameters(method);
+    if (bound.isEmpty() || parameters.isEmpty()) {
+      return null;
+    }
+    List<Type> result = new ArrayList<>();
+    for (JsonObject parameter : parameters) {
+      JType type = sema.factTypes().typeFromFact(parameter, bound);
+      result.add(type.isUnknown() || Substitution.mentionsTypeVariable(type) ? Type.UNKNOWN : type);
+    }
+    return result;
   }
 
   /**
