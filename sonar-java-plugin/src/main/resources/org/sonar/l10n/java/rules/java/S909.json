@@ -19,5 +19,11 @@
   "ruleSpecification": "RSPEC-909",
   "sqKey": "S909",
   "scope": "Main",
-  "quickfix": "unknown"
+  "quickfix": "unknown",
+  "sonarWayRemoval": {
+    "candidateProfiles": [
+      "style"
+    ],
+    "rationale": "This rule enforces a stylistic preference rather than identifying an inherent correctness or maintainability problem. A well-placed continue can make a loop easier to read by skipping irrelevant cases early, reducing nesting, and keeping the main processing logic clear. Removing it can require wrapping the remaining loop body in conditional blocks without improving the code. A blanket prohibition therefore risks generating noise and prompting changes with no clear benefit. Whether to allow continue is better decided through team conventions and context-specific review, so the rule belongs in an opt-in style profile rather than Sonar way."
+  }
 }

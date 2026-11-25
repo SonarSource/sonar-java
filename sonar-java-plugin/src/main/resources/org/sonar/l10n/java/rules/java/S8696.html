@@ -16,7 +16,8 @@ or identity hashing (<code>System.identityHashCode()</code>).</p>
   <li>wrapper classes for primitive values in the <code>java.lang</code> package, such as <code>Integer</code>, <code>Boolean</code> or
   <code>Double</code>;</li>
   <li>the optional classes: <code>Optional</code>, <code>OptionalDouble</code>, <code>OptionalLong</code>, <code>OptionalInt</code>;</li>
-  <li>all the classes in the <code>java.time</code> package and its sub-packages, except <code>Clock</code>.</li>
+  <li>all the classes in the <code>java.time</code> package and its sub-packages, except <code>Clock</code> and enums such as <code>Month</code> and
+  <code>DayOfWeek</code>.</li>
 </ul>
 <h2>Why is this an issue?</h2>
 <ul>
@@ -24,6 +25,10 @@ or identity hashing (<code>System.identityHashCode()</code>).</p>
   two objects that were instantiated by different calls to the same factory method, with the same arguments.</li>
   <li>Using <code>System.identityHashCode()</code> on two instances representing the exact same information may return different values.</li>
 </ul>
+<h3>Exceptions</h3>
+<p>The rule does not raise issues on enums of the <code>java.time</code> package and its sub-packages, such as <code>Month</code> or
+<code>DayOfWeek</code>. Java guarantees that each enum constant is a singleton, so they can safely be compared using <code>==</code> or passed to
+<code>System.identityHashCode()</code>.</p>
 <h2>How to fix it</h2>
 <p>Use <code>.equals()</code> to compare instances of value-based classes for equality, and <code>.hashCode()</code> to compute their hashes.</p>
 <h3>Code examples</h3>

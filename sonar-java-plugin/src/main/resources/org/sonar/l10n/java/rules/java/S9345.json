@@ -25,5 +25,9 @@
     "CERT": [
       "ERR09-J."
     ]
+  },
+  "sonarWayRemoval": {
+    "candidateProfiles": [],
+    "rationale": "This rule is relevant as a vulnerability when an application executes untrusted or less-trusted code in the same JVM across a security boundary, such as a plugin host or a legacy sandboxed runtime, or when a library exposes security-sensitive classes to such code. Exploitation requires an attacker to load and instantiate a subclass that overrides finalize(), with finalization enabled, and recover a partially initialized instance after its constructor throws to bypass security checks or access sensitive state. Merely controlling request data in an application that only loads trusted classes does not provide this attack path. Reporting every unprotected throwing constructor as a vulnerability will be seen as noise outside this threat model. The rule is better suited to an opt-in security profile for applications with this exposure than Sonar way; no matching candidate profile is currently defined."
   }
 }
