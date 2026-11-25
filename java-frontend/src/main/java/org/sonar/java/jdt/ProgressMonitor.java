@@ -23,6 +23,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.java.AnalysisProgress;
+import org.sonar.java.FrontendBenchLog;
 import org.sonar.java.annotations.VisibleForTesting;
 
 class ProgressMonitor implements IProgressMonitor, Runnable {
@@ -91,6 +92,7 @@ class ProgressMonitor implements IProgressMonitor, Runnable {
       unknownTotalWork = true;
     }
     this.totalWork = totalWork;
+    FrontendBenchLog.log("ecj.monitor", "phase", "begin", "total_work", totalWork);
     if (analysisProgress.isFirstBatch()) {
       log("Starting batch processing.");
     }
@@ -99,6 +101,7 @@ class ProgressMonitor implements IProgressMonitor, Runnable {
 
   @Override
   public void done() {
+    FrontendBenchLog.log("ecj.monitor", "phase", "done", "processed_work", processedWork);
     if (success && analysisProgress.isLastBatch()) {
       log("100% analyzed");
       log("Batch processing: Done.");
@@ -132,6 +135,9 @@ class ProgressMonitor implements IProgressMonitor, Runnable {
 
   @Override
   public void worked(int work) {
+    if (processedWork == 0) {
+      FrontendBenchLog.log("ecj.monitor", "phase", "first_worked", "work", work);
+    }
     processedWork += work;
     if (processedWork == totalWork) {
       success = true;

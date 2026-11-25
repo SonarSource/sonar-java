@@ -35,6 +35,7 @@ import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.AnalysisException;
 import org.sonar.java.AnalysisProgress;
+import org.sonar.java.FrontendBenchLog;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.model.InputFileUtils;
@@ -163,22 +164,32 @@ public class JavaAstScanner {
     long startTime = currentTimeMillis();
     visitor.setCurrentFile(inputFile);
     var telemetryAnalysisKeys = javaAnalysisKeys.exceptions();
+    String benchResult = "failure";
+    long benchChecksUs = 0L;
+    int benchUndefinedTypes = 0;
     try {
       JavaTree.CompilationUnitTreeImpl ast = result.get();
       modifyCompilationUnit.accept(ast);
+      long checksStart = System.nanoTime();
       visitor.visitFile(ast, sonarComponents != null && sonarComponents.fileCanBeSkipped(inputFile));
+      benchChecksUs = FrontendBenchLog.micros(checksStart);
       String path = inputFile.toString();
       Set<Problem> undefinedTypes = ast.semanticProblems();
+      benchUndefinedTypes = undefinedTypes.size();
       collectUndefinedTypes(path, undefinedTypes);
       cleanUp.accept(ast);
       telemetryAnalysisKeys = javaAnalysisKeys.success();
       telemetry.aggregateAsCounter(javaAnalysisKeys.success().typeErrorCountKey(), undefinedTypes.size());
+      benchResult = "ok";
     } catch (RecognitionException e) {
       checkInterrupted(e);
       LOG.error("Unable to parse source file : '{}'", inputFile);
       LOG.error(e.getMessage());
 
+      benchResult = "parse_error";
+      long checksStart = System.nanoTime();
       parseErrorWalkAndVisit(e, inputFile);
+      benchChecksUs = FrontendBenchLog.micros(checksStart);
       telemetryAnalysisKeys = javaAnalysisKeys.parseErrors();
     } catch (AnalysisException e) {
       throw e;
@@ -186,6 +197,7 @@ public class JavaAstScanner {
       checkInterrupted(e);
       interruptIfFailFast(e, inputFile);
     } catch (StackOverflowError error) {
+      benchResult = "stack_overflow";
       LOG.error("A stack overflow error occurred while analyzing file: '" + inputFile + "'", error);
       if (sonarComponents == null || sonarComponents.shouldFailOnStackOverflow()) {
         throw error;
@@ -193,6 +205,12 @@ public class JavaAstScanner {
     } finally {
       telemetry.aggregateAsCounter(telemetryAnalysisKeys.sizeCharsKey(), InputFileUtils.charCount(inputFile, 0));
       telemetry.aggregateAsCounter(telemetryAnalysisKeys.timeMsKey(), currentTimeMillis() - startTime);
+      FrontendBenchLog.flushFile(inputFile,
+        "result", benchResult,
+        "bytes", FrontendBenchLog.bytes(inputFile),
+        "lines", FrontendBenchLog.lines(inputFile),
+        "undefined_types", benchUndefinedTypes,
+        "checks_us", benchChecksUs);
     }
   }
 

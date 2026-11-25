@@ -127,6 +127,7 @@ public class JavaFrontend {
 
   public void scan(Iterable<InputFile> sourceFiles, Iterable<InputFile> testFiles, Iterable<? extends InputFile> generatedFiles) {
     if (canOptimizeScanning()) {
+      long cacheStart = System.nanoTime();
       long successfullyScanned = 0L;
       long total = 0L;
 
@@ -141,6 +142,7 @@ public class JavaFrontend {
       total += testFilesScannedWithoutParsing.get(true).size() + testFilesScannedWithoutParsing.get(false).size();
 
       total += StreamSupport.stream(generatedFiles.spliterator(), false).count();
+      FrontendBenchLog.log("cache", "skipped", successfullyScanned, "total", total, "dur_us", FrontendBenchLog.micros(cacheStart));
 
       LOG.info(
         "Server-side caching is enabled. The Java analyzer was able to leverage cached data from previous analyses for {} out of {} files. These files will not be parsed.",
@@ -202,7 +204,9 @@ public class JavaFrontend {
           LOG.info("No \"{}\" source files to scan.", context.descriptor());
         }
       } finally {
+        long endOfAnalysisStart = System.nanoTime();
         context.endOfAnalysis();
+        FrontendBenchLog.log("end_of_analysis", "kind", context.descriptor(), "dur_us", FrontendBenchLog.micros(endOfAnalysisStart));
       }
     } catch (AnalysisException e) {
       throw e;
@@ -237,12 +241,18 @@ public class JavaFrontend {
 
   private void scanBatch(BatchModeContext context, List<InputFile> batchFiles, AnalysisProgress analysisProgress) {
     analysisProgress.startBatch(batchFiles.size());
+    long batchStart = System.nanoTime();
+    FrontendBenchLog.log("batch.start", "kind", context.descriptor(), "files", batchFiles.size(),
+      "bytes", batchFiles.stream().mapToLong(FrontendBenchLog::bytes).sum());
     Set<Runnable> environmentsCleaners = new HashSet<>();
     JParser.Mode.BATCH
       .create(javaVersion, context.getClasspath(), sonarComponents.shouldIgnoreUnnamedModuleForSplitPackage(), sonarComponents.shouldUseJdkReleaseOption())
       .parse(batchFiles, sonarComponents::analysisCancelled, analysisProgress, (input, result) -> scanAsBatchCallback(input, result, context, environmentsCleaners));
+    long cleanupStart = System.nanoTime();
     // Due to a bug in ECJ, JAR files remain locked after the analysis on Windows, we unlock them manually, at the end of each batches. See SONARJAVA-3609.
     environmentsCleaners.forEach(Runnable::run);
+    FrontendBenchLog.log("ecj.cleanup", "environments", environmentsCleaners.size(), "dur_us", FrontendBenchLog.micros(cleanupStart));
+    FrontendBenchLog.log("batch.end", "kind", context.descriptor(), "files", batchFiles.size(), "dur_us", FrontendBenchLog.micros(batchStart));
     analysisProgress.endBatch();
   }
 
