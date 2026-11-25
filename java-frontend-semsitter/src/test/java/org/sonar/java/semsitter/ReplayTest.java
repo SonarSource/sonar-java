@@ -21,11 +21,13 @@ import com.sonar.sslr.api.RecognitionException;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Set;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.sonar.java.model.JParseResult;
+import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -37,6 +39,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  */
 class ReplayTest {
 
+  private static final Set<String> NOT_COMPILING = Set.of("Unresolved");
+  private static final List<String> NOT_DERIVED = List.of("WARNING REDUNDANT_CAST ", "WARNING MASKED_CATCH ");
 
   private static JsonObject types;
   private static JsonObject packages;
@@ -66,6 +70,19 @@ class ReplayTest {
       assertThatThrownBy(semSitter::get).isInstanceOf(RecognitionException.class);
     } else {
       assertThat(TreeDescription.shape(semSitter.get())).containsExactlyElementsOf(TreeDescription.shape(ecj.get()));
+    }
+  }
+
+  @ParameterizedTest
+  @MethodSource("samples")
+  void same_warnings_as_ecj(String sample) throws Exception {
+    JParseResult semSitter = translate(sample);
+    if (!Replays.document(sample).getHasError() && !NOT_COMPILING.contains(sample) && !Replays.isCorpus(sample)) {
+      List<String> expected = TreeDescription.warnings(Replays.parseWithEcj(baseDir, sample, Replays.source(sample)).get()).stream()
+        .filter(warning -> NOT_DERIVED.stream().noneMatch(warning::startsWith)).toList();
+
+      assertThat(TreeDescription.warnings(semSitter.get())).containsExactlyInAnyOrderElementsOf(expected);
+      assertThat(((CompilationUnitTree) semSitter.get()).supportedWarningKinds()).containsExactlyInAnyOrderElementsOf(CompilerWarnings.SUPPORTED_KINDS);
     }
   }
 

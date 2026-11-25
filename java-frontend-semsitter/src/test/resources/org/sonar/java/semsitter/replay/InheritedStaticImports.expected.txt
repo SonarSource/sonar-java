@@ -1,0 +1,112 @@
+COMPILATION_UNIT @1:1
+PACKAGE @1:1
+TOKEN @1:1
+IDENTIFIER @1:9 id inherited .inherited [p package] : ? : ?
+TOKEN @1:9
+TOKEN @1:18
+IMPORT @3:1
+TOKEN @3:1
+TOKEN @3:8
+MEMBER_SELECT @3:15 : ?
+MEMBER_SELECT @3:15 : ?
+IDENTIFIER @3:15 id inherited unknown : ?
+TOKEN @3:15
+TOKEN @3:24
+IDENTIFIER @3:25 id Child unknown : ?
+TOKEN @3:25
+TOKEN @3:30
+IDENTIFIER @3:31 id * unknown : ?
+TOKEN @3:31
+TOKEN @3:32
+CLASS @5:1 class inherited.Parent [t package] : inherited.Parent super java.lang.Object interfaces []
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Parent flags [package] members [<init>, twice] lookupToString 0 outermost Parent annotation false subtypeOf [java.lang.Object] superTypes [java.lang.Object] numerical false wrapper false raw false declaring Parent
+MODIFIERS
+TOKEN @5:1
+IDENTIFIER @5:7 id Parent inherited.Parent [t package] : inherited.Parent : inherited.Parent
+TOKEN @5:7
+TYPE_PARAMETERS
+LIST
+LIST
+TOKEN @5:14
+METHOD @6:3 method Parent.twice [m static package] : ? (int) returns int throws [] sig inherited.Parent#twice(I)I overrides false
+  details declared true usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Parent flags [static, package] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [value] parameterMetadata []
+MODIFIERS @6:3
+TOKEN @6:3
+TYPE_PARAMETERS
+PRIMITIVE_TYPE @6:10 : int
+TOKEN @6:10
+IDENTIFIER @6:14 id twice Parent.twice [m static package] : ? (int) returns int throws [] sig inherited.Parent#twice(I)I : int
+TOKEN @6:14
+TOKEN @6:19
+VARIABLE @6:20 var twice.value [v package] : int
+  details declared true usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Parent flags [package] local true parameter true effectivelyFinal true constant null owner twice inherited.Parent#twice(I)I [static, package] returns int parameters 1 thrown 0 overridden 0 declared true usages 1 metadata 0 enclosing Parent type true kinds truefalsefalse other falsefalsefalsefalsefalsefalse1falsefalse
+MODIFIERS
+PRIMITIVE_TYPE @6:20 : int
+TOKEN @6:20
+IDENTIFIER @6:24 id value twice.value [v package] : int : int
+TOKEN @6:24
+TOKEN @6:29
+BLOCK @6:31
+TOKEN @6:31
+RETURN_STATEMENT @7:5
+TOKEN @7:5
+MULTIPLY @7:12 : int
+IDENTIFIER @7:12 id value twice.value [v package] : int : int
+TOKEN @7:12
+TOKEN @7:18
+INT_LITERAL @7:20 : int = 2
+TOKEN @7:20
+TOKEN @7:21
+TOKEN @8:3
+TOKEN @9:1
+CLASS @11:1 class inherited.Child [t package] : inherited.Child super inherited.Parent interfaces []
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Child flags [package] members [<init>] lookupToString 0 outermost Child annotation false subtypeOf [java.lang.Object] superTypes [inherited.Parent, java.lang.Object] numerical false wrapper false raw false declaring Child
+MODIFIERS
+TOKEN @11:1
+IDENTIFIER @11:7 id Child inherited.Child [t package] : inherited.Child : inherited.Child
+TOKEN @11:7
+TYPE_PARAMETERS
+TOKEN @11:13
+IDENTIFIER @11:21 id Parent inherited.Parent [t package] : inherited.Parent : inherited.Parent
+TOKEN @11:21
+LIST
+LIST
+TOKEN @11:28
+TOKEN @12:1
+CLASS @14:1 class inherited.InheritedStaticImports [t package] : inherited.InheritedStaticImports super java.lang.Object interfaces []
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing InheritedStaticImports flags [package] members [<init>, four] lookupToString 0 outermost InheritedStaticImports annotation false subtypeOf [java.lang.Object] superTypes [java.lang.Object] numerical false wrapper false raw false declaring InheritedStaticImports
+MODIFIERS
+TOKEN @14:1
+IDENTIFIER @14:7 id InheritedStaticImports inherited.InheritedStaticImports [t package] : inherited.InheritedStaticImports : inherited.InheritedStaticImports
+TOKEN @14:7
+TYPE_PARAMETERS
+LIST
+LIST
+TOKEN @14:30
+METHOD @15:3 method InheritedStaticImports.four [m package] : ? () returns int throws [] sig inherited.InheritedStaticImports#four()I overrides false
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing InheritedStaticImports flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MODIFIERS
+TYPE_PARAMETERS
+PRIMITIVE_TYPE @15:3 : int
+TOKEN @15:3
+IDENTIFIER @15:7 id four InheritedStaticImports.four [m package] : ? () returns int throws [] sig inherited.InheritedStaticImports#four()I : int
+TOKEN @15:7
+TOKEN @15:11
+TOKEN @15:12
+BLOCK @15:14
+TOKEN @15:14
+RETURN_STATEMENT @16:5
+TOKEN @16:5
+METHOD_INVOCATION @16:12 call Parent.twice [m static package] : ? (int) returns int throws [] sig inherited.Parent#twice(I)I : int
+  details declared true usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Parent flags [static, package] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [value] parameterMetadata []
+IDENTIFIER @16:12 id twice Parent.twice [m static package] : ? (int) returns int throws [] sig inherited.Parent#twice(I)I : int
+TOKEN @16:12
+ARGUMENTS @16:17
+TOKEN @16:17
+INT_LITERAL @16:18 : int = 2
+TOKEN @16:18
+TOKEN @16:19
+TOKEN @16:20
+TOKEN @17:3
+TOKEN @18:1
+TOKEN @19:1
