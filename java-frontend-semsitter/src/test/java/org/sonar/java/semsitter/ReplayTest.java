@@ -40,7 +40,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class ReplayTest {
 
   private static final Set<String> NOT_COMPILING = Set.of("Unresolved");
-  private static final List<String> NOT_DERIVED = List.of("WARNING REDUNDANT_CAST ", "WARNING MASKED_CATCH ");
 
   private static JsonObject types;
   private static JsonObject packages;
@@ -78,8 +77,7 @@ class ReplayTest {
   void same_warnings_as_ecj(String sample) throws Exception {
     JParseResult semSitter = translate(sample);
     if (!Replays.document(sample).getHasError() && !NOT_COMPILING.contains(sample) && !Replays.isCorpus(sample)) {
-      List<String> expected = TreeDescription.warnings(Replays.parseWithEcj(baseDir, sample, Replays.source(sample)).get()).stream()
-        .filter(warning -> NOT_DERIVED.stream().noneMatch(warning::startsWith)).toList();
+      List<String> expected = TreeDescription.warnings(Replays.parseWithEcj(baseDir, sample, Replays.source(sample)).get());
 
       assertThat(TreeDescription.warnings(semSitter.get())).containsExactlyInAnyOrderElementsOf(expected);
       assertThat(((CompilationUnitTree) semSitter.get()).supportedWarningKinds()).containsExactlyInAnyOrderElementsOf(CompilerWarnings.SUPPORTED_KINDS);
@@ -106,7 +104,7 @@ class ReplayTest {
     }
   }
 
-  private static JParseResult translate(String sample) throws IOException {
+  static JParseResult translate(String sample) throws IOException {
     SessionTypes session = new SessionTypes(names -> {
       JsonObject answer = new JsonObject();
       names.stream().filter(types::has).forEach(name -> answer.add(name, types.get(name)));
