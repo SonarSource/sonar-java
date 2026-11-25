@@ -41,6 +41,11 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>java-frontend-semsitter</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>java-checks</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -184,7 +189,7 @@
             <configuration>
               <rules>
                 <requireFilesSize>
-                  <maxsize>21500000</maxsize>
+                  <maxsize>24000000</maxsize>
                   <minsize>19000000</minsize>
                   <files>
                     <file>${project.build.directory}/${project.build.finalName}.jar</file>
@@ -229,6 +234,12 @@
                 </filter>
                 <filter>
                   <artifact>org.sonarsource.java:java-frontend</artifact>
+                  <includes>
+                    <include>**</include>
+                  </includes>
+                </filter>
+                <filter>
+                  <artifact>org.sonarsource.java:java-frontend-semsitter</artifact>
                   <includes>
                     <include>**</include>
                   </includes>
@@ -300,6 +311,14 @@
                 <licenseUrlReplacement>
                     <regexp>http://www.opensource.org/licenses/bsd-license.php</regexp>
                     <replacement>${project.baseUri}/license-resources/bsd.txt</replacement>
+                </licenseUrlReplacement>
+                <licenseUrlReplacement>
+                    <regexp>https://opensource.org/licenses/BSD-3-Clause</regexp>
+                    <replacement>${project.baseUri}/license-resources/bsd-3-clause.txt</replacement>
+                </licenseUrlReplacement>
+                <licenseUrlReplacement>
+                    <regexp>https://sonarsource.com/license/ssal/</regexp>
+                    <replacement>${project.baseUri}/license-resources/ssal.txt</replacement>
                 </licenseUrlReplacement>
             </licenseUrlReplacements>
             <licenseUrlFileNameSanitizers>
