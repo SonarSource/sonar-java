@@ -21,5 +21,11 @@
       "MAINTAINABILITY": "MEDIUM"
     },
     "attribute": "CLEAR"
+  },
+  "sonarWayRemoval": {
+    "candidateProfiles": [
+      "style"
+    ],
+    "rationale": "Users report that simple loops can be more readable and easier to debug than streams, and some deliberately replaced streams with loops after profiling showed better performance. Feedback also identifies checked exceptions, external mutable state, ordered side effects, and legacy API constraints that make conversion impractical or obscure intent. Preferring streams is therefore not a universally applicable readability improvement; the rule is better suited to an opt-in style profile than Sonar way."
   }
 }

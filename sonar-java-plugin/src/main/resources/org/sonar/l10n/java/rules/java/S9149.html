@@ -39,6 +39,32 @@ class Child extends Parent {
 Parent obj = new Child();
 obj.display();  // Prints "Parent", not "Child"!
 </pre>
+<h3>Exceptions</h3>
+<p>The rule does not raise an issue when the hiding method is marked as deprecated or discouraged. Hiding a superclass method on purpose is a common
+way to retire it in a subclass, for example to stop callers from using it through the subclass. The rule treats a method as intentionally hiding when
+it has one of these annotations:</p>
+<ul>
+  <li><code>@java.lang.Deprecated</code></li>
+  <li><code>@kotlin.Deprecated</code></li>
+  <li><code>@com.google.errorprone.annotations.DoNotCall</code></li>
+  <li><code>@com.google.errorprone.annotations.InlineMe</code></li>
+  <li><code>@org.jetbrains.annotations.ApiStatus.Obsolete</code></li>
+  <li><code>@org.jetbrains.annotations.ApiStatus.ScheduledForRemoval</code></li>
+</ul>
+<pre>
+class Parent {
+    static void oldMethod() {
+        // Parent implementation
+    }
+}
+
+class Child extends Parent {
+    @Deprecated
+    static void oldMethod() {  // Compliant: intentional hiding
+        throw new UnsupportedOperationException();
+    }
+}
+</pre>
 <h3>What is the potential impact?</h3>
 <p>Method hiding makes code harder to understand and maintain. Developers might incorrectly assume that method calls will be resolved at runtime based
 on the actual object type (dynamic dispatch), leading to logic errors that are difficult to diagnose. During refactoring, changing variable types can

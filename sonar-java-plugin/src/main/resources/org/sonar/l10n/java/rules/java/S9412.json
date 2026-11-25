@@ -21,5 +21,11 @@
       "MAINTAINABILITY": "LOW"
     },
     "attribute": "CONVENTIONAL"
+  },
+  "sonarWayRemoval": {
+    "candidateProfiles": [
+      "style"
+    ],
+    "rationale": "Replacing Collections.sort() is a low-impact, purely stylistic improvement that may generate noise in codebases with many calls. Some developers prefer Collections.sort() for consistency with other Collections utility methods. The choice is a team style preference, so the rule is better suited to an opt-in style profile than Sonar way."
   }
 }

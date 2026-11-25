@@ -20,5 +20,11 @@
       "MAINTAINABILITY": "LOW"
     },
     "attribute": "CLEAR"
+  },
+  "sonarWayRemoval": {
+    "candidateProfiles": [
+      "style"
+    ],
+    "rationale": "Users repeatedly report that String.format() is as readable as, or more readable than, string concatenation, which can be clunky. They also prefer to retain it for consistency with existing code and logging conventions. The choice is a team style preference rather than a universally applicable readability improvement, so the rule is better suited to an opt-in style profile than Sonar way."
   }
 }

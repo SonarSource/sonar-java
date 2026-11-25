@@ -80,6 +80,13 @@ public class PurchaseOrderController {
 <p>The compliant code implements a Data Transfer Object (DTO) layer. Instead of accepting a persistent <code>Wish</code> entity as a parameter, the
 vulnerable method accepts a <code>WishDTO</code> object with a safe, minimal set of properties. It then instantiates a persistent entity and
 initializes it based on the DTO properties' values. The resulting object can safely be persisted in the database.</p>
+<h3>Pitfalls</h3>
+<p>Some applications register custom <code>HandlerMethodArgumentResolver</code> implementations that populate a request-mapping parameter from
+server-side context instead of from client-submitted data. The rule cannot verify what such a resolver reads. By default, the rule does not report
+parameters annotated with <code>@PathVariable</code> or <code>@AuthenticationPrincipal</code>.</p>
+<p>The rule’s <code>excludedAnnotations</code> and <code>excludedTypes</code> parameters let a project declare additional annotations and parameter
+types that the rule must not report. Declaring one asserts that the project’s own resolver is safe, and the analyzer does not check this assertion.
+Declare an annotation or type only if its resolver never reads from the request body, parameters, or headers.</p>
 <h2>Resources</h2>
 <h3>Documentation</h3>
 <ul>
