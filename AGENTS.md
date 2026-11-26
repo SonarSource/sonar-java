@@ -306,3 +306,40 @@ Ruling tests validate that rule fixes don't break existing true positives. They 
 Do not try to run these locally. A PR should be created automatically when they fail on CI.
 
 ---
+
+# Before you reply: Vortex analysis
+
+Install the [SonarQube CLI](https://docs.sonarsource.com/sonarqube-cli/), run `sonar auth login --server https://next.sonarqube.com/sonarqube/`, and optionally configure user-level integration with `sonar integrate claude` or `sonar integrate codex`.
+
+On a detached HEAD, add `--branch master` to the analysis command.
+
+<!-- sonar:begin:sonarqube-agentic-analysis-protocol -->
+# Vortex analysis protocol
+
+These instructions were installed by `sonar integrate` at the user's request. Vortex analysis checks the final change set for issues before you reply.
+
+At the end of a turn that changed file contents in the workspace (create, edit, patch, or format), run Vortex analysis before your final reply or handoff. Analyze all files changed in the turn in one command.
+
+Pass each modified path with `--file`, relative to the directory you run the command from (for example, `src/foo.ts`). Use `--depth DEEP` even for one file so the analysis includes cross-file findings.
+
+```bash
+sonar analyze agentic --depth DEEP --file <path/to/file1> --file <path/to/file2>
+```
+
+If you cannot reliably list every modified path, analyze the git change set with DEEP depth:
+
+```bash
+sonar analyze agentic --depth DEEP
+```
+
+Per-edit hooks use faster STANDARD analysis. The end-of-turn check uses DEEP depth, including when only one file changed.
+
+In a repository with several Sonar projects (a monorepo), the directory you run the command from decides what is analyzed. From the monorepo root, one command analyzes every changed file against the project that owns it. From inside one project, only that project is analyzed: a `--file` path outside the current directory is rejected, and changes in other projects are listed as not analyzed. Run the command from a directory that contains every file changed this turn, usually the monorepo root. Files owned by no project are skipped in the change-set report and rejected as `--file` paths; leave them out rather than retrying.
+
+After the analysis:
+
+1. If no project is configured, stop analysis attempts for this session. A routine skip needs no mention in the final reply unless the user asks about Vortex analysis. If the user asks for Vortex analysis or configures a project, run the analysis again and report any error.
+2. If analysis finds issues on lines you changed this turn, fix them and re-run the same scope. Continue until no touched-line findings remain. Leave findings on untouched lines to their existing owners unless the user asks you to address them.
+3. If analysis is skipped for another reason (for example, no SonarQube Cloud connection), state the reason once in your reply and continue without retrying this session.
+4. Include any remaining Vortex findings verbatim in your reply.
+<!-- sonar:end:sonarqube-agentic-analysis-protocol -->

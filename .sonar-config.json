@@ -1,0 +1,7 @@
+{
+  "project": {
+    "projectKey": "org.sonarsource.java:java",
+    "path": ".",
+    "serverUrl": "https://next.sonarqube.com/sonarqube/"
+  }
+}
