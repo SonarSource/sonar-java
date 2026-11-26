@@ -1,0 +1,32 @@
+name: Documentation
+
+on: pull_request
+
+permissions:
+  contents: read
+
+jobs:
+  docs:
+    name: Documentation checks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      PYTHONDONTWRITEBYTECODE: 1
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Install documentation checker dependencies
+        id: dependencies
+        run: |
+          python3 -m venv "$RUNNER_TEMP/docs-venv"
+          "$RUNNER_TEMP/docs-venv/bin/python" -m pip install -r .github/scripts/docs-requirements.txt
+          echo "$RUNNER_TEMP/docs-venv/bin" >> "$GITHUB_PATH"
+      - name: Test documentation checker
+        run: python -m unittest discover -s .github/scripts -p test_check_docs.py
+      - name: Lint Markdown
+        if: ${{ !cancelled() }}
+        run: npm exec --yes --ignore-scripts --package=markdownlint-cli2@0.20.0 -- markdownlint-cli2
+      - name: Check documentation structure and references
+        if: ${{ !cancelled() && steps.dependencies.outcome == 'success' }}
+        run: python .github/scripts/check_docs.py

@@ -1,17 +1,17 @@
-SonarQube Java Custom Rules Plugin Template
-=======
+---
+title: SonarQube Java custom rules plugin template
+description: Use this example plugin as a starting point for writing custom rules for the SonarQube Java Analyzer.
+generated:
+  by: tirion
+---
 
-This example demonstrates how to write **Custom Rules** for SonarJava.
+# SonarQube Java custom rules plugin template
 
-If you are using SonarQube 9.9 LTS (latest release), use the following command to build it without any dependency to the current project status:
+This example contains custom rules, their metadata and tests, and the code that registers the rules with the SonarQube Java Analyzer.
 
-```
-mvn clean install -f pom_SQ_9_9_LTS.xml
-```
+See [Getting started](../custom-rules/getting-started.md) for the JDK and Maven setup, the standalone build command, and the difference between the two POMs. Follow [Writing Custom Java Rules 101](../custom-rules/index.md) to add and test a rule of your own.
 
-For more details about how to write custom rules, please refer to the official tutorial, [Writing Custom Java Rules 101](../CUSTOM_RULES_101.md).
+## License
 
-### License
-
-The [SSALv1](https://www.sonarsource.com/license/ssal/) license of this GitHub repository does not apply in the `java-custom-rules-example` directory.
-All contents under the `java-custom-rules-example` directory are licensed under the more permissive [MIT No Attribution](LICENSE.txt) license.
+The [SSALv1](https://www.sonarsource.com/license/ssal/) license of this GitHub repository does not apply in the `docs/java-custom-rules-example` directory.
+All contents under the `docs/java-custom-rules-example` directory are licensed under the more permissive [MIT No Attribution](LICENSE.txt) license.

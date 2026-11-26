@@ -31,6 +31,7 @@ import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 /**
  * This interface defines how to use checks (rules) verifiers. Its goal is to provide all the required information
  * to the analyzer to verify the checks' expected behavior.
+ * <p>See <a href="https://github.com/SonarSource/sonar-java/blob/master/docs/systems/rule-tests.md">Rule tests and sample placement</a>.
  * <p>
  * The starting point to define a verifier is {@link #newVerifier()}. Then, a configuration can be specified.
  * <p>

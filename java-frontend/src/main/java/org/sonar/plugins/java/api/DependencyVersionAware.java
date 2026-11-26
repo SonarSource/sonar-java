@@ -22,6 +22,7 @@ import java.util.function.Function;
 /**
  * Implementing this interface allows a check to be executed - or not - during analysis, depending on the
  * version of desired libraries among dependencies of the current module.
+ * <p>See <a href="https://github.com/SonarSource/sonar-java/blob/master/docs/systems/rule-api.md">Rule API and version gating</a>.
  *
  * <p> For example, if a rule is to be used only on modules of a project that use spring-web version at least 4.3,
  * it should implement {@link DependencyVersionAware} with the following method:

@@ -1,308 +1,57 @@
-# Introduction
+# SonarJava agent guide
 
-SonarJava is a static code analyzer for Java.
+## Scope
 
-The rules are implemented in **Java** using the SonarJava API. Test resources are **Java** files annotated with special comment markers.
+SonarJava provides Java parsing, semantic analysis and rules for SonarQube Server, SonarQube Cloud and SonarQube for IDE. Use `pom.xml` for the Maven reactor.
+The ECJ fork, symbolic execution engine, DBD and security rules live outside this repository. Public API changes can break those consumers and customer custom-rule plugins.
+All agent instructions start here; there are no component-level `AGENTS.md` files. Read the topic guides below for component-specific constraints.
 
-For step-by-step guidance on implementing a new rule (including metadata generation), see `.agents/skills/new-rule/SKILL.md`.
+## Baseline reference
 
----
+[Repository Baseline](docs/systems/external-context.md#repository-baseline), checked 2026-11-26; shared `awesome-ai` template unavailable, so this file follows the guideline's required sections directly.
 
+## Commands
 
-# General Coding Guidelines
+Read [Setup, build and test commands](docs/systems/build.md) before selecting a JDK or running Maven.
 
-- Do **NOT** write comments, inside the code. Comments can easily become outdated.
-- Do write documentation for complex functions.
-- Use KISS (Keep It Simple, Stupid) and DRY (Don't Repeat Yourself) principles.
+## Constraints
 
----
+- This repository is public. All agent files and docs are public. Do not publish internal URLs, customer data, credentials or private repository content.
+- Preserve public API compatibility and SonarQube for IDE support; read `docs/systems/public-api.md` before changing the API or plugin registration.
+- Use the supported build and runtime JDKs in `docs/systems/build.md`; CI exercises them for different purposes.
+- The project uses SSALv1 (`LICENSE.txt`); read `docs/systems/licenses.md` before changing dependencies.
+- Do not edit generated rule metadata or the generated check list by hand. Read `docs/systems/rule-metadata.md` before registering rules or changing profiles.
+- New rules are stateless and must not introduce shared abstract check bases; read the decisions in `docs/adrs/index.md` before adding rule logic or unit tests.
+- Use JUnit Jupiter for unit tests and cover rule behavior both with and without semantic resolution; read `docs/systems/rule-tests.md` before changing a rule or fixture.
+- Let CI run ruling and generate baseline updates; read `docs/systems/ruling-tests.md` before reviewing SARIF changes.
 
-# Repository Structure
+## Escalation
 
-## Maven Module Structure
+`@SonarSource/code-quality-jvm-squad` owns the repository, as defined in [CODEOWNERS](.github/CODEOWNERS). Use the [SONARJAVA Jira project](https://jira.sonarsource.com/browse/SONARJAVA/) for issue context. If RSPEC, Repox, Orchestrator or the ruling submodule is required and unavailable, ask the owners and report which check is blocked. Do not guess metadata, change baselines to hide failures or substitute credentials.
 
-```
-sonar-java/
-├── java-frontend/              # Parser, AST, semantic model, type inference
-├── java-checks/                # Community rule implementations
-│   ├── src/main/java/org/sonar/java/checks/     # Rule Java source
-│   └── src/test/
-│       ├── java/org/sonar/java/checks/           # Test classes
-│       └── files/checks/                          # Legacy Java test resource files. Should be migrated to java-checks-test-sources 
-├── java-checks-test-sources/   # Shared Java test resource files used across modules
-├── java-checks-aws/            # AWS-specific rule implementations
-├── java-symbolic-execution/    # Symbolic execution engine
-├── sonar-java-plugin/          # Plugin packaging
-└── its/                        # Integration tests
-    └── ruling/                 # Ruling integration tests
-```
+## Verification before merge
 
-## Rule Implementation Pattern
+Read [verification before merge](docs/systems/verification.md) before requesting review; it covers local checks, CI jobs and changes requiring extra review.
 
-Rules are Java classes annotated with `@Rule(key = "SXXXX")` that extend one of:
+## Feature-flag applicability
 
-- **`IssuableSubscriptionVisitor`** — Event-based: register tree consumers for specific tree kinds
-- **`BaseTreeVisitor`** — Visitor pattern: override `visit*` methods; combined with `JavaFileScanner` to report issues
-- **`JavaFileScanner`** — Full scan: override `scanFile` to traverse the entire compilation unit
+Read [feature activation](docs/systems/feature-activation.md) before changing behavior that may need independent rollout or rollback.
 
-To avoid coupling between rules, never introduce new abstract classes from which rules would inherit.
-To avoid duplicating code, you may use utility classes.
+## Release checks
 
-### Example: IssuableSubscriptionVisitor
+Read [release checks](docs/systems/release-checks.md) before preparing a release or changing release automation.
 
-```java
-@Rule(key = "S1234")
-public class MyCheck extends IssuableSubscriptionVisitor {
+## Documentation
 
-  @Override
-  public List<Tree.Kind> nodesToVisit() {
-    return Collections.singletonList(Tree.Kind.METHOD_INVOCATION);
-  }
+- Start with [the documentation index](docs/index.md); read `docs/documentation-conventions.md` before editing docs.
+- Read `docs/systems/rule-api.md` before choosing a visitor or changing a rule's lifecycle.
+- Read `docs/systems/project-level-rules.md` before changing cross-file analysis or cache behavior.
+- Read `docs/systems/quickfix-tests.md` before adding or changing a quick fix.
+- Use `.agents/skills/new-rule/SKILL.md` when implementing a rule from its specification.
+- Use `.agents/skills/migrate-test-samples/SKILL.md` when moving legacy fixtures into the Maven test-source modules.
 
-  @Override
-  public void visitNode(Tree tree) {
-    MethodInvocationTree mit = (MethodInvocationTree) tree;
-    // Analyze the invocation...
-    reportIssue(mit, "Message describing the issue.");
-  }
-}
-```
+## External context
 
-### Example: BaseTreeVisitor
-
-```java
-@Rule(key = "S1234")
-public class MyCheck extends BaseTreeVisitor implements JavaFileScanner {
-
-  private JavaFileScannerContext context;
-
-  @Override
-  public void scanFile(JavaFileScannerContext context) {
-    this.context = context;
-    scan(context.getTree());
-  }
-
-  @Override
-  public void visitMethodInvocation(MethodInvocationTree tree) {
-    // Analyze the invocation...
-    context.reportIssue(this, tree, "Message describing the issue.");
-    super.visitMethodInvocation(tree);
-  }
-}
-```
-
-### Key API Elements
-
-- **`reportIssue(tree, message)`** — Report an issue at a specific AST node
-- **`reportIssue(tree, message, secondaries, cost)`** — Report with secondary locations
-- **`Tree.Kind.*`** — AST node type enumeration (e.g., `Tree.Kind.METHOD`, `Tree.Kind.IF_STATEMENT`, `Tree.Kind.METHOD_INVOCATION`)
-- **`ExpressionUtils.getParentOfType(tree, Tree.Kind.METHOD)`** — Navigate up the AST
-- **`ExpressionUtils`**, **`MethodMatchers`** — Utility classes for common analysis patterns
-
-### MethodMatchers
-
-Use `MethodMatchers` to match method calls by type, name, and signature:
-
-```java
-private static final MethodMatchers MY_MATCHER = MethodMatchers.create()
-  .ofTypes("java.util.List")
-  .names("add")
-  .withAnyParameters()
-  .build();
-
-// In visitNode:
-if (MY_MATCHER.matches(methodInvocationTree)) {
-  reportIssue(methodInvocationTree, "Message.");
-}
-```
-
-### Quick Fix API
-
-```java
-JavaQuickFix quickFix = JavaQuickFix.newQuickFix("Remove redundant check")
-  .addTextEdit(JavaTextEdit.removeTree(tree))
-  .build();
-reportIssue(tree, "Message").withQuickFix(() -> quickFix);
-```
-
-### Per-File State Cleanup
-
-New rules must be **stateless**: see the stateless-checks section of `.agents/skills/new-rule/SKILL.md`. The guidance below applies to existing checks that still accumulate per-file state.
-
-Rules that accumulate state in collections or mutable fields during file analysis **must clear that state between files**. A single rule instance is reused across all files in a module.
-
-For `IssuableSubscriptionVisitor` subclasses, override `clearState()` — it is called automatically before and after each file:
-
-```java
-@Rule(key = "S1234")
-public class MyCheck extends IssuableSubscriptionVisitor {
-
-  private final Set<Symbol> seen = new HashSet<>();
-
-  @Override
-  protected void clearState() {
-    seen.clear();
-  }
-}
-```
-
-For `BaseTreeVisitor` / `JavaFileScanner` implementations, clear state in `scanFile()` (typically in a `finally` block):
-
-```java
-@Override
-public void scanFile(JavaFileScannerContext context) {
-  this.context = context;
-  try {
-    scan(context.getTree());
-  } finally {
-    myCollection.clear();
-  }
-}
-```
-
-**Do not** clear lazy-initialized caches derived from immutable configuration (e.g. parsed `@RuleProperty` values) — those are intentionally computed once per rule instance.
-
-### Dependency-Aware Rules
-
-When a rule should only apply when a specific library is present, or when its behaviour depends on a dependency version, implement `DependencyVersionAware` alongside the visitor base class:
-
-```java
-@Rule(key = "S2230")
-public class TransactionalMethodVisibilityCheck extends IssuableSubscriptionVisitor implements DependencyVersionAware {
-
-  private boolean isSpring6OrLater = false;
-
-  @Override
-  public List<Tree.Kind> nodesToVisit() {
-    return Collections.singletonList(Tree.Kind.METHOD);
-  }
-
-  /** Called before analysis. Return false to disable the rule entirely when required dependencies are absent. */
-  @Override
-  public boolean isCompatibleWithDependencies(Function<String, Optional<Version>> dependencyFinder) {
-    Optional<Version> springTxVersion = dependencyFinder.apply("spring-tx");
-    Optional<Version> springContextVersion = dependencyFinder.apply("spring-context");
-    if (springTxVersion.isEmpty() && springContextVersion.isEmpty()) {
-      return false; // rule is disabled — dependency not on classpath
-    }
-    isSpring6OrLater = springContextVersion
-      .or(() -> springTxVersion)
-      .map(v -> v.isGreaterThanOrEqualTo("6.0"))
-      .orElse(false);
-    return true;
-  }
-
-  @Override
-  public void visitNode(Tree tree) {
-    // use isSpring6OrLater to adjust rule behaviour
-  }
-}
-```
-
-Key points:
-- `dependencyFinder.apply("artifact-id")` looks up a dependency by its Maven artifact ID and returns its version if present.
-- Returning `false` from `isCompatibleWithDependencies` disables the rule for the current project — use this when the rule only makes sense if a particular library is on the classpath.
-- Store any version information in an instance field (e.g. `isSpring6OrLater`) so that `visitNode` can use it during the scan.
-
----
-
-# Understanding Rule Trigger Requirements
-
-When creating simple examples or fixing false positives, examine the rule's test files to understand what conditions trigger the rule:
-
-## AST Node Kinds
-
-Rules subscribe to specific tree kinds. Check `nodesToVisit()` to see which `Tree.Kind.*` values the rule listens to:
-- `Tree.Kind.METHOD` — Method declarations
-- `Tree.Kind.METHOD_INVOCATION` — Method calls
-- `Tree.Kind.IF_STATEMENT` — If statements
-- `Tree.Kind.FOR_STATEMENT` — For loops
-- `Tree.Kind.VARIABLE` — Variable declarations
-
-## Semantic Model
-
-SonarJava provides a semantic model to resolve types and symbols:
-- **`symbol.type()`** — Resolved type of symbol
-- **`symbol.owner()`** — Enclosing symbol (e.g., class owning a method)
-- **`expressionTree.symbolType()`** — Type of expression
-- **`type.isSubtypeOf("java.util.Collection")`** — Type hierarchy checks
-
-## Java Version Context
-
-Rules may behave differently depending on the Java language level:
-- Some rules target Java 8+ features (lambdas, streams, `Optional`)
-- Some handle Java 11+ or Java 17+ features (var, records, sealed classes)
-
----
-
-# Test File Conventions
-
-The file general structure for a rule implementation and its tests is as follows:
-- Rule class: `java-checks/src/main/java/org/sonar/java/checks/{RuleId}Check.java`
-- Test class: `java-checks/src/test/java/org/sonar/java/checks/{RuleId}CheckTest.java`
-- Test samples: `java-checks-test-sources/default/src/main/java/checks/{RuleId}CheckSample.java`
-
-## Test Class
-
-The test class should use `CheckVerifier` and test the rule both with and without semantic. 
-This is to prevent false positives when the rule is applied to code that does not have the required dependencies on the classpath.
-Example:
-
-```java
-import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
-
-class AbsOnNegativeCheckTest {
-
-  @Test
-  void test() {
-    CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/AbsOnNegativeCheckSample.java"))
-      .withCheck(new AbsOnNegativeCheck())
-      .verifyIssues();
-  }
-
-  @Test
-  void test_without_semantic() {
-    CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/AbsOnNegativeCheckSample.java"))
-      .withCheck(new AbsOnNegativeCheck())
-      .withoutSemantic()
-      .verifyIssues();
-  }
-}
-```
-
-## Test samples
-Test resource files use inline comment markers to declare expected issues:
-
-```java
-int x = foo(); // Noncompliant
-int y = bar(); // Noncompliant {{Expected message text}}
-int z = baz(); // compliant
-```
-
-- `// Noncompliant` — The analyzer must report an issue on this line
-- `// Noncompliant {{message}}` — Issue must have this exact message
-- `// compliant` — Optional annotation for clarity; no issue expected
-
-Secondary locations use `[[...]]` inline markers when needed.
-
-The precise locations of the issues are underlined using `^` characters. To produce that underline use a script like:
-```shell
-str="<line including <substring>>"; sub="<substring>"; pre="${str%%"$sub"*}" suf="${str#*"$sub"}"; echo "${pre//?/ }${sub//?/^}"
-```
-
----
-
-# Ruling Tests
-
-Ruling tests validate that rule fixes don't break existing true positives. They run the analyzer against real-world Java projects (`guava`, `commons-beanutils`, `eclipse-jetty`, `sonar-server`, `jboss-ejb3-tutorial`, `regex-examples`, `mall`) and compare results to expected baselines.
-
-- Expected ruling files: `its/ruling/src/test/resources/expected/<project>/java-<RULE_ID>.json`
-- Actual ruling output: `its/ruling/target/actual/<project>/java-<RULE_ID>.json`
-- Format: `{"<projectKey>:path/to/File.java": [line1, line2, ...], ...}` where `<projectKey>` is the project's folder name under `its/sources/`
-- Ruling sources: `its/sources/<project>/`
-
-Do not try to run these locally. A PR should be created automatically when they fail on CI.
+Read [external context](docs/systems/external-context.md) before looking up rule specifications, upstream release procedures, shared operations or design proposals.
 
 ---
