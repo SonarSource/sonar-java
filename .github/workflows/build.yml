@@ -46,6 +46,7 @@ jobs:
           artifactory-reader-role: private-reader
           artifactory-deployer-role: qa-deployer
           use-develocity: ${{ env.USE_DEVELOCITY }}
+          develocity-auth: oidc
           develocity-url: ${{ env.DEVELOCITY_URL }}
           maven-args: >
             --define maven.test.skip=true
@@ -104,6 +105,7 @@ jobs:
           repox-url: https://repox-internal.dev.sonar.build
           artifactory-reader-role: private-reader
           use-develocity: ${{ env.USE_DEVELOCITY }}
+          develocity-auth: oidc
           develocity-url: ${{ env.DEVELOCITY_URL }}
           disable-caching: 'true'
       - name: Getting Vault Secrets
@@ -240,6 +242,7 @@ jobs:
           repox-url: https://repox-internal.dev.sonar.build
           artifactory-reader-role: private-reader
           use-develocity: ${{ env.USE_DEVELOCITY }}
+          develocity-auth: oidc
           develocity-url: ${{ env.DEVELOCITY_URL }}
           disable-caching: 'true'
       - name: Getting Vault Secrets
@@ -308,6 +311,7 @@ jobs:
           repox-url: https://repox-internal.dev.sonar.build
           artifactory-reader-role: private-reader
           use-develocity: ${{ env.USE_DEVELOCITY }}
+          develocity-auth: oidc
           develocity-url: ${{ env.DEVELOCITY_URL }}
           disable-caching: 'true'
       - name: Compile Test Sources
@@ -354,6 +358,7 @@ jobs:
           artifactory-reader-role: private-reader    # Override default public-reader
           artifactory-deployer-role: qa-deployer     # Override default public-deployer
           use-develocity: ${{ env.USE_DEVELOCITY }}
+          develocity-auth: oidc
           develocity-url: ${{ env.DEVELOCITY_URL }}
           scanner-java-opts: '-Xmx2g'
         env:
@@ -392,6 +397,7 @@ jobs:
           repox-url: https://repox-internal.dev.sonar.build
           artifactory-reader-role: private-reader
           use-develocity: ${{ env.USE_DEVELOCITY }}
+          develocity-auth: oidc
           develocity-url: ${{ env.DEVELOCITY_URL }}
           disable-caching: 'true'
         env:
@@ -436,6 +442,7 @@ jobs:
           repox-url: https://repox-internal.dev.sonar.build
           artifactory-reader-role: private-reader
           use-develocity: ${{ env.USE_DEVELOCITY }}
+          develocity-auth: oidc
           develocity-url: ${{ env.DEVELOCITY_URL }}
           disable-caching: 'true'
       - name: Run Maven
