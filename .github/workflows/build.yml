@@ -31,6 +31,8 @@ jobs:
       deployed: ${{ steps.build-maven.outputs.deployed }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - uses: jdx/mise-action@90f833d396d0cc3674b631d2d225e306476c303a # v5.2.10
         with:
           version: 2026.10.20
@@ -84,6 +86,7 @@ jobs:
         run: git config --global core.autocrlf input
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           submodules: recursive
       - uses: jdx/mise-action@90f833d396d0cc3674b631d2d225e306476c303a # v5.2.10
         with:
@@ -166,17 +169,24 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
+      id-token: write
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
           submodules: recursive
 
-      - name: Install uv
-        uses: step-security/setup-uv@b49aac5576b90039e3e427495dda1a21aba6aaec # v10.3.3
+      - name: Get enhancer secrets
+        id: secrets
+        continue-on-error: true
+        uses: SonarSource/vault-action-wrapper@v3
         with:
-          enable-cache: true
+          secrets: |
+            development/kv/data/portkey/code-quality/ruling-test-unification api_key | PORTKEY_API_KEY_OPENAI;
+            development/artifactory/token/{REPO_OWNER_NAME_DASH}-private-reader access_token | ARTIFACTORY_ACCESS_TOKEN;
+            development/artifactory/token/{REPO_OWNER_NAME_DASH}-private-reader role | ARTIFACTORY_ROLE;
 
       - name: Check ruling-qa results
         id: check-ruling
@@ -196,6 +206,10 @@ jobs:
           ruling-failed: ${{ steps.check-ruling.outputs.ruling-failed }}
         env:
           GH_TOKEN: ${{ github.token }}
+          DSPY_MODEL: ${{ steps.secrets.outcome == 'success' && 'gpt-6-luna' || '' }}
+          PORTKEY_API_KEY_OPENAI: ${{ fromJSON(steps.secrets.outputs.vault || '{}').PORTKEY_API_KEY_OPENAI }}
+          UV_INDEX_REPOX_USERNAME: ${{ steps.secrets.outputs.vault && format('vault-{0}', fromJSON(steps.secrets.outputs.vault).ARTIFACTORY_ROLE) || '' }}
+          UV_INDEX_REPOX_PASSWORD: ${{ fromJSON(steps.secrets.outputs.vault || '{}').ARTIFACTORY_ACCESS_TOKEN }}
 
   plugin-qa:
     strategy:
@@ -220,6 +234,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           submodules: recursive
       - uses: jdx/mise-action@90f833d396d0cc3674b631d2d225e306476c303a # v5.2.10
         with:

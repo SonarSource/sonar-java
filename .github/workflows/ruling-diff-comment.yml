@@ -29,6 +29,7 @@ concurrency:
 permissions:
   contents: read
   pull-requests: write
+  id-token: write
 
 jobs:
   ruling-diff-comment:
@@ -39,10 +40,15 @@ jobs:
           fetch-depth: 0
           submodules: true
 
-      - name: Install uv
-        uses: step-security/setup-uv@b49aac5576b90039e3e427495dda1a21aba6aaec # v10.3.3
+      - name: Get enhancer secrets
+        id: secrets
+        continue-on-error: true
+        uses: SonarSource/vault-action-wrapper@v3
         with:
-          enable-cache: true
+          secrets: |
+            development/kv/data/portkey/code-quality/ruling-test-unification api_key | PORTKEY_API_KEY_OPENAI;
+            development/artifactory/token/{REPO_OWNER_NAME_DASH}-private-reader access_token | ARTIFACTORY_ACCESS_TOKEN;
+            development/artifactory/token/{REPO_OWNER_NAME_DASH}-private-reader role | ARTIFACTORY_ROLE;
 
       - name: Post ruling diff comment
         uses: SonarSource/core-languages-tooling-public/ruling-diff-comment@master
@@ -54,3 +60,7 @@ jobs:
           sources-root: 'its/sources'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DSPY_MODEL: ${{ steps.secrets.outcome == 'success' && 'gpt-6-luna' || '' }}
+          PORTKEY_API_KEY_OPENAI: ${{ fromJSON(steps.secrets.outputs.vault || '{}').PORTKEY_API_KEY_OPENAI }}
+          UV_INDEX_REPOX_USERNAME: ${{ steps.secrets.outputs.vault && format('vault-{0}', fromJSON(steps.secrets.outputs.vault).ARTIFACTORY_ROLE) || '' }}
+          UV_INDEX_REPOX_PASSWORD: ${{ fromJSON(steps.secrets.outputs.vault || '{}').ARTIFACTORY_ACCESS_TOKEN }}
