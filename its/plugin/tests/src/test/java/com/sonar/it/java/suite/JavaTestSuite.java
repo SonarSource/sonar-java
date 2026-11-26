@@ -61,11 +61,9 @@ public class JavaTestSuite {
   public static final OrchestratorRule ORCHESTRATOR;
 
   static {
-    OrchestratorRuleBuilder orchestratorBuilder = OrchestratorRule.builderEnv()
+    OrchestratorRuleBuilder orchestratorBuilder = TestUtils.licensedEnterpriseOrchestratorBuilder()
       .useDefaultAdminCredentialsForBuilds(true)
       .setSonarVersion(System.getProperty("sonar.runtimeVersion", "LATEST_RELEASE"))
-      .setEdition(com.sonar.orchestrator.container.Edition.ENTERPRISE_LW)
-      .activateLicense()
       .addPlugin(JAVA_PLUGIN_LOCATION)
       // for support of custom rules
       .addPlugin(FileLocation.of(TestUtils.pluginJar("java-extension-plugin")))

@@ -1,3 +1,88 @@
 [tools]
 java = ["26", "21", "17"]
 maven = "3.9"
+
+[settings.task]
+run_auto_install = false
+
+[tasks.build]
+description = "Build and install reactor artifacts without executing tests (JDK 26)"
+run = "python3 -B scripts/mise/tasks.py build"
+
+[tasks."test:unit"]
+description = "Run reactor unit tests (JDK 26)"
+usage = '''
+flag "--module <module>" help="Reactor module path or :artifactId; includes prerequisites"
+flag "--test <test>" help="Surefire test selector (class or class#method)"
+flag "--coverage" help="Enable JaCoCo coverage"
+'''
+run = "python3 -B scripts/mise/tasks.py test:unit"
+
+[tasks."test:sanity"]
+description = "Compile test sources and check that the analyzer does not crash (JDK 26)"
+run = "python3 -B scripts/mise/tasks.py test:sanity"
+
+[tasks."test:custom-rules-example"]
+description = "Build and test the custom Java rules example against the CI compatibility floor"
+run = "python3 -B scripts/mise/tasks.py test:custom-rules-example"
+
+[tasks."lint:licenses"]
+description = "Check third-party Maven dependency licenses"
+run = "python3 -B scripts/mise/tasks.py lint:licenses"
+
+[tasks."its:plugin"]
+description = "Run Plugin QA (JDK 21)"
+usage = '''
+flag "--sq-version <version>" help="SonarQube version (default: LATEST_RELEASE)"
+flag "--test <class>" help="Run one test class"
+flag "--community-only" help="Skip commercial-edition tests"
+'''
+run = "python3 -B scripts/mise/tasks.py its:plugin"
+
+[tasks.ruling]
+description = "Run a ruling profile (JDK 21)"
+usage = '''
+arg "<profile>" {
+  choices "without-sonarqube-project" "only-sonarqube-project"
+}
+flag "--rules <keys>" help="Comma-separated rule keys, e.g. S100,S101"
+flag "--project <method>" help="Run one JavaRulingTest method in the selected profile"
+flag "--sq-version <version>" help="SonarQube version (default: LATEST_RELEASE)"
+'''
+run = "python3 -B scripts/mise/tasks.py ruling"
+
+[tasks."analyze:vortex"]
+description = "Run DEEP Vortex analysis on the Git change set"
+run = "python3 -B scripts/mise/tasks.py analyze:vortex"
+
+[tasks.check]
+description = "Run unit, license, custom-rules-example and sanity checks"
+run = [{ task = "test:unit" }, { task = "lint:licenses" }, { task = "test:custom-rules-example" }, { task = "test:sanity" }]
+
+[tasks.ci]
+description = "Run check, Plugin QA and both Linux ruling profiles locally"
+run = [{ task = "check" }, { task = "its:plugin" }, { task = "ruling without-sonarqube-project" }, { task = "ruling only-sonarqube-project" }]
+
+[tasks."build:changed"]
+description = "Compile changed Maven modules and their prerequisites"
+run = "python3 -B scripts/mise/changed.py build:changed"
+
+[tasks."test:changed"]
+description = "Run corresponding tests for changed checks or tests in changed modules"
+run = "python3 -B scripts/mise/changed.py test:changed"
+
+[tasks."lint:licenses:changed"]
+description = "Run the license check only if Maven or license inputs changed"
+run = "python3 -B scripts/mise/changed.py lint:licenses:changed"
+
+[tasks."test:custom-rules-example:changed"]
+description = "Check the custom rules example only if its inputs changed"
+run = "python3 -B scripts/mise/changed.py test:custom-rules-example:changed"
+
+[tasks."check:changed"]
+description = "Check changed modules, including licenses and the custom example when relevant"
+run = "python3 -B scripts/mise/changed.py check:changed"
+
+[tasks.doctor]
+description = "Report which tasks can run, without installing tools or printing credentials"
+run = "python3 -B scripts/mise/doctor.py"

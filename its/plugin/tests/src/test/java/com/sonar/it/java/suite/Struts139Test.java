@@ -41,7 +41,7 @@ public class Struts139Test {
     MavenBuild analysis = TestUtils.createMavenBuild().setPom(TestUtils.projectPom("struts-1.3.9-lite"))
       .setProperty("sonar.scm.disabled", "true")
       .setProperty("sonar.exclusions", "**/pom.xml")
-      .setGoals("sonar:sonar");
+      .setGoals(TestUtils.MAVEN_SCANNER_GOAL);
     orchestrator.executeBuilds(build, analysis);
   }
 

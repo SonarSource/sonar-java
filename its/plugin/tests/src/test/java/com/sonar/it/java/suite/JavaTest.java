@@ -91,7 +91,7 @@ public class JavaTest {
     inspection = TestUtils.createMavenBuild()
       .setPom(TestUtils.projectPom("multiple-packages-in-directory"))
       .setProperty("sonar.skipPackageDesign", "true")
-      .setGoals("sonar:sonar");
+      .setGoals(TestUtils.MAVEN_SCANNER_GOAL);
     result = orchestrator.executeBuildQuietly(inspection);
     assertThat(result.getLastStatus()).isZero();
   }

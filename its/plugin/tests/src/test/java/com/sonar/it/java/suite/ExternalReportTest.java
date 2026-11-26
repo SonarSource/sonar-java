@@ -37,7 +37,7 @@ public class ExternalReportTest {
   public void checkstyle() {
     MavenBuild build = TestUtils.createMavenBuild().setPom(TestUtils.projectPom("checkstyle-external-report"))
       .setProperty("sonar.java.checkstyle.reportPaths", "target" + File.separator + "checkstyle-result.xml")
-      .setGoals("org.apache.maven.plugins:maven-checkstyle-plugin:3.0.0:checkstyle", "sonar:sonar");
+      .setGoals("org.apache.maven.plugins:maven-checkstyle-plugin:3.0.0:checkstyle", TestUtils.MAVEN_SCANNER_GOAL);
     orchestrator.executeBuild(build);
 
     List<Issue> issues = getExternalIssues("org.sonarsource.it.projects:checkstyle-external-report");
@@ -55,7 +55,7 @@ public class ExternalReportTest {
   public void pmd() {
     MavenBuild build = TestUtils.createMavenBuild().setPom(TestUtils.projectPom("pmd-external-report"))
       .setProperty("sonar.java.pmd.reportPaths", "target" + File.separator + "pmd.xml")
-      .setGoals("org.apache.maven.plugins:maven-pmd-plugin:3.10.0:pmd", "sonar:sonar");
+      .setGoals("org.apache.maven.plugins:maven-pmd-plugin:3.10.0:pmd", TestUtils.MAVEN_SCANNER_GOAL);
     orchestrator.executeBuild(build);
 
     String projectKey = "org.sonarsource.it.projects:pmd-external-report";
@@ -74,7 +74,7 @@ public class ExternalReportTest {
   public void spotbugs() {
     MavenBuild build = TestUtils.createMavenBuild().setPom(TestUtils.projectPom("spotbugs-external-report"))
       .setProperty("sonar.java.spotbugs.reportPaths", "target" + File.separator + "spotbugsXml.xml")
-      .setGoals("clean package com.github.spotbugs:spotbugs-maven-plugin:spotbugs", "sonar:sonar");
+      .setGoals("clean package com.github.spotbugs:spotbugs-maven-plugin:spotbugs", TestUtils.MAVEN_SCANNER_GOAL);
     orchestrator.executeBuild(build);
 
     String projectKey = "org.sonarsource.it.projects:spotbugs-external-report";

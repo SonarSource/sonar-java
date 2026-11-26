@@ -112,6 +112,8 @@
           <artifactId>maven-surefire-plugin</artifactId>
           <configuration>
             <argLine>-server</argLine>
+            <!-- Allow -Dsurefire.failIfNoSpecifiedTests=false in reactor builds without hiding typos here. -->
+            <failIfNoSpecifiedTests>true</failIfNoSpecifiedTests>
             <includes>
               <include>com/sonar/it/java/suite/*TestSuite.java</include>
               <include>com/sonar/it/java/suite/SonarLintIntegrationTest.java</include>

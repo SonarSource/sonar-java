@@ -37,7 +37,7 @@ public class UnitTestsTest {
   public void tests_without_main_code() {
     MavenBuild build = TestUtils.createMavenBuild()
       .setPom(TestUtils.projectPom("tests-without-main-code"))
-      .setGoals("clean test-compile surefire:test", "sonar:sonar");
+      .setGoals("clean test-compile surefire:test", TestUtils.MAVEN_SCANNER_GOAL);
     orchestrator.executeBuild(build);
 
     Map<String, Measure> measures = getMeasures("org.sonarsource.it.projects:tests-without-main-code",
@@ -55,7 +55,7 @@ public class UnitTestsTest {
   public void tests_with_report_name_suffix() {
     MavenBuild build = TestUtils.createMavenBuild()
       .setPom(TestUtils.projectPom("tests-surefire-suffix"))
-      .setGoals("clean test-compile surefire:test -Dsurefire.reportNameSuffix=Run1", "test-compile surefire:test -Dsurefire.reportNameSuffix=Run2", "sonar:sonar");
+      .setGoals("clean test-compile surefire:test -Dsurefire.reportNameSuffix=Run1", "test-compile surefire:test -Dsurefire.reportNameSuffix=Run2", TestUtils.MAVEN_SCANNER_GOAL);
     orchestrator.executeBuild(build);
 
     Map<String, Measure> measures = getMeasures("org.sonarsource.it.projects:tests-surefire-suffix",

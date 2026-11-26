@@ -20,7 +20,6 @@ import com.sonar.it.java.suite.JavaTestSuite;
 import com.sonar.it.java.suite.TestUtils;
 import com.sonar.orchestrator.build.BuildResult;
 import com.sonar.orchestrator.build.MavenBuild;
-import com.sonar.orchestrator.container.Edition;
 import com.sonar.orchestrator.junit4.OrchestratorRule;
 import com.sonar.orchestrator.junit4.OrchestratorRuleBuilder;
 import com.sonar.orchestrator.locator.FileLocation;
@@ -50,16 +49,13 @@ public class JspTest {
     if (isCommunityEditionTestsOnly()) {
       return null;
     }
-    OrchestratorRuleBuilder orchestratorBuilder = OrchestratorRule.builderEnv()
+    OrchestratorRuleBuilder orchestratorBuilder = TestUtils.licensedEnterpriseOrchestratorBuilder()
       .useDefaultAdminCredentialsForBuilds(true)
       .setSonarVersion(System.getProperty("sonar.runtimeVersion", "LATEST_RELEASE"))
-      .setEdition(Edition.ENTERPRISE_LW)
-      .activateLicense()
       .addPlugin(JavaTestSuite.JAVA_PLUGIN_LOCATION)
       // we need html plugin to have "jsp" language
       .addPlugin(MavenLocation.of("org.sonarsource.html", "sonar-html-plugin", "DEV"))
-      .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-jsp.xml"))
-      .activateLicense();
+      .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-jsp.xml"));
     orchestratorBuilder.addPlugin(FileLocation.of(TestUtils.pluginJar("java-extension-plugin")));
     return orchestratorBuilder.build();
   }
