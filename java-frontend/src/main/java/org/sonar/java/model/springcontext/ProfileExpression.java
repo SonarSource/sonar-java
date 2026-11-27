@@ -76,14 +76,14 @@ public sealed interface ProfileExpression extends SizeEstimable {
   }
 
   record And(Set<ProfileExpression> operands) implements ProfileExpression {
-    public And {
-      operands = lexicographicallyOrdered(operands);
+    public And(Set<ProfileExpression> operands) {
+      this.operands = lexicographicallyOrdered(operands);
     }
   }
 
   record Or(Set<ProfileExpression> operands) implements ProfileExpression {
-    public Or {
-      operands = lexicographicallyOrdered(operands);
+    public Or(Set<ProfileExpression> operands) {
+      this.operands = lexicographicallyOrdered(operands);
     }
   }
 
