@@ -37,6 +37,8 @@ import static org.sonar.java.semsitter.SemaFacts.text;
 final class FactTypes {
 
   private static final String OBJECT = "java.lang.Object";
+  private static final String TERM = "java::";
+  private static final String HASHED_TERM = TERM + "{";
 
   private final JSema sema;
   private final Map<String, Symbol> placeholders = new HashMap<>();
@@ -247,7 +249,18 @@ final class FactTypes {
     return key.startsWith(erased + "<") ? erased : null;
   }
 
-  Type typeFromName(String name) {
+  /**
+   * The type a fact names: a class, a primitive, a type variable item or an array of those. An array term is spelled
+   * {@code java::byte[]} over its element; a hashed term, {@code java::{...}}, spells no element and stays unknown.
+   */
+  Type typeFromName(String id) {
+    if (id.startsWith(HASHED_TERM)) {
+      return JType.unknown(sema);
+    }
+    String name = id.startsWith(TERM) ? id.substring(TERM.length()) : id;
+    if (name.endsWith("[]")) {
+      return JType.array(sema, sema.asJType(typeFromName(name.substring(0, name.length() - 2))));
+    }
     JTypeSymbol variable = typeParameterItem(name);
     if (variable != null) {
       return variable.type();
@@ -255,9 +268,6 @@ final class FactTypes {
     String erased = erase(name);
     if (JSema.PRIMITIVES.contains(erased)) {
       return sema.primitiveType(erased);
-    }
-    if (erased.endsWith("[]")) {
-      return JType.array(sema, sema.asJType(typeFromName(erased.substring(0, erased.length() - 2))));
     }
     return sema.getClassType(erased);
   }
