@@ -147,6 +147,7 @@ import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.jdt.core.dom.WhileStatement;
 import org.eclipse.jdt.core.dom.WildcardType;
 import org.eclipse.jdt.core.dom.YieldStatement;
+import org.sonar.java.FrontendBenchLog;
 import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 import org.eclipse.jdt.internal.compiler.parser.Scanner;
 import org.eclipse.jdt.internal.compiler.parser.TerminalToken;
@@ -268,7 +269,10 @@ final class JDTAstConverter {
   private final Deque<JLabelSymbol> labels = new LinkedList<>();
 
   static JavaTree.CompilationUnitTreeImpl convert(String version, String unitName, String source, CompilationUnit astNode) {
+    long problemsStart = System.nanoTime();
     List<IProblem> errors = Stream.of(astNode.getProblems()).filter(IProblem::isError).toList();
+    FrontendBenchLog.putFileField("ecj_errors", errors.size());
+    FrontendBenchLog.putFileField("ecj_warnings", Stream.of(astNode.getProblems()).filter(IProblem::isWarning).count());
     Optional<IProblem> possibleSyntaxError = errors.stream().filter(JDTProblem::isSyntaxError).findFirst();
     LineColumnConverter lineColumnConverter = new LineColumnConverter(source);
     if (possibleSyntaxError.isPresent()) {
@@ -278,20 +282,31 @@ final class JDTAstConverter {
       // interrupt parsing
       throw new RecognitionException(pos.line(), message);
     }
+    FrontendBenchLog.putFileField("problems_us", FrontendBenchLog.micros(problemsStart));
 
     JDTAstConverter converter = new JDTAstConverter();
     converter.sema = new JDTSema(astNode.getAST());
     converter.compilationUnit = astNode;
+    long lexStart = System.nanoTime();
     converter.tokenManager = createTokenManager(version, unitName, source);
+    FrontendBenchLog.putFileField("lex_us", FrontendBenchLog.micros(lexStart));
     converter.lineColumnConverter = lineColumnConverter;
 
+    long treeStart = System.nanoTime();
     JavaTree.CompilationUnitTreeImpl tree = converter.convertCompilationUnit(astNode);
+    FrontendBenchLog.putFileField("tree_us", FrontendBenchLog.micros(treeStart));
+    long semaStart = System.nanoTime();
     tree.setSemanticModel(converter.sema, JDTProblem.semanticProblems(errors), ASTUtils.getEnvironmentCleaner(astNode.getAST()));
+    FrontendBenchLog.putFileField("sema_us", FrontendBenchLog.micros(semaStart));
+    long warningsStart = System.nanoTime();
     JDTWarning.Mapper.warningsFor(astNode, converter.lineColumnConverter).mappedInto(tree);
+    FrontendBenchLog.putFileField("warnings_us", FrontendBenchLog.micros(warningsStart));
 
     ASTUtils.mayTolerateMissingType(astNode.getAST());
 
+    long parentsStart = System.nanoTime();
     setParents(tree);
+    FrontendBenchLog.putFileField("parents_us", FrontendBenchLog.micros(parentsStart));
     return tree;
   }
 

@@ -99,6 +99,7 @@
     <sonar.integration.tester.version>1.7.0.11463</sonar.integration.tester.version>
     <sslr.version>1.26.0.4194</sslr.version>
     <argLine>-Xmx512m</argLine>
+    <frontendBench>false</frontendBench>
     <gitRepositoryName>sonar-java</gitRepositoryName>
     <!-- Use more recent version than the one in parent-oss to support jreMinVersion -->
 
@@ -461,6 +462,9 @@
           <environmentVariables>
             <M2_REPO>${settings.localRepository}</M2_REPO>
           </environmentVariables>
+          <systemPropertyVariables>
+            <sonar.java.frontend.bench>${frontendBench}</sonar.java.frontend.bench>
+          </systemPropertyVariables>
           <argLine> -Dnet.bytebuddy.experimental=true -javaagent:"${test-java-agent-directory}/${jacoco-agent-jar}=destfile=${project.build.directory}/jacoco.exec" -javaagent:"${test-java-agent-directory}/${mockito-agent-jar}" </argLine>
         </configuration>
       </plugin>

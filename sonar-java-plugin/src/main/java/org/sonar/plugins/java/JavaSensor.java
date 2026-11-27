@@ -35,6 +35,7 @@ import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
 import org.sonar.api.issue.NoSonarFilter;
 import org.sonar.api.rule.RuleKey;
+import org.sonar.java.FrontendBenchLog;
 import org.sonar.java.GeneratedCheckList;
 import org.sonar.java.JavaFrontend;
 import org.sonar.java.Measurer;
@@ -102,12 +103,19 @@ public class JavaSensor implements Sensor {
   @Override
   public void execute(SensorContext context) {
     PerformanceMeasure.Duration sensorDuration = createPerformanceMeasureReport(context);
+    FrontendBenchLog.startRun();
+    long benchStart = System.nanoTime();
+    long benchCpuStart = FrontendBenchLog.threadCpuNanos();
+    long benchGcStart = FrontendBenchLog.gcMillis();
 
     sonarComponents.setSensorContext(context);
     sonarComponents.setCheckFilter(createCheckFilter(sonarComponents.isAutoScanCheckFiltering()));
+    logSensorStart(context);
     List<JavaCheck> mainChecks = new ArrayList<>(sonarComponents.mainChecks());
     if (!sonarComponents.isSonarLintContext()) {
+      long classpathStart = System.nanoTime();
       List<File> classpath = sonarComponents.getJavaClasspath();
+      FrontendBenchLog.log("classpath", "entries", classpath.size(), "dur_us", FrontendBenchLog.micros(classpathStart));
       var dependencyService = new DependencyVersionInference();
       if (SpringContextModelGatherers.hasSpringDependency(artifactId -> dependencyService.infer(artifactId, classpath))) {
         springContextGatheringModel.enable();
@@ -138,6 +146,40 @@ public class JavaSensor implements Sensor {
     frontend.scan(getSourceFiles(context.fileSystem()), getTestFiles(context.fileSystem()), runJasper(context));
 
     sensorDuration.stop();
+    FrontendBenchLog.log("sensor.end",
+      "cp_entries", sonarComponents.getJavaClasspath().size(),
+      "dur_us", FrontendBenchLog.micros(benchStart),
+      "cpu_us", (FrontendBenchLog.threadCpuNanos() - benchCpuStart) / 1_000L,
+      "gc_ms", FrontendBenchLog.gcMillis() - benchGcStart,
+      "heap_mb", FrontendBenchLog.heapMb());
+  }
+
+  private void logSensorStart(SensorContext context) {
+    long mainFiles = 0L;
+    long testFiles = 0L;
+    long sourceBytes = 0L;
+    for (InputFile file : getSourceFiles(context.fileSystem())) {
+      mainFiles++;
+      sourceBytes += FrontendBenchLog.bytes(file);
+    }
+    for (InputFile file : getTestFiles(context.fileSystem())) {
+      testFiles++;
+      sourceBytes += FrontendBenchLog.bytes(file);
+    }
+    FrontendBenchLog.log("sensor.start",
+      "project", context.config().get("sonar.projectKey").orElse("unknown"),
+      "mode", analysisMode(),
+      "java", JavaVersionImpl.readFromConfiguration(context.config()),
+      "main_files", mainFiles,
+      "test_files", testFiles,
+      "src_bytes", sourceBytes);
+  }
+
+  private String analysisMode() {
+    if (sonarComponents.isSonarLintContext() || sonarComponents.isFileByFileEnabled()) {
+      return "file-by-file";
+    }
+    return sonarComponents.isAutoScan() ? "autoscan" : "batch";
   }
 
   private UnaryOperator<List<JavaCheck>> createCheckFilter(boolean isAutoScanCheckFiltering) {

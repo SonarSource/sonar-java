@@ -45,6 +45,7 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.AnalysisException;
 import org.sonar.java.AnalysisProgress;
 import org.sonar.java.ExecutionTimeReport;
+import org.sonar.java.FrontendBenchLog;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.model.JParseResult;
 import org.sonar.java.model.JParser;
@@ -188,19 +189,37 @@ public abstract class JDTParser implements JParser {
       ProgressMonitor monitor = new ProgressMonitor(isCanceled, analysisProgress);
       PerformanceMeasure.Duration batchPerformance = PerformanceMeasure.start("ParseAsBatch");
       try {
+        long setupStart = System.nanoTime();
         ASTParser astParser = jdtAstParser();
-        astParser.createASTs(sourceFilePaths.toArray(new String[0]), encodings.toArray(new String[0]), new String[0], new FileASTRequestor() {
+        FrontendBenchLog.log("ecj.setup", "cp_entries", classpath.size(), "release", shouldUseJdkReleaseOption, "dur_us", FrontendBenchLog.micros(setupStart));
+        long createStart = System.nanoTime();
+        FrontendBenchLog.log("ecj.createASTs.start", "files", sourceFilePaths.size());
+        var requestor = new FileASTRequestor() {
+          long previousAcceptEnd = createStart;
+          long firstAcceptUs = -1L;
+          int accepted = 0;
+
           @Override
           public void acceptAST(String sourceFilePath, CompilationUnit ast) {
+            long acceptStart = System.nanoTime();
+            FrontendBenchLog.resetFile();
+            FrontendBenchLog.putFileField("first", accepted == 0);
+            FrontendBenchLog.putFileField("ecj_us", (acceptStart - previousAcceptEnd) / 1_000L);
+            if (accepted == 0) {
+              firstAcceptUs = (acceptStart - createStart) / 1_000L;
+            }
+            accepted++;
             PerformanceMeasure.Duration convertDuration = PerformanceMeasure.start("Convert");
             InputFile inputFile = inputs.get(new File(sourceFilePath));
             executionTimeReport.start(inputFile);
             JParseResult result;
+            long convertStart = System.nanoTime();
             try {
               result = JParseResult.success(JDTAstConverter.convert(javaVersion.effectiveJavaVersionAsString(), inputFile.filename(), inputFile.contents(), ast));
             } catch (Exception e) {
               result = JParseResult.failure(e);
             }
+            FrontendBenchLog.putFileField("convert_us", FrontendBenchLog.micros(convertStart));
             convertDuration.stop();
             PerformanceMeasure.Duration analyzeDuration = PerformanceMeasure.start("Analyze");
             action.accept(inputFile, result);
@@ -208,8 +227,17 @@ public abstract class JDTParser implements JParser {
             notYetAnalyzedFiles.remove(inputFile);
             executionTimeReport.end();
             analyzeDuration.stop();
+            previousAcceptEnd = System.nanoTime();
           }
-        }, monitor);
+        };
+        astParser.createASTs(sourceFilePaths.toArray(new String[0]), encodings.toArray(new String[0]), new String[0], requestor, monitor);
+        FrontendBenchLog.log("ecj.createASTs.end",
+          "files", sourceFilePaths.size(),
+          "accepted", requestor.accepted,
+          "not_accepted", notYetAnalyzedFiles.size(),
+          "first_accept_us", requestor.firstAcceptUs,
+          "tail_us", FrontendBenchLog.micros(requestor.previousAcceptEnd),
+          "dur_us", FrontendBenchLog.micros(createStart));
         if (!notYetAnalyzedFiles.isEmpty()) {
           String message = String.format("%d/%d files were not analyzed by the batch mode", notYetAnalyzedFiles.size(), sourceFilePaths.size());
           throw new AnalysisException(message);
@@ -218,6 +246,7 @@ public abstract class JDTParser implements JParser {
         throw e;
       } catch (RuntimeException e) {
         LOG.warn("Unexpected {}: {}", e.getClass().getSimpleName(), e.getMessage());
+        FrontendBenchLog.log("ecj.fallback", "files", notYetAnalyzedFiles.size(), "exception", e.getClass().getSimpleName());
         if (!notYetAnalyzedFiles.isEmpty()) {
           fallbackToFileByFileMode(notYetAnalyzedFiles.stream().toList(), isCanceled, analysisProgress, action);
         }
@@ -278,6 +307,7 @@ public abstract class JDTParser implements JParser {
 
     private void parse(InputFile inputFile, JavaVersion javaVersion, BiConsumer<InputFile, JParseResult> action) {
       JParseResult result;
+      FrontendBenchLog.resetFile();
       PerformanceMeasure.Duration parseDuration = PerformanceMeasure.start("JParser");
       try {
         result = JParseResult.success(parse(javaVersion.effectiveJavaVersionAsString(), inputFile.filename(), inputFile.contents()));
@@ -295,14 +325,22 @@ public abstract class JDTParser implements JParser {
       parser.setSource(source.toCharArray());
 
       CompilationUnit astNode;
+      long createAstStart = System.nanoTime();
       try {
         astNode = (CompilationUnit) parser.createAST(null);
       } catch (Exception e) {
         LOG.error("ECJ: Unable to parse file", e);
         throw new RecognitionException(-1, "ECJ: Unable to parse file.", e);
+      } finally {
+        FrontendBenchLog.putFileField("create_ast_us", FrontendBenchLog.micros(createAstStart));
       }
 
-      return JDTAstConverter.convert(version, unitName, source, astNode);
+      long convertStart = System.nanoTime();
+      try {
+        return JDTAstConverter.convert(version, unitName, source, astNode);
+      } finally {
+        FrontendBenchLog.putFileField("convert_us", FrontendBenchLog.micros(convertStart));
+      }
     }
   }
 
