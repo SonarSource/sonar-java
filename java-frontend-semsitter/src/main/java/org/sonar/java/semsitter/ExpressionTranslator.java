@@ -153,7 +153,7 @@ final class ExpressionTranslator extends TranslatorPart {
     if (expression instanceof MethodInvocationTreeImpl call
       && call.methodSymbol() instanceof JMethodSymbol generic
       && !generic.isUnknown()
-      && !call.symbolType().isParameterized()) {
+      && (!call.symbolType().isParameterized() || capturesAnArgument(call.symbolType()))) {
       Type inferred = sema.inference().targetedReturn(generic, target);
       if (inferred != null) {
         ascribe(call, inferred);
@@ -163,6 +163,10 @@ final class ExpressionTranslator extends TranslatorPart {
         }
       }
     }
+  }
+
+  private static boolean capturesAnArgument(Type type) {
+    return type.typeArguments().stream().anyMatch(argument -> argument instanceof JType captured && captured.isCapture());
   }
 
   private void ascribeCollectorCall(ExpressionTree expression, Type target) {

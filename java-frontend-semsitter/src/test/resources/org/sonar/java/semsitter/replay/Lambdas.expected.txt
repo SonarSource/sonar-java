@@ -490,13 +490,13 @@ BLOCK @28:45
 TOKEN @28:45
 RETURN_STATEMENT @29:5
 TOKEN @29:5
-METHOD_INVOCATION @29:12 call Stream.collect [m abstract public] : ? (java.util.stream.Collector<java.lang.Object,A erasure java.lang.Object,R erasure java.lang.Object>) returns java.lang.Object throws [] sig java.util.stream.Stream#collect(Ljava/util/stream/Collector;)Ljava/lang/Object; : java.util.List<java.lang.Integer>
+METHOD_INVOCATION @29:12 call Stream.collect [m abstract public] : ? (java.util.stream.Collector<java.lang.Object,A erasure java.lang.Object,R erasure java.lang.Object>) returns java.util.List<java.lang.Integer> throws [] sig java.util.stream.Stream#collect(Ljava/util/stream/Collector;)Ljava/lang/Object; : java.util.List<java.lang.Integer>
   details declared false usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Stream flags [abstract, public] overridden [] overridable true generic true default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
 MEMBER_SELECT @29:12 : ?
-METHOD_INVOCATION @29:12 call Stream.filter [m abstract public] : ? (java.util.function.Predicate<java.lang.Object>) returns java.util.stream.Stream<R erasure java.lang.Object> throws [] sig java.util.stream.Stream#filter(Ljava/util/function/Predicate;)Ljava/util/stream/Stream; : java.util.stream.Stream<R erasure java.lang.Object>
+METHOD_INVOCATION @29:12 call Stream.filter [m abstract public] : ? (java.util.function.Predicate<java.lang.Object>) returns java.util.stream.Stream<java.lang.Integer> throws [] sig java.util.stream.Stream#filter(Ljava/util/function/Predicate;)Ljava/util/stream/Stream; : java.util.stream.Stream<java.lang.Integer>
   details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Stream flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
 MEMBER_SELECT @29:12 : ?
-METHOD_INVOCATION @29:12 call Stream.map [m abstract public] : ? (java.util.function.Function<java.lang.Object,java.lang.Object>) returns java.util.stream.Stream<R erasure java.lang.Object> throws [] sig java.util.stream.Stream#map(Ljava/util/function/Function;)Ljava/util/stream/Stream; : java.util.stream.Stream<R erasure java.lang.Object>
+METHOD_INVOCATION @29:12 call Stream.map [m abstract public] : ? (java.util.function.Function<java.lang.Object,java.lang.Object>) returns java.util.stream.Stream<java.lang.Integer> throws [] sig java.util.stream.Stream#map(Ljava/util/function/Function;)Ljava/util/stream/Stream; : java.util.stream.Stream<java.lang.Integer>
   details declared false usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Stream flags [abstract, public] overridden [] overridable true generic true default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
 MEMBER_SELECT @29:12 : ?
 METHOD_INVOCATION @29:12 call Collection.stream [m public] : ? () returns java.util.stream.Stream<java.lang.String> throws [] sig java.util.Collection#stream()Ljava/util/stream/Stream; : java.util.stream.Stream<java.lang.String>
@@ -511,7 +511,7 @@ ARGUMENTS @29:24
 TOKEN @29:24
 TOKEN @29:25
 TOKEN @29:26
-IDENTIFIER @29:27 id map Stream.map [m abstract public] : ? (java.util.function.Function<java.lang.Object,java.lang.Object>) returns java.util.stream.Stream<R erasure java.lang.Object> throws [] sig java.util.stream.Stream#map(Ljava/util/function/Function;)Ljava/util/stream/Stream; : java.util.stream.Stream<R erasure java.lang.Object>
+IDENTIFIER @29:27 id map Stream.map [m abstract public] : ? (java.util.function.Function<java.lang.Object,java.lang.Object>) returns java.util.stream.Stream<java.lang.Integer> throws [] sig java.util.stream.Stream#map(Ljava/util/function/Function;)Ljava/util/stream/Stream; : java.util.stream.Stream<java.lang.Integer>
 TOKEN @29:27
 ARGUMENTS @29:30
 TOKEN @29:30
@@ -536,11 +536,11 @@ TOKEN @29:44
 TOKEN @29:45
 TOKEN @29:46
 TOKEN @29:47
-IDENTIFIER @29:48 id filter Stream.filter [m abstract public] : ? (java.util.function.Predicate<java.lang.Object>) returns java.util.stream.Stream<R erasure java.lang.Object> throws [] sig java.util.stream.Stream#filter(Ljava/util/function/Predicate;)Ljava/util/stream/Stream; : java.util.stream.Stream<R erasure java.lang.Object>
+IDENTIFIER @29:48 id filter Stream.filter [m abstract public] : ? (java.util.function.Predicate<java.lang.Object>) returns java.util.stream.Stream<java.lang.Integer> throws [] sig java.util.stream.Stream#filter(Ljava/util/function/Predicate;)Ljava/util/stream/Stream; : java.util.stream.Stream<java.lang.Integer>
 TOKEN @29:48
 ARGUMENTS @29:54
 TOKEN @29:54
-LAMBDA_EXPRESSION @29:55 : java.util.function.Predicate<R erasure java.lang.Object>
+LAMBDA_EXPRESSION @29:55 : java.util.function.Predicate<java.lang.Integer>
 VARIABLE @29:55 var test.n [v package] : java.lang.Integer
   details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Predicate flags [package] local true parameter true effectivelyFinal true constant null owner test java.util.function.Predicate#test(Ljava/lang/Object;)Z [abstract, public] returns boolean parameters 1 thrown 0 overridden 0 declared false usages 0 metadata 0 enclosing Predicate type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
 MODIFIERS
@@ -556,11 +556,11 @@ INT_LITERAL @29:64 : int = 2
 TOKEN @29:64
 TOKEN @29:65
 TOKEN @29:66
-IDENTIFIER @29:67 id collect Stream.collect [m abstract public] : ? (java.util.stream.Collector<java.lang.Object,A erasure java.lang.Object,R erasure java.lang.Object>) returns java.lang.Object throws [] sig java.util.stream.Stream#collect(Ljava/util/stream/Collector;)Ljava/lang/Object; : java.lang.Object
+IDENTIFIER @29:67 id collect Stream.collect [m abstract public] : ? (java.util.stream.Collector<java.lang.Object,A erasure java.lang.Object,R erasure java.lang.Object>) returns java.util.List<java.lang.Integer> throws [] sig java.util.stream.Stream#collect(Ljava/util/stream/Collector;)Ljava/lang/Object; : java.util.List<java.lang.Integer>
 TOKEN @29:67
 ARGUMENTS @29:74
 TOKEN @29:74
-METHOD_INVOCATION @29:75 call Collectors.toList [m static public] : ? () returns java.util.stream.Collector throws [] sig java.util.stream.Collectors#toList()Ljava/util/stream/Collector; : java.util.stream.Collector
+METHOD_INVOCATION @29:75 call Collectors.toList [m static public] : ? () returns java.util.stream.Collector throws [] sig java.util.stream.Collectors#toList()Ljava/util/stream/Collector; : java.util.stream.Collector<java.lang.Integer,java.lang.Object,java.util.List<java.lang.Integer>>
   details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Collectors flags [static, public] overridden [] overridable false generic true default false synchronized false varargs false native false parameters [] parameterMetadata []
 MEMBER_SELECT @29:75 : ?
 IDENTIFIER @29:75 id Collectors java.util.stream.Collectors [t final public] : java.util.stream.Collectors : java.util.stream.Collectors
@@ -688,10 +688,10 @@ BLOCK @36:51
 TOKEN @36:51
 RETURN_STATEMENT @37:5
 TOKEN @37:5
-METHOD_INVOCATION @37:12 call Stream.findFirst [m abstract public] : ? () returns java.util.Optional<R erasure java.lang.Object> throws [] sig java.util.stream.Stream#findFirst()Ljava/util/Optional; : java.util.Optional<R erasure java.lang.Object>
+METHOD_INVOCATION @37:12 call Stream.findFirst [m abstract public] : ? () returns java.util.Optional<java.lang.String> throws [] sig java.util.stream.Stream#findFirst()Ljava/util/Optional; : java.util.Optional<java.lang.String>
   details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Stream flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
 MEMBER_SELECT @37:12 : ?
-METHOD_INVOCATION @37:12 call Stream.map [m abstract public] : ? (java.util.function.Function<java.lang.Object,java.lang.Object>) returns java.util.stream.Stream<R erasure java.lang.Object> throws [] sig java.util.stream.Stream#map(Ljava/util/function/Function;)Ljava/util/stream/Stream; : java.util.stream.Stream<R erasure java.lang.Object>
+METHOD_INVOCATION @37:12 call Stream.map [m abstract public] : ? (java.util.function.Function<java.lang.Object,java.lang.Object>) returns java.util.stream.Stream<java.lang.String> throws [] sig java.util.stream.Stream#map(Ljava/util/function/Function;)Ljava/util/stream/Stream; : java.util.stream.Stream<java.lang.String>
   details declared false usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Stream flags [abstract, public] overridden [] overridable true generic true default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
 MEMBER_SELECT @37:12 : ?
 METHOD_INVOCATION @37:12 call Collection.stream [m public] : ? () returns java.util.stream.Stream<java.lang.String> throws [] sig java.util.Collection#stream()Ljava/util/stream/Stream; : java.util.stream.Stream<java.lang.String>
@@ -706,7 +706,7 @@ ARGUMENTS @37:24
 TOKEN @37:24
 TOKEN @37:25
 TOKEN @37:26
-IDENTIFIER @37:27 id map Stream.map [m abstract public] : ? (java.util.function.Function<java.lang.Object,java.lang.Object>) returns java.util.stream.Stream<R erasure java.lang.Object> throws [] sig java.util.stream.Stream#map(Ljava/util/function/Function;)Ljava/util/stream/Stream; : java.util.stream.Stream<R erasure java.lang.Object>
+IDENTIFIER @37:27 id map Stream.map [m abstract public] : ? (java.util.function.Function<java.lang.Object,java.lang.Object>) returns java.util.stream.Stream<java.lang.String> throws [] sig java.util.stream.Stream#map(Ljava/util/function/Function;)Ljava/util/stream/Stream; : java.util.stream.Stream<java.lang.String>
 TOKEN @37:27
 ARGUMENTS @37:30
 TOKEN @37:30
@@ -718,7 +718,7 @@ IDENTIFIER @37:39 id toUpperCase String.toUpperCase [m public] : ? () returns ja
 TOKEN @37:39
 TOKEN @37:50
 TOKEN @37:51
-IDENTIFIER @37:52 id findFirst Stream.findFirst [m abstract public] : ? () returns java.util.Optional<R erasure java.lang.Object> throws [] sig java.util.stream.Stream#findFirst()Ljava/util/Optional; : java.util.Optional<R erasure java.lang.Object>
+IDENTIFIER @37:52 id findFirst Stream.findFirst [m abstract public] : ? () returns java.util.Optional<java.lang.String> throws [] sig java.util.stream.Stream#findFirst()Ljava/util/Optional; : java.util.Optional<java.lang.String>
 TOKEN @37:52
 ARGUMENTS @37:61
 TOKEN @37:61
