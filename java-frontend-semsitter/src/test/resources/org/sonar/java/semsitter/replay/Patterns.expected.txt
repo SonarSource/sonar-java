@@ -1,0 +1,604 @@
+COMPILATION_UNIT @1:1
+IMPORT @1:1
+TOKEN @1:1
+MEMBER_SELECT @1:8 : ?
+MEMBER_SELECT @1:8 : ?
+IDENTIFIER @1:8 id java unknown : ?
+TOKEN @1:8
+TOKEN @1:12
+IDENTIFIER @1:13 id util unknown : ?
+TOKEN @1:13
+TOKEN @1:17
+IDENTIFIER @1:18 id List unknown : ?
+TOKEN @1:18
+TOKEN @1:22
+CLASS @3:1 class .Patterns [t package] : Patterns super java.lang.Object interfaces []
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Patterns flags [package] members [<init>, Circle, Color, Rect, Shape, area, code, describe, text] lookupToString 0 outermost Patterns annotation false subtypeOf [java.lang.Object] superTypes [java.lang.Object] numerical false wrapper false raw false declaring Patterns
+MODIFIERS
+TOKEN @3:1
+IDENTIFIER @3:7 id Patterns .Patterns [t package] : Patterns : Patterns
+TOKEN @3:7
+TYPE_PARAMETERS
+LIST
+LIST
+TOKEN @3:16
+INTERFACE @5:3 class Patterns.Shape [t static package interface] : Patterns$Shape super java.lang.Object interfaces []
+  details declared true usages 3 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Patterns flags [static, package, interface] members [] lookupToString 0 outermost Patterns annotation false subtypeOf [java.lang.Object] superTypes [java.lang.Object] numerical false wrapper false raw false declaring Shape
+MODIFIERS @5:3
+TOKEN @5:3
+TOKEN @5:10
+IDENTIFIER @5:20 id Shape Patterns.Shape [t static package interface] : Patterns$Shape : Patterns$Shape
+TOKEN @5:20
+TYPE_PARAMETERS
+LIST
+LIST @5:34
+IDENTIFIER @5:34 id Circle Patterns.Circle [t static final package] : Patterns$Circle : Patterns$Circle
+TOKEN @5:34
+TOKEN @5:40
+IDENTIFIER @5:42 id Rect Patterns.Rect [t static final package] : Patterns$Rect : Patterns$Rect
+TOKEN @5:42
+TOKEN @5:47
+TOKEN @6:3
+RECORD @8:3 class Patterns.Circle [t static final package] : Patterns$Circle super java.lang.Record interfaces [Patterns$Shape]
+  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Patterns flags [static, final, package] members [<init>, radius, radius] lookupToString 0 outermost Patterns annotation false subtypeOf [java.lang.Object] superTypes [Patterns$Shape, java.lang.Object, java.lang.Record] numerical false wrapper false raw false declaring Circle
+MODIFIERS
+TOKEN @8:3
+IDENTIFIER @8:10 id Circle Patterns.Circle [t static final package] : Patterns$Circle : Patterns$Circle
+TOKEN @8:10
+TYPE_PARAMETERS
+TOKEN @8:16
+VARIABLE @8:17 var Circle.radius [v package] : double
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Circle flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+PRIMITIVE_TYPE @8:17 : double
+TOKEN @8:17
+IDENTIFIER @8:24 id radius Circle.radius [v package] : double : double
+TOKEN @8:24
+TOKEN @8:30
+TOKEN @8:32
+LIST @8:43
+IDENTIFIER @8:43 id Shape Patterns.Shape [t static package interface] : Patterns$Shape : Patterns$Shape
+TOKEN @8:43
+LIST
+TOKEN @8:49
+TOKEN @9:3
+RECORD @11:3 class Patterns.Rect [t static final package] : Patterns$Rect super java.lang.Record interfaces [Patterns$Shape]
+  details declared true usages 3 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Patterns flags [static, final, package] members [<init>, height, height, width, width] lookupToString 0 outermost Patterns annotation false subtypeOf [java.lang.Object] superTypes [Patterns$Shape, java.lang.Object, java.lang.Record] numerical false wrapper false raw false declaring Rect
+MODIFIERS
+TOKEN @11:3
+IDENTIFIER @11:10 id Rect Patterns.Rect [t static final package] : Patterns$Rect : Patterns$Rect
+TOKEN @11:10
+TYPE_PARAMETERS
+TOKEN @11:14
+VARIABLE @11:15 var Rect.width [v package] : double
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Rect flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+PRIMITIVE_TYPE @11:15 : double
+TOKEN @11:15
+IDENTIFIER @11:22 id width Rect.width [v package] : double : double
+TOKEN @11:22
+TOKEN @11:27
+VARIABLE @11:29 var Rect.height [v package] : double
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Rect flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+PRIMITIVE_TYPE @11:29 : double
+TOKEN @11:29
+IDENTIFIER @11:36 id height Rect.height [v package] : double : double
+TOKEN @11:36
+TOKEN @11:42
+TOKEN @11:44
+LIST @11:55
+IDENTIFIER @11:55 id Shape Patterns.Shape [t static package interface] : Patterns$Shape : Patterns$Shape
+TOKEN @11:55
+LIST
+TOKEN @11:61
+TOKEN @12:3
+ENUM @14:3 class Patterns.Color [t static final package enum] : Patterns$Color super java.lang.Enum<Patterns$Color> interfaces []
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Patterns flags [static, final, package, enum] members [<init>, BLUE, GREEN, RED, valueOf, values] lookupToString 0 outermost Patterns annotation false subtypeOf [java.lang.Object, java.io.Serializable, java.lang.Comparable] superTypes [java.io.Serializable, java.lang.Comparable<Patterns$Color>, java.lang.Enum<Patterns$Color>, java.lang.Object, java.lang.constant.Constable] numerical false wrapper false raw false declaring Color
+MODIFIERS
+TOKEN @14:3
+IDENTIFIER @14:8 id Color Patterns.Color [t static final package enum] : Patterns$Color : Patterns$Color
+TOKEN @14:8
+TYPE_PARAMETERS
+LIST
+LIST
+TOKEN @14:14
+ENUM_CONSTANT @15:5 var Color.RED [v static final public enum] : Patterns$Color
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Color flags [static, final, public, enum] local false parameter false effectivelyFinal true constant null
+MODIFIERS
+NEW_CLASS @15:5 new Color.<init> [m private] : ? () returns void throws [] sig Patterns$Color#<init>(Ljava/lang/String;I)V : ?
+  details declared false usages 3 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Color flags [private] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+IDENTIFIER @15:5 id RED Color.<init> [m private] : ? () returns void throws [] sig Patterns$Color#<init>(Ljava/lang/String;I)V : Patterns$Color
+TOKEN @15:5
+ARGUMENTS
+TOKEN @15:8
+ENUM_CONSTANT @15:10 var Color.GREEN [v static final public enum] : Patterns$Color
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Color flags [static, final, public, enum] local false parameter false effectivelyFinal true constant null
+MODIFIERS
+NEW_CLASS @15:10 new Color.<init> [m private] : ? () returns void throws [] sig Patterns$Color#<init>(Ljava/lang/String;I)V : ?
+  details declared false usages 3 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Color flags [private] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+IDENTIFIER @15:10 id GREEN Color.<init> [m private] : ? () returns void throws [] sig Patterns$Color#<init>(Ljava/lang/String;I)V : Patterns$Color
+TOKEN @15:10
+ARGUMENTS
+TOKEN @15:15
+ENUM_CONSTANT @15:17 var Color.BLUE [v static final public enum] : Patterns$Color
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Color flags [static, final, public, enum] local false parameter false effectivelyFinal true constant null
+MODIFIERS
+NEW_CLASS @15:17 new Color.<init> [m private] : ? () returns void throws [] sig Patterns$Color#<init>(Ljava/lang/String;I)V : ?
+  details declared false usages 3 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Color flags [private] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+IDENTIFIER @15:17 id BLUE Color.<init> [m private] : ? () returns void throws [] sig Patterns$Color#<init>(Ljava/lang/String;I)V : Patterns$Color
+TOKEN @15:17
+ARGUMENTS
+TOKEN @16:3
+METHOD @18:3 method Patterns.area [m package] : ? (Patterns$Shape) returns double throws [] sig Patterns#area(LPatterns$Shape;)D overrides false
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Patterns flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [shape] parameterMetadata []
+MODIFIERS
+TYPE_PARAMETERS
+PRIMITIVE_TYPE @18:3 : double
+TOKEN @18:3
+IDENTIFIER @18:10 id area Patterns.area [m package] : ? (Patterns$Shape) returns double throws [] sig Patterns#area(LPatterns$Shape;)D : double
+TOKEN @18:10
+TOKEN @18:14
+VARIABLE @18:15 var area.shape [v package] : Patterns$Shape
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Patterns flags [package] local true parameter true effectivelyFinal true constant null owner area Patterns#area(LPatterns$Shape;)D [package] returns double parameters 1 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Patterns type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+MODIFIERS
+IDENTIFIER @18:15 id Shape Patterns.Shape [t static package interface] : Patterns$Shape : Patterns$Shape
+TOKEN @18:15
+IDENTIFIER @18:21 id shape area.shape [v package] : Patterns$Shape : Patterns$Shape
+TOKEN @18:21
+TOKEN @18:26
+BLOCK @18:28
+TOKEN @18:28
+RETURN_STATEMENT @19:5
+TOKEN @19:5
+SWITCH_EXPRESSION @19:12 : double
+TOKEN @19:12
+TOKEN @19:19
+IDENTIFIER @19:20 id shape area.shape [v package] : Patterns$Shape : Patterns$Shape
+TOKEN @19:20
+TOKEN @19:25
+TOKEN @19:27
+CASE_GROUP @20:7
+CASE_LABEL @20:7
+TOKEN @20:7
+TYPE_PATTERN @20:12 : Patterns$Circle
+VARIABLE @20:12 var area.c [v package] : Patterns$Circle
+  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Patterns flags [package] local true parameter false effectivelyFinal true constant null owner area Patterns#area(LPatterns$Shape;)D [package] returns double parameters 1 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Patterns type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+MODIFIERS
+IDENTIFIER @20:12 id Circle Patterns.Circle [t static final package] : Patterns$Circle : Patterns$Circle
+TOKEN @20:12
+IDENTIFIER @20:19 id c area.c [v package] : Patterns$Circle : Patterns$Circle
+TOKEN @20:19
+TOKEN @20:21
+YIELD_STATEMENT @20:24
+MULTIPLY @20:24 : double
+MULTIPLY @20:24 : double
+MEMBER_SELECT @20:24 : double = 3.141592653589793
+IDENTIFIER @20:24 id Math java.lang.Math [t final public] : java.lang.Math : java.lang.Math
+TOKEN @20:24
+TOKEN @20:28
+IDENTIFIER @20:29 id PI Math.PI [v static final public] : double : double = 3.141592653589793
+TOKEN @20:29
+TOKEN @20:32
+METHOD_INVOCATION @20:34 call Circle.radius [m public] : ? () returns double throws [] sig Patterns$Circle#radius()D : double
+  details declared false usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Circle flags [public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @20:34 : ?
+IDENTIFIER @20:34 id c area.c [v package] : Patterns$Circle : Patterns$Circle
+TOKEN @20:34
+TOKEN @20:35
+IDENTIFIER @20:36 id radius Circle.radius [m public] : ? () returns double throws [] sig Patterns$Circle#radius()D : double
+TOKEN @20:36
+ARGUMENTS @20:42
+TOKEN @20:42
+TOKEN @20:43
+TOKEN @20:45
+METHOD_INVOCATION @20:47 call Circle.radius [m public] : ? () returns double throws [] sig Patterns$Circle#radius()D : double
+  details declared false usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Circle flags [public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @20:47 : ?
+IDENTIFIER @20:47 id c area.c [v package] : Patterns$Circle : Patterns$Circle
+TOKEN @20:47
+TOKEN @20:48
+IDENTIFIER @20:49 id radius Circle.radius [m public] : ? () returns double throws [] sig Patterns$Circle#radius()D : double
+TOKEN @20:49
+ARGUMENTS @20:55
+TOKEN @20:55
+TOKEN @20:56
+TOKEN @20:57
+CASE_GROUP @21:7
+CASE_LABEL @21:7
+TOKEN @21:7
+RECORD_PATTERN @21:12 : Patterns$Rect
+IDENTIFIER @21:12 id Rect Patterns.Rect [t static final package] : Patterns$Rect : Patterns$Rect
+TOKEN @21:12
+TOKEN @21:16
+TYPE_PATTERN @21:17 : double
+VARIABLE @21:17 var area.w [v package] : double
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Patterns flags [package] local true parameter false effectivelyFinal true constant null owner area Patterns#area(LPatterns$Shape;)D [package] returns double parameters 1 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Patterns type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+MODIFIERS
+PRIMITIVE_TYPE @21:17 : double
+TOKEN @21:17
+IDENTIFIER @21:24 id w area.w [v package] : double : double
+TOKEN @21:24
+TYPE_PATTERN @21:27 : double
+VARIABLE @21:27 var area.h [v package] : double
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Patterns flags [package] local true parameter false effectivelyFinal true constant null owner area Patterns#area(LPatterns$Shape;)D [package] returns double parameters 1 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Patterns type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+MODIFIERS
+PRIMITIVE_TYPE @21:27 : double
+TOKEN @21:27
+IDENTIFIER @21:34 id h area.h [v package] : double : double
+TOKEN @21:34
+TOKEN @21:35
+TOKEN @21:37
+YIELD_STATEMENT @21:40
+MULTIPLY @21:40 : double
+IDENTIFIER @21:40 id w area.w [v package] : double : double
+TOKEN @21:40
+TOKEN @21:42
+IDENTIFIER @21:44 id h area.h [v package] : double : double
+TOKEN @21:44
+TOKEN @21:45
+TOKEN @22:5
+TOKEN @22:6
+TOKEN @23:3
+METHOD @25:3 method Patterns.describe [m package] : ? (java.lang.Object) returns java.lang.String throws [] sig Patterns#describe(Ljava/lang/Object;)Ljava/lang/String; overrides false
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Patterns flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [o] parameterMetadata []
+MODIFIERS
+TYPE_PARAMETERS
+IDENTIFIER @25:3 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @25:3
+IDENTIFIER @25:10 id describe Patterns.describe [m package] : ? (java.lang.Object) returns java.lang.String throws [] sig Patterns#describe(Ljava/lang/Object;)Ljava/lang/String; : java.lang.String
+TOKEN @25:10
+TOKEN @25:18
+VARIABLE @25:19 var describe.o [v package] : java.lang.Object
+  details declared true usages 4 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Patterns flags [package] local true parameter true effectivelyFinal true constant null owner describe Patterns#describe(Ljava/lang/Object;)Ljava/lang/String; [package] returns java.lang.String parameters 1 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Patterns type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+MODIFIERS
+IDENTIFIER @25:19 id Object java.lang.Object [t public] : java.lang.Object : java.lang.Object
+TOKEN @25:19
+IDENTIFIER @25:26 id o describe.o [v package] : java.lang.Object : java.lang.Object
+TOKEN @25:26
+TOKEN @25:27
+BLOCK @25:29
+TOKEN @25:29
+IF_STATEMENT @26:5
+TOKEN @26:5
+TOKEN @26:8
+CONDITIONAL_AND @26:9 : boolean
+PATTERN_INSTANCE_OF @26:9 : boolean
+IDENTIFIER @26:9 id o describe.o [v package] : java.lang.Object : java.lang.Object
+TOKEN @26:9
+TOKEN @26:11
+TYPE_PATTERN @26:22 : java.lang.String
+VARIABLE @26:22 var describe.s [v package] : java.lang.String
+  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Patterns flags [package] local true parameter false effectivelyFinal true constant null owner describe Patterns#describe(Ljava/lang/Object;)Ljava/lang/String; [package] returns java.lang.String parameters 1 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Patterns type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+MODIFIERS
+IDENTIFIER @26:22 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @26:22
+IDENTIFIER @26:29 id s describe.s [v package] : java.lang.String : java.lang.String
+TOKEN @26:29
+TOKEN @26:31
+LOGICAL_COMPLEMENT @26:34 : boolean
+TOKEN @26:34
+METHOD_INVOCATION @26:35 call String.isEmpty [m public] : ? () returns boolean throws [] sig java.lang.String#isEmpty()Z : boolean
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing String flags [public] overridden [CharSequence.isEmpty[]] overridable false generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @26:35 : ?
+IDENTIFIER @26:35 id s describe.s [v package] : java.lang.String : java.lang.String
+TOKEN @26:35
+TOKEN @26:36
+IDENTIFIER @26:37 id isEmpty String.isEmpty [m public] : ? () returns boolean throws [] sig java.lang.String#isEmpty()Z : boolean
+TOKEN @26:37
+ARGUMENTS @26:44
+TOKEN @26:44
+TOKEN @26:45
+TOKEN @26:46
+BLOCK @26:48
+TOKEN @26:48
+RETURN_STATEMENT @27:7
+TOKEN @27:7
+IDENTIFIER @27:14 id s describe.s [v package] : java.lang.String : java.lang.String
+TOKEN @27:14
+TOKEN @27:15
+TOKEN @28:5
+IF_STATEMENT @29:5
+TOKEN @29:5
+TOKEN @29:8
+PATTERN_INSTANCE_OF @29:9 : boolean
+IDENTIFIER @29:9 id o describe.o [v package] : java.lang.Object : java.lang.Object
+TOKEN @29:9
+TOKEN @29:11
+RECORD_PATTERN @29:22 : Patterns$Rect
+IDENTIFIER @29:22 id Rect Patterns.Rect [t static final package] : Patterns$Rect : Patterns$Rect
+TOKEN @29:22
+TOKEN @29:26
+TYPE_PATTERN @29:27 : double
+VARIABLE @29:27 var describe.w [v package] : double
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Patterns flags [package] local true parameter false effectivelyFinal true constant null owner describe Patterns#describe(Ljava/lang/Object;)Ljava/lang/String; [package] returns java.lang.String parameters 1 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Patterns type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+MODIFIERS
+VAR_TYPE @29:27
+TOKEN @29:27
+IDENTIFIER @29:31 id w describe.w [v package] : double : double
+TOKEN @29:31
+TYPE_PATTERN @29:34 : double
+VARIABLE @29:34 var describe.h [v package] : double
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Patterns flags [package] local true parameter false effectivelyFinal true constant null owner describe Patterns#describe(Ljava/lang/Object;)Ljava/lang/String; [package] returns java.lang.String parameters 1 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Patterns type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+MODIFIERS
+VAR_TYPE @29:34
+TOKEN @29:34
+IDENTIFIER @29:38 id h describe.h [v package] : double : double
+TOKEN @29:38
+TOKEN @29:39
+TOKEN @29:40
+BLOCK @29:42
+TOKEN @29:42
+RETURN_STATEMENT @30:7
+TOKEN @30:7
+PLUS @30:14 : java.lang.String
+PLUS @30:14 : java.lang.String
+IDENTIFIER @30:14 id w describe.w [v package] : double : double
+TOKEN @30:14
+TOKEN @30:16
+STRING_LITERAL @30:18 : java.lang.String = x
+TOKEN @30:18
+TOKEN @30:22
+IDENTIFIER @30:24 id h describe.h [v package] : double : double
+TOKEN @30:24
+TOKEN @30:25
+TOKEN @31:5
+RETURN_STATEMENT @32:5
+TOKEN @32:5
+SWITCH_EXPRESSION @32:12 : java.lang.String
+TOKEN @32:12
+TOKEN @32:19
+IDENTIFIER @32:20 id o describe.o [v package] : java.lang.Object : java.lang.Object
+TOKEN @32:20
+TOKEN @32:21
+TOKEN @32:23
+CASE_GROUP @33:7
+CASE_LABEL @33:7
+TOKEN @33:7
+NULL_PATTERN @33:12 : <nulltype>
+NULL_LITERAL @33:12 : <nulltype>
+TOKEN @33:12
+TOKEN @33:17
+YIELD_STATEMENT @33:20
+STRING_LITERAL @33:20 : java.lang.String = null
+TOKEN @33:20
+TOKEN @33:26
+CASE_GROUP @34:7
+CASE_LABEL @34:7
+TOKEN @34:7
+GUARDED_PATTERN @34:12 : java.lang.Integer
+TYPE_PATTERN @34:12 : java.lang.Integer
+VARIABLE @34:12 var describe.i [v package] : java.lang.Integer
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Patterns flags [package] local true parameter false effectivelyFinal true constant null owner describe Patterns#describe(Ljava/lang/Object;)Ljava/lang/String; [package] returns java.lang.String parameters 1 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Patterns type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+MODIFIERS
+IDENTIFIER @34:12 id Integer java.lang.Integer [t final public] : java.lang.Integer : java.lang.Integer
+TOKEN @34:12
+IDENTIFIER @34:20 id i describe.i [v package] : java.lang.Integer : java.lang.Integer
+TOKEN @34:20
+TOKEN @34:22
+GREATER_THAN @34:27 : boolean
+IDENTIFIER @34:27 id i describe.i [v package] : java.lang.Integer : java.lang.Integer
+TOKEN @34:27
+TOKEN @34:29
+INT_LITERAL @34:31 : int = 10
+TOKEN @34:31
+TOKEN @34:34
+YIELD_STATEMENT @34:37
+STRING_LITERAL @34:37 : java.lang.String = big
+TOKEN @34:37
+TOKEN @34:42
+CASE_GROUP @35:7
+CASE_LABEL @35:7
+TOKEN @35:7
+TYPE_PATTERN @35:12 : java.lang.Integer
+VARIABLE @35:12 var describe.i [v package] : java.lang.Integer
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Patterns flags [package] local true parameter false effectivelyFinal true constant null owner describe Patterns#describe(Ljava/lang/Object;)Ljava/lang/String; [package] returns java.lang.String parameters 1 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Patterns type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+MODIFIERS
+IDENTIFIER @35:12 id Integer java.lang.Integer [t final public] : java.lang.Integer : java.lang.Integer
+TOKEN @35:12
+IDENTIFIER @35:20 id i describe.i [v package] : java.lang.Integer : java.lang.Integer
+TOKEN @35:20
+TOKEN @35:22
+YIELD_STATEMENT @35:25
+PLUS @35:25 : java.lang.String
+STRING_LITERAL @35:25 : java.lang.String = int 
+TOKEN @35:25
+TOKEN @35:32
+IDENTIFIER @35:34 id i describe.i [v package] : java.lang.Integer : java.lang.Integer
+TOKEN @35:34
+TOKEN @35:35
+CASE_GROUP @36:7
+CASE_LABEL @36:7
+TOKEN @36:7
+TYPE_PATTERN @36:12 : java.util.List<java.lang.Object>
+VARIABLE @36:12 var describe.list [v package] : java.util.List<java.lang.Object>
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Patterns flags [package] local true parameter false effectivelyFinal true constant null owner describe Patterns#describe(Ljava/lang/Object;)Ljava/lang/String; [package] returns java.lang.String parameters 1 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Patterns type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+MODIFIERS
+PARAMETERIZED_TYPE @36:12 : java.util.List<java.lang.Object>
+IDENTIFIER @36:12 id List java.util.List [t public interface] : java.util.List<java.lang.Object> : java.util.List<java.lang.Object>
+TOKEN @36:12
+TYPE_ARGUMENTS @36:16
+TOKEN @36:16
+UNBOUNDED_WILDCARD @36:17
+TOKEN @36:17
+TOKEN @36:18
+IDENTIFIER @36:20 id list describe.list [v package] : java.util.List<java.lang.Object> : java.util.List<java.lang.Object>
+TOKEN @36:20
+TOKEN @36:25
+YIELD_STATEMENT @36:28
+PLUS @36:28 : java.lang.String
+STRING_LITERAL @36:28 : java.lang.String = list 
+TOKEN @36:28
+TOKEN @36:36
+METHOD_INVOCATION @36:38 call List.size [m abstract public] : ? () returns int throws [] sig java.util.List#size()I : int
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing List flags [abstract, public] overridden [Collection.size[]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @36:38 : ?
+IDENTIFIER @36:38 id list describe.list [v package] : java.util.List<java.lang.Object> : java.util.List<java.lang.Object>
+TOKEN @36:38
+TOKEN @36:42
+IDENTIFIER @36:43 id size List.size [m abstract public] : ? () returns int throws [] sig java.util.List#size()I : int
+TOKEN @36:43
+ARGUMENTS @36:47
+TOKEN @36:47
+TOKEN @36:48
+TOKEN @36:49
+CASE_GROUP @37:7
+CASE_LABEL @37:7
+TOKEN @37:7
+TOKEN @37:15
+YIELD_STATEMENT @37:18
+METHOD_INVOCATION @37:18 call Object.toString [m public] : ? () returns java.lang.String throws [] sig java.lang.Object#toString()Ljava/lang/String; : java.lang.String
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Object flags [public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @37:18 : ?
+IDENTIFIER @37:18 id o describe.o [v package] : java.lang.Object : java.lang.Object
+TOKEN @37:18
+TOKEN @37:19
+IDENTIFIER @37:20 id toString Object.toString [m public] : ? () returns java.lang.String throws [] sig java.lang.Object#toString()Ljava/lang/String; : java.lang.String
+TOKEN @37:20
+ARGUMENTS @37:28
+TOKEN @37:28
+TOKEN @37:29
+TOKEN @37:30
+TOKEN @38:5
+TOKEN @38:6
+TOKEN @39:3
+METHOD @41:3 method Patterns.code [m package] : ? (Patterns$Color) returns int throws [] sig Patterns#code(LPatterns$Color;)I overrides false
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Patterns flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [color] parameterMetadata []
+MODIFIERS
+TYPE_PARAMETERS
+PRIMITIVE_TYPE @41:3 : int
+TOKEN @41:3
+IDENTIFIER @41:7 id code Patterns.code [m package] : ? (Patterns$Color) returns int throws [] sig Patterns#code(LPatterns$Color;)I : int
+TOKEN @41:7
+TOKEN @41:11
+VARIABLE @41:12 var code.color [v package] : Patterns$Color
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Patterns flags [package] local true parameter true effectivelyFinal true constant null owner code Patterns#code(LPatterns$Color;)I [package] returns int parameters 1 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Patterns type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+MODIFIERS
+IDENTIFIER @41:12 id Color Patterns.Color [t static final package enum] : Patterns$Color : Patterns$Color
+TOKEN @41:12
+IDENTIFIER @41:18 id color code.color [v package] : Patterns$Color : Patterns$Color
+TOKEN @41:18
+TOKEN @41:23
+BLOCK @41:25
+TOKEN @41:25
+RETURN_STATEMENT @42:5
+TOKEN @42:5
+SWITCH_EXPRESSION @42:12 : int
+TOKEN @42:12
+TOKEN @42:19
+IDENTIFIER @42:20 id color code.color [v package] : Patterns$Color : Patterns$Color
+TOKEN @42:20
+TOKEN @42:25
+TOKEN @42:27
+CASE_GROUP @43:7
+CASE_LABEL @43:7
+TOKEN @43:7
+IDENTIFIER @43:12 id RED Color.RED [v static final public enum] : Patterns$Color : Patterns$Color
+TOKEN @43:12
+TOKEN @43:16
+YIELD_STATEMENT @43:19
+INT_LITERAL @43:19 : int = 1
+TOKEN @43:19
+TOKEN @43:20
+CASE_GROUP @44:7
+CASE_LABEL @44:7
+TOKEN @44:7
+IDENTIFIER @44:12 id GREEN Color.GREEN [v static final public enum] : Patterns$Color : Patterns$Color
+TOKEN @44:12
+TOKEN @44:18
+YIELD_STATEMENT @44:21
+INT_LITERAL @44:21 : int = 2
+TOKEN @44:21
+TOKEN @44:22
+CASE_GROUP @45:7
+CASE_LABEL @45:7
+TOKEN @45:7
+IDENTIFIER @45:12 id BLUE Color.BLUE [v static final public enum] : Patterns$Color : Patterns$Color
+TOKEN @45:12
+TOKEN @45:17
+BLOCK @45:20
+TOKEN @45:20
+VARIABLE @46:9 var code.base [v package] : int
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Patterns flags [package] local true parameter false effectivelyFinal true constant null owner code Patterns#code(LPatterns$Color;)I [package] returns int parameters 1 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Patterns type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+MODIFIERS
+PRIMITIVE_TYPE @46:9 : int
+TOKEN @46:9
+IDENTIFIER @46:13 id base code.base [v package] : int : int
+TOKEN @46:13
+TOKEN @46:18
+INT_LITERAL @46:20 : int = 3
+TOKEN @46:20
+TOKEN @46:21
+YIELD_STATEMENT @47:9
+TOKEN @47:9
+IDENTIFIER @47:15 id base code.base [v package] : int : int
+TOKEN @47:15
+TOKEN @47:19
+TOKEN @48:7
+TOKEN @49:5
+TOKEN @49:6
+TOKEN @50:3
+METHOD @52:3 method Patterns.text [m package] : ? (java.lang.String) returns java.lang.String throws [] sig Patterns#text(Ljava/lang/String;)Ljava/lang/String; overrides false
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Patterns flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [s] parameterMetadata []
+MODIFIERS
+TYPE_PARAMETERS
+IDENTIFIER @52:3 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @52:3
+IDENTIFIER @52:10 id text Patterns.text [m package] : ? (java.lang.String) returns java.lang.String throws [] sig Patterns#text(Ljava/lang/String;)Ljava/lang/String; : java.lang.String
+TOKEN @52:10
+TOKEN @52:14
+VARIABLE @52:15 var text.s [v package] : java.lang.String
+  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Patterns flags [package] local true parameter true effectivelyFinal true constant null owner text Patterns#text(Ljava/lang/String;)Ljava/lang/String; [package] returns java.lang.String parameters 1 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Patterns type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+MODIFIERS
+IDENTIFIER @52:15 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @52:15
+IDENTIFIER @52:22 id s text.s [v package] : java.lang.String : java.lang.String
+TOKEN @52:22
+TOKEN @52:23
+BLOCK @52:25
+TOKEN @52:25
+VARIABLE @53:5 var text.block [v package] : java.lang.String
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Patterns flags [package] local true parameter false effectivelyFinal true constant null owner text Patterns#text(Ljava/lang/String;)Ljava/lang/String; [package] returns java.lang.String parameters 1 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Patterns type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+MODIFIERS
+IDENTIFIER @53:5 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @53:5
+IDENTIFIER @53:12 id block text.block [v package] : java.lang.String : java.lang.String
+TOKEN @53:12
+TOKEN @53:18
+TEXT_BLOCK @53:20 : java.lang.String = block\ntext\n
+TOKEN @53:20
+TOKEN @56:10
+RETURN_STATEMENT @57:5
+TOKEN @57:5
+SWITCH_EXPRESSION @57:12 : java.lang.String
+TOKEN @57:12
+TOKEN @57:19
+IDENTIFIER @57:20 id s text.s [v package] : java.lang.String : java.lang.String
+TOKEN @57:20
+TOKEN @57:21
+TOKEN @57:23
+CASE_GROUP @58:7
+CASE_LABEL @58:7
+TOKEN @58:7
+STRING_LITERAL @58:12 : java.lang.String = a
+TOKEN @58:12
+STRING_LITERAL @58:17 : java.lang.String = b
+TOKEN @58:17
+TOKEN @58:21
+YIELD_STATEMENT @58:24
+IDENTIFIER @58:24 id block text.block [v package] : java.lang.String : java.lang.String
+TOKEN @58:24
+TOKEN @58:29
+CASE_GROUP @59:7
+CASE_LABEL @59:7
+TOKEN @59:7
+TOKEN @59:15
+YIELD_STATEMENT @59:18
+IDENTIFIER @59:18 id s text.s [v package] : java.lang.String : java.lang.String
+TOKEN @59:18
+TOKEN @59:19
+TOKEN @60:5
+TOKEN @60:6
+TOKEN @61:3
+TOKEN @62:1
+TOKEN @63:1

@@ -1,0 +1,180 @@
+COMPILATION_UNIT @1:1
+IMPORT @1:1
+TOKEN @1:1
+MEMBER_SELECT @1:8 : ?
+MEMBER_SELECT @1:8 : ?
+IDENTIFIER @1:8 id java unknown : ?
+TOKEN @1:8
+TOKEN @1:12
+IDENTIFIER @1:13 id sql unknown : ?
+TOKEN @1:13
+TOKEN @1:16
+IDENTIFIER @1:17 id Driver unknown : ?
+TOKEN @1:17
+TOKEN @1:23
+MODULE @3:1
+ANNOTATION @3:1 : java.lang.Deprecated
+TOKEN @3:1
+IDENTIFIER @3:2 id Deprecated java.lang.Deprecated [t public interface] : java.lang.Deprecated : java.lang.Deprecated
+TOKEN @3:2
+ARGUMENTS
+TOKEN @4:1
+TOKEN @4:6
+LIST @4:13
+IDENTIFIER @4:13 id org unknown : ?
+TOKEN @4:13
+IDENTIFIER @4:17 id example unknown : ?
+TOKEN @4:17
+IDENTIFIER @4:25 id app unknown : ?
+TOKEN @4:25
+TOKEN @4:29
+REQUIRES_DIRECTIVE @5:3
+TOKEN @5:3
+MODIFIERS
+LIST @5:12
+IDENTIFIER @5:12 id java unknown : ?
+TOKEN @5:12
+IDENTIFIER @5:17 id base unknown : ?
+TOKEN @5:17
+TOKEN @5:21
+REQUIRES_DIRECTIVE @6:3
+TOKEN @6:3
+MODIFIERS @6:12
+TOKEN @6:12
+LIST @6:23
+IDENTIFIER @6:23 id java unknown : ?
+TOKEN @6:23
+IDENTIFIER @6:28 id logging unknown : ?
+TOKEN @6:28
+TOKEN @6:35
+REQUIRES_DIRECTIVE @7:3
+TOKEN @7:3
+MODIFIERS @7:12
+TOKEN @7:12
+LIST @7:19
+IDENTIFIER @7:19 id java unknown : ?
+TOKEN @7:19
+IDENTIFIER @7:24 id sql unknown : ?
+TOKEN @7:24
+TOKEN @7:27
+EXPORTS_DIRECTIVE @8:3
+TOKEN @8:3
+MEMBER_SELECT @8:11 : ?
+MEMBER_SELECT @8:11 : ?
+IDENTIFIER @8:11 id org unknown : ?
+TOKEN @8:11
+TOKEN @8:14
+IDENTIFIER @8:15 id example unknown : ?
+TOKEN @8:15
+TOKEN @8:22
+IDENTIFIER @8:23 id api unknown : ?
+TOKEN @8:23
+TOKEN @8:26
+EXPORTS_DIRECTIVE @9:3
+TOKEN @9:3
+MEMBER_SELECT @9:11 : ?
+MEMBER_SELECT @9:11 : ?
+IDENTIFIER @9:11 id org unknown : ?
+TOKEN @9:11
+TOKEN @9:14
+IDENTIFIER @9:15 id example unknown : ?
+TOKEN @9:15
+TOKEN @9:22
+IDENTIFIER @9:23 id internal unknown : ?
+TOKEN @9:23
+TOKEN @9:32
+LIST @9:35
+LIST @9:35
+IDENTIFIER @9:35 id org unknown : ?
+TOKEN @9:35
+IDENTIFIER @9:39 id example unknown : ?
+TOKEN @9:39
+IDENTIFIER @9:47 id friend unknown : ?
+TOKEN @9:47
+TOKEN @9:53
+LIST @9:55
+IDENTIFIER @9:55 id org unknown : ?
+TOKEN @9:55
+IDENTIFIER @9:59 id example unknown : ?
+TOKEN @9:59
+IDENTIFIER @9:67 id other unknown : ?
+TOKEN @9:67
+TOKEN @9:72
+OPENS_DIRECTIVE @10:3
+TOKEN @10:3
+MEMBER_SELECT @10:9 : ?
+MEMBER_SELECT @10:9 : ?
+IDENTIFIER @10:9 id org unknown : ?
+TOKEN @10:9
+TOKEN @10:12
+IDENTIFIER @10:13 id example unknown : ?
+TOKEN @10:13
+TOKEN @10:20
+IDENTIFIER @10:21 id model unknown : ?
+TOKEN @10:21
+TOKEN @10:26
+OPENS_DIRECTIVE @11:3
+TOKEN @11:3
+MEMBER_SELECT @11:9 : ?
+MEMBER_SELECT @11:9 : ?
+IDENTIFIER @11:9 id org unknown : ?
+TOKEN @11:9
+TOKEN @11:12
+IDENTIFIER @11:13 id example unknown : ?
+TOKEN @11:13
+TOKEN @11:20
+IDENTIFIER @11:21 id data unknown : ?
+TOKEN @11:21
+TOKEN @11:26
+LIST @11:29
+LIST @11:29
+IDENTIFIER @11:29 id org unknown : ?
+TOKEN @11:29
+IDENTIFIER @11:33 id example unknown : ?
+TOKEN @11:33
+IDENTIFIER @11:41 id orm unknown : ?
+TOKEN @11:41
+TOKEN @11:44
+USES_DIRECTIVE @12:3
+TOKEN @12:3
+IDENTIFIER @12:8 id Driver unknown : ?
+TOKEN @12:8
+TOKEN @12:14
+PROVIDES_DIRECTIVE @13:3
+TOKEN @13:3
+MEMBER_SELECT @13:12 : java.lang.Runnable
+MEMBER_SELECT @13:12 : ?
+IDENTIFIER @13:12 id java .java [p package] : ? : ?
+TOKEN @13:12
+TOKEN @13:16
+IDENTIFIER @13:17 id lang .java.lang [p package] : ? : ?
+TOKEN @13:17
+TOKEN @13:21
+IDENTIFIER @13:22 id Runnable java.lang.Runnable [t public interface] : java.lang.Runnable : java.lang.Runnable
+TOKEN @13:22
+TOKEN @13:31
+LIST @13:36
+MEMBER_SELECT @13:36 : ?
+MEMBER_SELECT @13:36 : ?
+IDENTIFIER @13:36 id org unknown : ?
+TOKEN @13:36
+TOKEN @13:39
+IDENTIFIER @13:40 id example unknown : ?
+TOKEN @13:40
+TOKEN @13:47
+IDENTIFIER @13:48 id Task unknown : ?
+TOKEN @13:48
+TOKEN @13:52
+MEMBER_SELECT @13:54 : ?
+MEMBER_SELECT @13:54 : ?
+IDENTIFIER @13:54 id org unknown : ?
+TOKEN @13:54
+TOKEN @13:57
+IDENTIFIER @13:58 id example unknown : ?
+TOKEN @13:58
+TOKEN @13:65
+IDENTIFIER @13:66 id OtherTask unknown : ?
+TOKEN @13:66
+TOKEN @13:75
+TOKEN @14:1
+TOKEN @15:1

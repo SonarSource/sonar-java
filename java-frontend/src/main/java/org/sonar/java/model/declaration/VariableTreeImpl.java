@@ -161,7 +161,7 @@ public class VariableTreeImpl extends JavaTree implements VariableTree {
     return endToken;
   }
 
-  public void setEndToken(InternalSyntaxToken endToken) {
+  public void setEndToken(@Nullable InternalSyntaxToken endToken) {
     this.endToken = endToken;
   }
 }

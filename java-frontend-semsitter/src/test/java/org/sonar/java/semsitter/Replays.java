@@ -16,6 +16,9 @@
  */
 package org.sonar.java.semsitter;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.protobuf.TextFormat;
@@ -28,6 +31,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -43,8 +48,8 @@ import org.sonarsource.semsitter.wire.Document;
 
 /**
  * Recorded SemSitter server answers. Each sample {@code replay/X.java} has the document the server answered for it in
- * {@code replay/X.textproto.gz}. {@code replay/types.json.gz} holds a separately recorded snapshot of JDK type declarations;
- * {@link ReplayRecorderTest} does not refresh it.
+ * {@code replay/X.textproto.gz}. The type declarations and package answers of all samples are shared in
+ * {@code replay/types.json.gz} and {@code replay/packages.json}.
  */
 final class Replays {
 
@@ -52,9 +57,12 @@ final class Replays {
   private static final Pattern VERSIONED = Pattern.compile("java(\\d+)/.*");
   static final Path DIRECTORY = Path.of("src", "test", "resources", "org", "sonar", "java", "semsitter", "replay");
   static final Path TYPES = DIRECTORY.resolve("types.json.gz");
+  static final Path PACKAGES = DIRECTORY.resolve("packages.json");
   static final Path PROJECT = Path.of("..", "java-frontend", "src", "main", "java");
 
   private static final String PROJECT_PREFIX = "project/";
+
+  private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().create();
 
   private Replays() {
   }
@@ -100,6 +108,10 @@ final class Replays {
     return DIRECTORY.resolve(sample + ".textproto.gz");
   }
 
+  static Path approved(String sample) {
+    return DIRECTORY.resolve(sample + (isCorpus(sample) ? ".expected.txt.gz" : ".expected.txt"));
+  }
+
   static String read(Path file) throws IOException {
     try (InputStream in = Files.newInputStream(file)) {
       return new String(isGzip(file) ? new GZIPInputStream(in).readAllBytes() : in.readAllBytes(), StandardCharsets.UTF_8);
@@ -121,6 +133,18 @@ final class Replays {
       return new JsonObject();
     }
     return JsonParser.parseString(read(file)).getAsJsonObject();
+  }
+
+  static void writeSorted(Path file, JsonObject json) throws IOException {
+    Map<String, JsonElement> sorted = new TreeMap<>(json.asMap());
+    StringBuilder out = new StringBuilder("{\n");
+    int index = 0;
+    for (Map.Entry<String, JsonElement> entry : sorted.entrySet()) {
+      out.append(GSON.toJson(entry.getKey())).append(": ").append(GSON.toJson(entry.getValue()));
+      out.append(++index < sorted.size() ? ",\n" : "\n");
+    }
+    out.append("}\n");
+    write(file, out.toString());
   }
 
   static InputFile inputFile(Path baseDir, String relativePath, String source) {

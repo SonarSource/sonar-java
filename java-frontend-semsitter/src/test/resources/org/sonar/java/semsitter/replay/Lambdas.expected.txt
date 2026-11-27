@@ -1,0 +1,982 @@
+COMPILATION_UNIT @1:1
+IMPORT @1:1
+TOKEN @1:1
+MEMBER_SELECT @1:8 : ?
+MEMBER_SELECT @1:8 : ?
+IDENTIFIER @1:8 id java unknown : ?
+TOKEN @1:8
+TOKEN @1:12
+IDENTIFIER @1:13 id util unknown : ?
+TOKEN @1:13
+TOKEN @1:17
+IDENTIFIER @1:18 id Comparator unknown : ?
+TOKEN @1:18
+TOKEN @1:28
+IMPORT @2:1
+TOKEN @2:1
+MEMBER_SELECT @2:8 : ?
+MEMBER_SELECT @2:8 : ?
+IDENTIFIER @2:8 id java unknown : ?
+TOKEN @2:8
+TOKEN @2:12
+IDENTIFIER @2:13 id util unknown : ?
+TOKEN @2:13
+TOKEN @2:17
+IDENTIFIER @2:18 id List unknown : ?
+TOKEN @2:18
+TOKEN @2:22
+IMPORT @3:1
+TOKEN @3:1
+MEMBER_SELECT @3:8 : ?
+MEMBER_SELECT @3:8 : ?
+IDENTIFIER @3:8 id java unknown : ?
+TOKEN @3:8
+TOKEN @3:12
+IDENTIFIER @3:13 id util unknown : ?
+TOKEN @3:13
+TOKEN @3:17
+IDENTIFIER @3:18 id Map unknown : ?
+TOKEN @3:18
+TOKEN @3:21
+IMPORT @4:1
+TOKEN @4:1
+MEMBER_SELECT @4:8 : ?
+MEMBER_SELECT @4:8 : ?
+IDENTIFIER @4:8 id java unknown : ?
+TOKEN @4:8
+TOKEN @4:12
+IDENTIFIER @4:13 id util unknown : ?
+TOKEN @4:13
+TOKEN @4:17
+IDENTIFIER @4:18 id Optional unknown : ?
+TOKEN @4:18
+TOKEN @4:26
+IMPORT @5:1
+TOKEN @5:1
+MEMBER_SELECT @5:8 : ?
+MEMBER_SELECT @5:8 : ?
+MEMBER_SELECT @5:8 : ?
+IDENTIFIER @5:8 id java unknown : ?
+TOKEN @5:8
+TOKEN @5:12
+IDENTIFIER @5:13 id util unknown : ?
+TOKEN @5:13
+TOKEN @5:17
+IDENTIFIER @5:18 id function unknown : ?
+TOKEN @5:18
+TOKEN @5:26
+IDENTIFIER @5:27 id BiFunction unknown : ?
+TOKEN @5:27
+TOKEN @5:37
+IMPORT @6:1
+TOKEN @6:1
+MEMBER_SELECT @6:8 : ?
+MEMBER_SELECT @6:8 : ?
+MEMBER_SELECT @6:8 : ?
+IDENTIFIER @6:8 id java unknown : ?
+TOKEN @6:8
+TOKEN @6:12
+IDENTIFIER @6:13 id util unknown : ?
+TOKEN @6:13
+TOKEN @6:17
+IDENTIFIER @6:18 id function unknown : ?
+TOKEN @6:18
+TOKEN @6:26
+IDENTIFIER @6:27 id Function unknown : ?
+TOKEN @6:27
+TOKEN @6:35
+IMPORT @7:1
+TOKEN @7:1
+MEMBER_SELECT @7:8 : ?
+MEMBER_SELECT @7:8 : ?
+MEMBER_SELECT @7:8 : ?
+IDENTIFIER @7:8 id java unknown : ?
+TOKEN @7:8
+TOKEN @7:12
+IDENTIFIER @7:13 id util unknown : ?
+TOKEN @7:13
+TOKEN @7:17
+IDENTIFIER @7:18 id function unknown : ?
+TOKEN @7:18
+TOKEN @7:26
+IDENTIFIER @7:27 id Predicate unknown : ?
+TOKEN @7:27
+TOKEN @7:36
+IMPORT @8:1
+TOKEN @8:1
+MEMBER_SELECT @8:8 : ?
+MEMBER_SELECT @8:8 : ?
+MEMBER_SELECT @8:8 : ?
+IDENTIFIER @8:8 id java unknown : ?
+TOKEN @8:8
+TOKEN @8:12
+IDENTIFIER @8:13 id util unknown : ?
+TOKEN @8:13
+TOKEN @8:17
+IDENTIFIER @8:18 id function unknown : ?
+TOKEN @8:18
+TOKEN @8:26
+IDENTIFIER @8:27 id Supplier unknown : ?
+TOKEN @8:27
+TOKEN @8:35
+IMPORT @9:1
+TOKEN @9:1
+MEMBER_SELECT @9:8 : ?
+MEMBER_SELECT @9:8 : ?
+MEMBER_SELECT @9:8 : ?
+IDENTIFIER @9:8 id java unknown : ?
+TOKEN @9:8
+TOKEN @9:12
+IDENTIFIER @9:13 id util unknown : ?
+TOKEN @9:13
+TOKEN @9:17
+IDENTIFIER @9:18 id stream unknown : ?
+TOKEN @9:18
+TOKEN @9:24
+IDENTIFIER @9:25 id Collectors unknown : ?
+TOKEN @9:25
+TOKEN @9:35
+CLASS @11:1 class .Lambdas [t package] : Lambdas super java.lang.Object interfaces []
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Lambdas flags [package] members [13:22, 15:30, 19:46, 20:48, <init>, arrays, builder, byLength, capture, empty, firstUpper, grouped, length, lengths, notEmpty, printer, runnable, sort, sum, supplier, total, typed] lookupToString 0 outermost Lambdas annotation false subtypeOf [java.lang.Object] superTypes [java.lang.Object] numerical false wrapper false raw false declaring Lambdas
+MODIFIERS
+TOKEN @11:1
+IDENTIFIER @11:7 id Lambdas .Lambdas [t package] : Lambdas : Lambdas
+TOKEN @11:7
+TYPE_PARAMETERS
+LIST
+LIST
+TOKEN @11:15
+VARIABLE @13:3 var Lambdas.runnable [v package] : java.lang.Runnable
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Lambdas flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+IDENTIFIER @13:3 id Runnable java.lang.Runnable [t public interface] : java.lang.Runnable : java.lang.Runnable
+TOKEN @13:3
+IDENTIFIER @13:12 id runnable Lambdas.runnable [v package] : java.lang.Runnable : java.lang.Runnable
+TOKEN @13:12
+TOKEN @13:21
+LAMBDA_EXPRESSION @13:23 : java.lang.Runnable
+TOKEN @13:23
+TOKEN @13:24
+TOKEN @13:26
+BLOCK @13:29
+TOKEN @13:29
+TOKEN @14:3
+TOKEN @14:4
+VARIABLE @15:3 var Lambdas.supplier [v package] : java.util.function.Supplier<java.lang.String>
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Lambdas flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+PARAMETERIZED_TYPE @15:3 : java.util.function.Supplier<java.lang.String>
+IDENTIFIER @15:3 id Supplier java.util.function.Supplier [t public interface] : java.util.function.Supplier<java.lang.String> : java.util.function.Supplier<java.lang.String>
+TOKEN @15:3
+TYPE_ARGUMENTS @15:11
+TOKEN @15:11
+IDENTIFIER @15:12 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @15:12
+TOKEN @15:18
+IDENTIFIER @15:20 id supplier Lambdas.supplier [v package] : java.util.function.Supplier<java.lang.String> : java.util.function.Supplier<java.lang.String>
+TOKEN @15:20
+TOKEN @15:29
+LAMBDA_EXPRESSION @15:31 : java.util.function.Supplier<java.lang.String>
+TOKEN @15:31
+TOKEN @15:32
+TOKEN @15:34
+STRING_LITERAL @15:37 : java.lang.String = value
+TOKEN @15:37
+TOKEN @15:44
+VARIABLE @16:3 var Lambdas.length [v package] : java.util.function.Function<java.lang.String,java.lang.Integer>
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Lambdas flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+PARAMETERIZED_TYPE @16:3 : java.util.function.Function<java.lang.String,java.lang.Integer>
+IDENTIFIER @16:3 id Function java.util.function.Function [t public interface] : java.util.function.Function<java.lang.String,java.lang.Integer> : java.util.function.Function<java.lang.String,java.lang.Integer>
+TOKEN @16:3
+TYPE_ARGUMENTS @16:11
+TOKEN @16:11
+IDENTIFIER @16:12 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @16:12
+TOKEN @16:18
+IDENTIFIER @16:20 id Integer java.lang.Integer [t final public] : java.lang.Integer : java.lang.Integer
+TOKEN @16:20
+TOKEN @16:27
+IDENTIFIER @16:29 id length Lambdas.length [v package] : java.util.function.Function<java.lang.String,java.lang.Integer> : java.util.function.Function<java.lang.String,java.lang.Integer>
+TOKEN @16:29
+TOKEN @16:36
+METHOD_REFERENCE @16:38 : java.util.function.Function<java.lang.String,java.lang.Integer>
+IDENTIFIER @16:38 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @16:38
+TOKEN @16:44
+IDENTIFIER @16:46 id length String.length [m public] : ? () returns int throws [] sig java.lang.String#length()I : int
+TOKEN @16:46
+TOKEN @16:52
+VARIABLE @17:3 var Lambdas.arrays [v package] : java.util.function.Function<java.lang.Integer,int[]>
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Lambdas flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+PARAMETERIZED_TYPE @17:3 : java.util.function.Function<java.lang.Integer,int[]>
+IDENTIFIER @17:3 id Function java.util.function.Function [t public interface] : java.util.function.Function<java.lang.Integer,int[]> : java.util.function.Function<java.lang.Integer,int[]>
+TOKEN @17:3
+TYPE_ARGUMENTS @17:11
+TOKEN @17:11
+IDENTIFIER @17:12 id Integer java.lang.Integer [t final public] : java.lang.Integer : java.lang.Integer
+TOKEN @17:12
+TOKEN @17:19
+ARRAY_TYPE @17:21 : int[]
+PRIMITIVE_TYPE @17:21 : int
+TOKEN @17:21
+TOKEN @17:24
+TOKEN @17:25
+TOKEN @17:26
+IDENTIFIER @17:28 id arrays Lambdas.arrays [v package] : java.util.function.Function<java.lang.Integer,int[]> : java.util.function.Function<java.lang.Integer,int[]>
+TOKEN @17:28
+TOKEN @17:35
+METHOD_REFERENCE @17:37 : java.util.function.Function<java.lang.Integer,int[]>
+ARRAY_TYPE @17:37 : int[]
+PRIMITIVE_TYPE @17:37 : int
+TOKEN @17:37
+TOKEN @17:40
+TOKEN @17:41
+TOKEN @17:42
+IDENTIFIER @17:44 id new unknown : ?
+TOKEN @17:44
+TOKEN @17:47
+VARIABLE @18:3 var Lambdas.builder [v package] : java.util.function.Supplier<java.lang.StringBuilder>
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Lambdas flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+PARAMETERIZED_TYPE @18:3 : java.util.function.Supplier<java.lang.StringBuilder>
+IDENTIFIER @18:3 id Supplier java.util.function.Supplier [t public interface] : java.util.function.Supplier<java.lang.StringBuilder> : java.util.function.Supplier<java.lang.StringBuilder>
+TOKEN @18:3
+TYPE_ARGUMENTS @18:11
+TOKEN @18:11
+IDENTIFIER @18:12 id StringBuilder java.lang.StringBuilder [t final public] : java.lang.StringBuilder : java.lang.StringBuilder
+TOKEN @18:12
+TOKEN @18:25
+IDENTIFIER @18:27 id builder Lambdas.builder [v package] : java.util.function.Supplier<java.lang.StringBuilder> : java.util.function.Supplier<java.lang.StringBuilder>
+TOKEN @18:27
+TOKEN @18:35
+METHOD_REFERENCE @18:37 : java.util.function.Supplier<java.lang.StringBuilder>
+IDENTIFIER @18:37 id StringBuilder java.lang.StringBuilder [t final public] : java.lang.StringBuilder : java.lang.StringBuilder
+TOKEN @18:37
+TOKEN @18:50
+IDENTIFIER @18:52 id new StringBuilder.<init> [m public] : ? () returns void throws [] sig java.lang.StringBuilder#<init>()V : void
+TOKEN @18:52
+TOKEN @18:55
+VARIABLE @19:3 var Lambdas.sum [v package] : java.util.function.BiFunction<java.lang.Integer,java.lang.Integer,java.lang.Integer>
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Lambdas flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+PARAMETERIZED_TYPE @19:3 : java.util.function.BiFunction<java.lang.Integer,java.lang.Integer,java.lang.Integer>
+IDENTIFIER @19:3 id BiFunction java.util.function.BiFunction [t public interface] : java.util.function.BiFunction<java.lang.Integer,java.lang.Integer,java.lang.Integer> : java.util.function.BiFunction<java.lang.Integer,java.lang.Integer,java.lang.Integer>
+TOKEN @19:3
+TYPE_ARGUMENTS @19:13
+TOKEN @19:13
+IDENTIFIER @19:14 id Integer java.lang.Integer [t final public] : java.lang.Integer : java.lang.Integer
+TOKEN @19:14
+TOKEN @19:21
+IDENTIFIER @19:23 id Integer java.lang.Integer [t final public] : java.lang.Integer : java.lang.Integer
+TOKEN @19:23
+TOKEN @19:30
+IDENTIFIER @19:32 id Integer java.lang.Integer [t final public] : java.lang.Integer : java.lang.Integer
+TOKEN @19:32
+TOKEN @19:39
+IDENTIFIER @19:41 id sum Lambdas.sum [v package] : java.util.function.BiFunction<java.lang.Integer,java.lang.Integer,java.lang.Integer> : java.util.function.BiFunction<java.lang.Integer,java.lang.Integer,java.lang.Integer>
+TOKEN @19:41
+TOKEN @19:45
+LAMBDA_EXPRESSION @19:47 : java.util.function.BiFunction<java.lang.Integer,java.lang.Integer,java.lang.Integer>
+TOKEN @19:47
+VARIABLE @19:48 var apply.x [v package] : java.lang.Integer
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing BiFunction flags [package] local true parameter true effectivelyFinal true constant null owner apply java.util.function.BiFunction#apply(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object; [abstract, public] returns java.lang.Object parameters 2 thrown 0 overridden 0 declared false usages 0 metadata 0 enclosing BiFunction type true kinds truefalsefalse other falsefalsefalsefalsetruefalse2falsefalse
+MODIFIERS
+INFERED_TYPE
+IDENTIFIER @19:48 id x apply.x [v package] : java.lang.Integer : java.lang.Integer
+TOKEN @19:48
+TOKEN @19:49
+VARIABLE @19:51 var apply.y [v package] : java.lang.Integer
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing BiFunction flags [package] local true parameter true effectivelyFinal true constant null owner apply java.util.function.BiFunction#apply(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object; [abstract, public] returns java.lang.Object parameters 2 thrown 0 overridden 0 declared false usages 0 metadata 0 enclosing BiFunction type true kinds truefalsefalse other falsefalsefalsefalsetruefalse2falsefalse
+MODIFIERS
+INFERED_TYPE
+IDENTIFIER @19:51 id y apply.y [v package] : java.lang.Integer : java.lang.Integer
+TOKEN @19:51
+TOKEN @19:52
+TOKEN @19:54
+PLUS @19:57 : int
+IDENTIFIER @19:57 id x apply.x [v package] : java.lang.Integer : java.lang.Integer
+TOKEN @19:57
+TOKEN @19:59
+IDENTIFIER @19:61 id y apply.y [v package] : java.lang.Integer : java.lang.Integer
+TOKEN @19:61
+TOKEN @19:62
+VARIABLE @20:3 var Lambdas.typed [v package] : java.util.function.BiFunction<java.lang.Integer,java.lang.Integer,java.lang.Integer>
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Lambdas flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+PARAMETERIZED_TYPE @20:3 : java.util.function.BiFunction<java.lang.Integer,java.lang.Integer,java.lang.Integer>
+IDENTIFIER @20:3 id BiFunction java.util.function.BiFunction [t public interface] : java.util.function.BiFunction<java.lang.Integer,java.lang.Integer,java.lang.Integer> : java.util.function.BiFunction<java.lang.Integer,java.lang.Integer,java.lang.Integer>
+TOKEN @20:3
+TYPE_ARGUMENTS @20:13
+TOKEN @20:13
+IDENTIFIER @20:14 id Integer java.lang.Integer [t final public] : java.lang.Integer : java.lang.Integer
+TOKEN @20:14
+TOKEN @20:21
+IDENTIFIER @20:23 id Integer java.lang.Integer [t final public] : java.lang.Integer : java.lang.Integer
+TOKEN @20:23
+TOKEN @20:30
+IDENTIFIER @20:32 id Integer java.lang.Integer [t final public] : java.lang.Integer : java.lang.Integer
+TOKEN @20:32
+TOKEN @20:39
+IDENTIFIER @20:41 id typed Lambdas.typed [v package] : java.util.function.BiFunction<java.lang.Integer,java.lang.Integer,java.lang.Integer> : java.util.function.BiFunction<java.lang.Integer,java.lang.Integer,java.lang.Integer>
+TOKEN @20:41
+TOKEN @20:47
+LAMBDA_EXPRESSION @20:49 : java.util.function.BiFunction<java.lang.Integer,java.lang.Integer,java.lang.Integer>
+TOKEN @20:49
+VARIABLE @20:50 var apply.x [v package] : java.lang.Integer
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing BiFunction flags [package] local true parameter true effectivelyFinal true constant null owner apply java.util.function.BiFunction#apply(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object; [abstract, public] returns java.lang.Object parameters 2 thrown 0 overridden 0 declared false usages 0 metadata 0 enclosing BiFunction type true kinds truefalsefalse other falsefalsefalsefalsetruefalse2falsefalse
+MODIFIERS
+IDENTIFIER @20:50 id Integer java.lang.Integer [t final public] : java.lang.Integer : java.lang.Integer
+TOKEN @20:50
+IDENTIFIER @20:58 id x apply.x [v package] : java.lang.Integer : java.lang.Integer
+TOKEN @20:58
+TOKEN @20:59
+VARIABLE @20:61 var apply.y [v package] : java.lang.Integer
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing BiFunction flags [package] local true parameter true effectivelyFinal true constant null owner apply java.util.function.BiFunction#apply(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object; [abstract, public] returns java.lang.Object parameters 2 thrown 0 overridden 0 declared false usages 0 metadata 0 enclosing BiFunction type true kinds truefalsefalse other falsefalsefalsefalsetruefalse2falsefalse
+MODIFIERS
+IDENTIFIER @20:61 id Integer java.lang.Integer [t final public] : java.lang.Integer : java.lang.Integer
+TOKEN @20:61
+IDENTIFIER @20:69 id y apply.y [v package] : java.lang.Integer : java.lang.Integer
+TOKEN @20:69
+TOKEN @20:70
+TOKEN @20:72
+BLOCK @20:75
+TOKEN @20:75
+RETURN_STATEMENT @21:5
+TOKEN @21:5
+MULTIPLY @21:12 : int
+IDENTIFIER @21:12 id x apply.x [v package] : java.lang.Integer : java.lang.Integer
+TOKEN @21:12
+TOKEN @21:14
+IDENTIFIER @21:16 id y apply.y [v package] : java.lang.Integer : java.lang.Integer
+TOKEN @21:16
+TOKEN @21:17
+TOKEN @22:3
+TOKEN @22:4
+VARIABLE @23:3 var Lambdas.empty [v package] : java.util.function.Predicate<java.lang.String>
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Lambdas flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+PARAMETERIZED_TYPE @23:3 : java.util.function.Predicate<java.lang.String>
+IDENTIFIER @23:3 id Predicate java.util.function.Predicate [t public interface] : java.util.function.Predicate<java.lang.String> : java.util.function.Predicate<java.lang.String>
+TOKEN @23:3
+TYPE_ARGUMENTS @23:12
+TOKEN @23:12
+IDENTIFIER @23:13 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @23:13
+TOKEN @23:19
+IDENTIFIER @23:21 id empty Lambdas.empty [v package] : java.util.function.Predicate<java.lang.String> : java.util.function.Predicate<java.lang.String>
+TOKEN @23:21
+TOKEN @23:27
+METHOD_REFERENCE @23:29 : java.util.function.Predicate<java.lang.String>
+IDENTIFIER @23:29 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @23:29
+TOKEN @23:35
+IDENTIFIER @23:37 id isEmpty String.isEmpty [m public] : ? () returns boolean throws [] sig java.lang.String#isEmpty()Z : boolean
+TOKEN @23:37
+TOKEN @23:44
+VARIABLE @24:3 var Lambdas.notEmpty [v package] : java.util.function.Predicate<java.lang.String>
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Lambdas flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+PARAMETERIZED_TYPE @24:3 : java.util.function.Predicate<java.lang.String>
+IDENTIFIER @24:3 id Predicate java.util.function.Predicate [t public interface] : java.util.function.Predicate<java.lang.String> : java.util.function.Predicate<java.lang.String>
+TOKEN @24:3
+TYPE_ARGUMENTS @24:12
+TOKEN @24:12
+IDENTIFIER @24:13 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @24:13
+TOKEN @24:19
+IDENTIFIER @24:21 id notEmpty Lambdas.notEmpty [v package] : java.util.function.Predicate<java.lang.String> : java.util.function.Predicate<java.lang.String>
+TOKEN @24:21
+TOKEN @24:30
+METHOD_INVOCATION @24:32 call Predicate.negate [m public] : ? () returns java.util.function.Predicate<T erasure java.lang.Object> throws [] sig java.util.function.Predicate#negate()Ljava/util/function/Predicate; : java.util.function.Predicate<T erasure java.lang.Object>
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Predicate flags [public] overridden [] overridable true generic false default true synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @24:32 : ?
+IDENTIFIER @24:32 id empty Lambdas.empty [v package] : java.util.function.Predicate<java.lang.String> : java.util.function.Predicate<java.lang.String>
+TOKEN @24:32
+TOKEN @24:37
+IDENTIFIER @24:38 id negate Predicate.negate [m public] : ? () returns java.util.function.Predicate<T erasure java.lang.Object> throws [] sig java.util.function.Predicate#negate()Ljava/util/function/Predicate; : java.util.function.Predicate<T erasure java.lang.Object>
+TOKEN @24:38
+ARGUMENTS @24:44
+TOKEN @24:44
+TOKEN @24:45
+TOKEN @24:46
+VARIABLE @25:3 var Lambdas.printer [v package] : java.util.function.Function<java.lang.Object,java.lang.String>
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Lambdas flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+PARAMETERIZED_TYPE @25:3 : java.util.function.Function<java.lang.Object,java.lang.String>
+IDENTIFIER @25:3 id Function java.util.function.Function [t public interface] : java.util.function.Function<java.lang.Object,java.lang.String> : java.util.function.Function<java.lang.Object,java.lang.String>
+TOKEN @25:3
+TYPE_ARGUMENTS @25:11
+TOKEN @25:11
+IDENTIFIER @25:12 id Object java.lang.Object [t public] : java.lang.Object : java.lang.Object
+TOKEN @25:12
+TOKEN @25:18
+IDENTIFIER @25:20 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @25:20
+TOKEN @25:26
+IDENTIFIER @25:28 id printer Lambdas.printer [v package] : java.util.function.Function<java.lang.Object,java.lang.String> : java.util.function.Function<java.lang.Object,java.lang.String>
+TOKEN @25:28
+TOKEN @25:36
+METHOD_REFERENCE @25:38 : java.util.function.Function<java.lang.Object,java.lang.String>
+IDENTIFIER @25:38 id Object java.lang.Object [t public] : java.lang.Object : java.lang.Object
+TOKEN @25:38
+TOKEN @25:44
+IDENTIFIER @25:46 id toString Object.toString [m public] : ? () returns java.lang.String throws [] sig java.lang.Object#toString()Ljava/lang/String; : java.lang.String
+TOKEN @25:46
+TOKEN @25:54
+VARIABLE @26:3 var Lambdas.byLength [v package] : java.util.Comparator<java.lang.String>
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Lambdas flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+PARAMETERIZED_TYPE @26:3 : java.util.Comparator<java.lang.String>
+IDENTIFIER @26:3 id Comparator java.util.Comparator [t public interface] : java.util.Comparator<java.lang.String> : java.util.Comparator<java.lang.String>
+TOKEN @26:3
+TYPE_ARGUMENTS @26:13
+TOKEN @26:13
+IDENTIFIER @26:14 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @26:14
+TOKEN @26:20
+IDENTIFIER @26:22 id byLength Lambdas.byLength [v package] : java.util.Comparator<java.lang.String> : java.util.Comparator<java.lang.String>
+TOKEN @26:22
+TOKEN @26:31
+METHOD_INVOCATION @26:33 call Comparator.comparing [m static public] : ? (java.util.function.Function<java.lang.Object,java.lang.Object>) returns java.util.Comparator throws [] sig java.util.Comparator#comparing(Ljava/util/function/Function;)Ljava/util/Comparator; : java.util.Comparator
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Comparator flags [static, public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+MEMBER_SELECT @26:33 : ?
+IDENTIFIER @26:33 id Comparator java.util.Comparator [t public interface] : java.util.Comparator : java.util.Comparator
+TOKEN @26:33
+TOKEN @26:43
+IDENTIFIER @26:44 id comparing Comparator.comparing [m static public] : ? (java.util.function.Function<java.lang.Object,java.lang.Object>) returns java.util.Comparator throws [] sig java.util.Comparator#comparing(Ljava/util/function/Function;)Ljava/util/Comparator; : java.util.Comparator
+TOKEN @26:44
+ARGUMENTS @26:53
+TOKEN @26:53
+METHOD_REFERENCE @26:54 : java.util.function.Function<java.lang.Object,java.lang.Object>
+IDENTIFIER @26:54 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @26:54
+TOKEN @26:60
+IDENTIFIER @26:62 id length String.length [m public] : ? () returns int throws [] sig java.lang.String#length()I : int
+TOKEN @26:62
+TOKEN @26:68
+TOKEN @26:69
+METHOD @28:3 method Lambdas.lengths [m package] : ? (java.util.List<java.lang.String>) returns java.util.List<java.lang.Integer> throws [] sig Lambdas#lengths(Ljava/util/List;)Ljava/util/List; overrides false
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Lambdas flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [words] parameterMetadata []
+MODIFIERS
+TYPE_PARAMETERS
+PARAMETERIZED_TYPE @28:3 : java.util.List<java.lang.Integer>
+IDENTIFIER @28:3 id List java.util.List [t public interface] : java.util.List<java.lang.Integer> : java.util.List<java.lang.Integer>
+TOKEN @28:3
+TYPE_ARGUMENTS @28:7
+TOKEN @28:7
+IDENTIFIER @28:8 id Integer java.lang.Integer [t final public] : java.lang.Integer : java.lang.Integer
+TOKEN @28:8
+TOKEN @28:15
+IDENTIFIER @28:17 id lengths Lambdas.lengths [m package] : ? (java.util.List<java.lang.String>) returns java.util.List<java.lang.Integer> throws [] sig Lambdas#lengths(Ljava/util/List;)Ljava/util/List; : java.util.List<java.lang.Integer>
+TOKEN @28:17
+TOKEN @28:24
+VARIABLE @28:25 var lengths.words [v package] : java.util.List<java.lang.String>
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Lambdas flags [package] local true parameter true effectivelyFinal true constant null owner lengths Lambdas#lengths(Ljava/util/List;)Ljava/util/List; [package] returns java.util.List<java.lang.Integer> parameters 1 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Lambdas type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+MODIFIERS
+PARAMETERIZED_TYPE @28:25 : java.util.List<java.lang.String>
+IDENTIFIER @28:25 id List java.util.List [t public interface] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
+TOKEN @28:25
+TYPE_ARGUMENTS @28:29
+TOKEN @28:29
+IDENTIFIER @28:30 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @28:30
+TOKEN @28:36
+IDENTIFIER @28:38 id words lengths.words [v package] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
+TOKEN @28:38
+TOKEN @28:43
+BLOCK @28:45
+TOKEN @28:45
+RETURN_STATEMENT @29:5
+TOKEN @29:5
+METHOD_INVOCATION @29:12 call Stream.collect [m abstract public] : ? (java.util.stream.Collector<java.lang.Object,A erasure java.lang.Object,R erasure java.lang.Object>) returns java.lang.Object throws [] sig java.util.stream.Stream#collect(Ljava/util/stream/Collector;)Ljava/lang/Object; : java.lang.Object
+  details declared false usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Stream flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+MEMBER_SELECT @29:12 : ?
+METHOD_INVOCATION @29:12 call Stream.filter [m abstract public] : ? (java.util.function.Predicate<java.lang.Object>) returns java.util.stream.Stream<T erasure java.lang.Object> throws [] sig java.util.stream.Stream#filter(Ljava/util/function/Predicate;)Ljava/util/stream/Stream; : java.util.stream.Stream<T erasure java.lang.Object>
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Stream flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+MEMBER_SELECT @29:12 : ?
+METHOD_INVOCATION @29:12 call Stream.map [m abstract public] : ? (java.util.function.Function<java.lang.Object,java.lang.Object>) returns java.util.stream.Stream<R erasure java.lang.Object> throws [] sig java.util.stream.Stream#map(Ljava/util/function/Function;)Ljava/util/stream/Stream; : java.util.stream.Stream<R erasure java.lang.Object>
+  details declared false usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Stream flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+MEMBER_SELECT @29:12 : ?
+METHOD_INVOCATION @29:12 call Collection.stream [m public] : ? () returns java.util.stream.Stream<E erasure java.lang.Object> throws [] sig java.util.Collection#stream()Ljava/util/stream/Stream; : java.util.stream.Stream<E erasure java.lang.Object>
+  details declared false usages 4 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Collection flags [public] overridden [] overridable true generic false default true synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @29:12 : ?
+IDENTIFIER @29:12 id words lengths.words [v package] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
+TOKEN @29:12
+TOKEN @29:17
+IDENTIFIER @29:18 id stream Collection.stream [m public] : ? () returns java.util.stream.Stream<E erasure java.lang.Object> throws [] sig java.util.Collection#stream()Ljava/util/stream/Stream; : java.util.stream.Stream<E erasure java.lang.Object>
+TOKEN @29:18
+ARGUMENTS @29:24
+TOKEN @29:24
+TOKEN @29:25
+TOKEN @29:26
+IDENTIFIER @29:27 id map Stream.map [m abstract public] : ? (java.util.function.Function<java.lang.Object,java.lang.Object>) returns java.util.stream.Stream<R erasure java.lang.Object> throws [] sig java.util.stream.Stream#map(Ljava/util/function/Function;)Ljava/util/stream/Stream; : java.util.stream.Stream<R erasure java.lang.Object>
+TOKEN @29:27
+ARGUMENTS @29:30
+TOKEN @29:30
+LAMBDA_EXPRESSION @29:31 : java.util.function.Function<java.lang.Object,java.lang.Object>
+VARIABLE @29:31 var apply.w [v package] : java.lang.String
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Function flags [package] local true parameter true effectivelyFinal true constant null owner apply java.util.function.Function#apply(Ljava/lang/Object;)Ljava/lang/Object; [abstract, public] returns java.lang.Object parameters 1 thrown 0 overridden 0 declared false usages 0 metadata 0 enclosing Function type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+MODIFIERS
+INFERED_TYPE
+IDENTIFIER @29:31 id w apply.w [v package] : java.lang.String : java.lang.String
+TOKEN @29:31
+TOKEN @29:33
+METHOD_INVOCATION @29:36 call String.length [m public] : ? () returns int throws [] sig java.lang.String#length()I : int
+  details declared false usages 5 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing String flags [public] overridden [CharSequence.length[]] overridable false generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @29:36 : ?
+IDENTIFIER @29:36 id w apply.w [v package] : java.lang.String : java.lang.String
+TOKEN @29:36
+TOKEN @29:37
+IDENTIFIER @29:38 id length String.length [m public] : ? () returns int throws [] sig java.lang.String#length()I : int
+TOKEN @29:38
+ARGUMENTS @29:44
+TOKEN @29:44
+TOKEN @29:45
+TOKEN @29:46
+TOKEN @29:47
+IDENTIFIER @29:48 id filter Stream.filter [m abstract public] : ? (java.util.function.Predicate<java.lang.Object>) returns java.util.stream.Stream<T erasure java.lang.Object> throws [] sig java.util.stream.Stream#filter(Ljava/util/function/Predicate;)Ljava/util/stream/Stream; : java.util.stream.Stream<T erasure java.lang.Object>
+TOKEN @29:48
+ARGUMENTS @29:54
+TOKEN @29:54
+LAMBDA_EXPRESSION @29:55 : java.util.function.Predicate<java.lang.Object>
+VARIABLE @29:55 var test.n [v package] : java.lang.Integer
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Predicate flags [package] local true parameter true effectivelyFinal true constant null owner test java.util.function.Predicate#test(Ljava/lang/Object;)Z [abstract, public] returns boolean parameters 1 thrown 0 overridden 0 declared false usages 0 metadata 0 enclosing Predicate type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+MODIFIERS
+INFERED_TYPE
+IDENTIFIER @29:55 id n test.n [v package] : java.lang.Integer : java.lang.Integer
+TOKEN @29:55
+TOKEN @29:57
+GREATER_THAN @29:60 : boolean
+IDENTIFIER @29:60 id n test.n [v package] : java.lang.Integer : java.lang.Integer
+TOKEN @29:60
+TOKEN @29:62
+INT_LITERAL @29:64 : int = 2
+TOKEN @29:64
+TOKEN @29:65
+TOKEN @29:66
+IDENTIFIER @29:67 id collect Stream.collect [m abstract public] : ? (java.util.stream.Collector<java.lang.Object,A erasure java.lang.Object,R erasure java.lang.Object>) returns java.lang.Object throws [] sig java.util.stream.Stream#collect(Ljava/util/stream/Collector;)Ljava/lang/Object; : java.lang.Object
+TOKEN @29:67
+ARGUMENTS @29:74
+TOKEN @29:74
+METHOD_INVOCATION @29:75 call Collectors.toList [m static public] : ? () returns java.util.stream.Collector throws [] sig java.util.stream.Collectors#toList()Ljava/util/stream/Collector; : java.util.stream.Collector
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Collectors flags [static, public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @29:75 : ?
+IDENTIFIER @29:75 id Collectors java.util.stream.Collectors [t final public] : java.util.stream.Collectors : java.util.stream.Collectors
+TOKEN @29:75
+TOKEN @29:85
+IDENTIFIER @29:86 id toList Collectors.toList [m static public] : ? () returns java.util.stream.Collector throws [] sig java.util.stream.Collectors#toList()Ljava/util/stream/Collector; : java.util.stream.Collector
+TOKEN @29:86
+ARGUMENTS @29:92
+TOKEN @29:92
+TOKEN @29:93
+TOKEN @29:94
+TOKEN @29:95
+TOKEN @30:3
+METHOD @32:3 method Lambdas.grouped [m package] : ? (java.util.List<java.lang.String>) returns java.util.Map<java.lang.Integer,java.util.List<java.lang.String>> throws [] sig Lambdas#grouped(Ljava/util/List;)Ljava/util/Map; overrides false
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Lambdas flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [words] parameterMetadata []
+MODIFIERS
+TYPE_PARAMETERS
+PARAMETERIZED_TYPE @32:3 : java.util.Map<java.lang.Integer,java.util.List<java.lang.String>>
+IDENTIFIER @32:3 id Map java.util.Map [t public interface] : java.util.Map<java.lang.Integer,java.util.List<java.lang.String>> : java.util.Map<java.lang.Integer,java.util.List<java.lang.String>>
+TOKEN @32:3
+TYPE_ARGUMENTS @32:6
+TOKEN @32:6
+IDENTIFIER @32:7 id Integer java.lang.Integer [t final public] : java.lang.Integer : java.lang.Integer
+TOKEN @32:7
+TOKEN @32:14
+PARAMETERIZED_TYPE @32:16 : java.util.List<java.lang.String>
+IDENTIFIER @32:16 id List java.util.List [t public interface] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
+TOKEN @32:16
+TYPE_ARGUMENTS @32:20
+TOKEN @32:20
+IDENTIFIER @32:21 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @32:21
+TOKEN @32:27
+TOKEN @32:28
+IDENTIFIER @32:30 id grouped Lambdas.grouped [m package] : ? (java.util.List<java.lang.String>) returns java.util.Map<java.lang.Integer,java.util.List<java.lang.String>> throws [] sig Lambdas#grouped(Ljava/util/List;)Ljava/util/Map; : java.util.Map<java.lang.Integer,java.util.List<java.lang.String>>
+TOKEN @32:30
+TOKEN @32:37
+VARIABLE @32:38 var grouped.words [v package] : java.util.List<java.lang.String>
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Lambdas flags [package] local true parameter true effectivelyFinal true constant null owner grouped Lambdas#grouped(Ljava/util/List;)Ljava/util/Map; [package] returns java.util.Map<java.lang.Integer,java.util.List<java.lang.String>> parameters 1 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Lambdas type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+MODIFIERS
+PARAMETERIZED_TYPE @32:38 : java.util.List<java.lang.String>
+IDENTIFIER @32:38 id List java.util.List [t public interface] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
+TOKEN @32:38
+TYPE_ARGUMENTS @32:42
+TOKEN @32:42
+IDENTIFIER @32:43 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @32:43
+TOKEN @32:49
+IDENTIFIER @32:51 id words grouped.words [v package] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
+TOKEN @32:51
+TOKEN @32:56
+BLOCK @32:58
+TOKEN @32:58
+RETURN_STATEMENT @33:5
+TOKEN @33:5
+METHOD_INVOCATION @33:12 call Stream.collect [m abstract public] : ? (java.util.stream.Collector<java.lang.Object,A erasure java.lang.Object,R erasure java.lang.Object>) returns java.lang.Object throws [] sig java.util.stream.Stream#collect(Ljava/util/stream/Collector;)Ljava/lang/Object; : java.lang.Object
+  details declared false usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Stream flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+MEMBER_SELECT @33:12 : ?
+METHOD_INVOCATION @33:12 call Collection.stream [m public] : ? () returns java.util.stream.Stream<E erasure java.lang.Object> throws [] sig java.util.Collection#stream()Ljava/util/stream/Stream; : java.util.stream.Stream<E erasure java.lang.Object>
+  details declared false usages 4 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Collection flags [public] overridden [] overridable true generic false default true synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @33:12 : ?
+IDENTIFIER @33:12 id words grouped.words [v package] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
+TOKEN @33:12
+TOKEN @33:17
+IDENTIFIER @33:18 id stream Collection.stream [m public] : ? () returns java.util.stream.Stream<E erasure java.lang.Object> throws [] sig java.util.Collection#stream()Ljava/util/stream/Stream; : java.util.stream.Stream<E erasure java.lang.Object>
+TOKEN @33:18
+ARGUMENTS @33:24
+TOKEN @33:24
+TOKEN @33:25
+TOKEN @33:26
+IDENTIFIER @33:27 id collect Stream.collect [m abstract public] : ? (java.util.stream.Collector<java.lang.Object,A erasure java.lang.Object,R erasure java.lang.Object>) returns java.lang.Object throws [] sig java.util.stream.Stream#collect(Ljava/util/stream/Collector;)Ljava/lang/Object; : java.lang.Object
+TOKEN @33:27
+ARGUMENTS @33:34
+TOKEN @33:34
+METHOD_INVOCATION @33:35 call Collectors.groupingBy [m static public] : ? (java.util.function.Function<java.lang.Object,java.lang.Object>) returns java.util.stream.Collector throws [] sig java.util.stream.Collectors#groupingBy(Ljava/util/function/Function;)Ljava/util/stream/Collector; : java.util.stream.Collector
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Collectors flags [static, public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+MEMBER_SELECT @33:35 : ?
+IDENTIFIER @33:35 id Collectors java.util.stream.Collectors [t final public] : java.util.stream.Collectors : java.util.stream.Collectors
+TOKEN @33:35
+TOKEN @33:45
+IDENTIFIER @33:46 id groupingBy Collectors.groupingBy [m static public] : ? (java.util.function.Function<java.lang.Object,java.lang.Object>) returns java.util.stream.Collector throws [] sig java.util.stream.Collectors#groupingBy(Ljava/util/function/Function;)Ljava/util/stream/Collector; : java.util.stream.Collector
+TOKEN @33:46
+ARGUMENTS @33:56
+TOKEN @33:56
+METHOD_REFERENCE @33:57 : java.util.function.Function<java.lang.Object,java.lang.Object>
+IDENTIFIER @33:57 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @33:57
+TOKEN @33:63
+IDENTIFIER @33:65 id length String.length [m public] : ? () returns int throws [] sig java.lang.String#length()I : int
+TOKEN @33:65
+TOKEN @33:71
+TOKEN @33:72
+TOKEN @33:73
+TOKEN @34:3
+METHOD @36:3 method Lambdas.firstUpper [m package] : ? (java.util.List<java.lang.String>) returns java.util.Optional<java.lang.String> throws [] sig Lambdas#firstUpper(Ljava/util/List;)Ljava/util/Optional; overrides false
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Lambdas flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [words] parameterMetadata []
+MODIFIERS
+TYPE_PARAMETERS
+PARAMETERIZED_TYPE @36:3 : java.util.Optional<java.lang.String>
+IDENTIFIER @36:3 id Optional java.util.Optional [t final public] : java.util.Optional<java.lang.String> : java.util.Optional<java.lang.String>
+TOKEN @36:3
+TYPE_ARGUMENTS @36:11
+TOKEN @36:11
+IDENTIFIER @36:12 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @36:12
+TOKEN @36:18
+IDENTIFIER @36:20 id firstUpper Lambdas.firstUpper [m package] : ? (java.util.List<java.lang.String>) returns java.util.Optional<java.lang.String> throws [] sig Lambdas#firstUpper(Ljava/util/List;)Ljava/util/Optional; : java.util.Optional<java.lang.String>
+TOKEN @36:20
+TOKEN @36:30
+VARIABLE @36:31 var firstUpper.words [v package] : java.util.List<java.lang.String>
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Lambdas flags [package] local true parameter true effectivelyFinal true constant null owner firstUpper Lambdas#firstUpper(Ljava/util/List;)Ljava/util/Optional; [package] returns java.util.Optional<java.lang.String> parameters 1 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Lambdas type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+MODIFIERS
+PARAMETERIZED_TYPE @36:31 : java.util.List<java.lang.String>
+IDENTIFIER @36:31 id List java.util.List [t public interface] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
+TOKEN @36:31
+TYPE_ARGUMENTS @36:35
+TOKEN @36:35
+IDENTIFIER @36:36 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @36:36
+TOKEN @36:42
+IDENTIFIER @36:44 id words firstUpper.words [v package] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
+TOKEN @36:44
+TOKEN @36:49
+BLOCK @36:51
+TOKEN @36:51
+RETURN_STATEMENT @37:5
+TOKEN @37:5
+METHOD_INVOCATION @37:12 call Stream.findFirst [m abstract public] : ? () returns java.util.Optional<T erasure java.lang.Object> throws [] sig java.util.stream.Stream#findFirst()Ljava/util/Optional; : java.util.Optional<T erasure java.lang.Object>
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Stream flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @37:12 : ?
+METHOD_INVOCATION @37:12 call Stream.map [m abstract public] : ? (java.util.function.Function<java.lang.Object,java.lang.Object>) returns java.util.stream.Stream<R erasure java.lang.Object> throws [] sig java.util.stream.Stream#map(Ljava/util/function/Function;)Ljava/util/stream/Stream; : java.util.stream.Stream<R erasure java.lang.Object>
+  details declared false usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Stream flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+MEMBER_SELECT @37:12 : ?
+METHOD_INVOCATION @37:12 call Collection.stream [m public] : ? () returns java.util.stream.Stream<E erasure java.lang.Object> throws [] sig java.util.Collection#stream()Ljava/util/stream/Stream; : java.util.stream.Stream<E erasure java.lang.Object>
+  details declared false usages 4 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Collection flags [public] overridden [] overridable true generic false default true synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @37:12 : ?
+IDENTIFIER @37:12 id words firstUpper.words [v package] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
+TOKEN @37:12
+TOKEN @37:17
+IDENTIFIER @37:18 id stream Collection.stream [m public] : ? () returns java.util.stream.Stream<E erasure java.lang.Object> throws [] sig java.util.Collection#stream()Ljava/util/stream/Stream; : java.util.stream.Stream<E erasure java.lang.Object>
+TOKEN @37:18
+ARGUMENTS @37:24
+TOKEN @37:24
+TOKEN @37:25
+TOKEN @37:26
+IDENTIFIER @37:27 id map Stream.map [m abstract public] : ? (java.util.function.Function<java.lang.Object,java.lang.Object>) returns java.util.stream.Stream<R erasure java.lang.Object> throws [] sig java.util.stream.Stream#map(Ljava/util/function/Function;)Ljava/util/stream/Stream; : java.util.stream.Stream<R erasure java.lang.Object>
+TOKEN @37:27
+ARGUMENTS @37:30
+TOKEN @37:30
+METHOD_REFERENCE @37:31 : java.util.function.Function<java.lang.Object,java.lang.Object>
+IDENTIFIER @37:31 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @37:31
+TOKEN @37:37
+IDENTIFIER @37:39 id toUpperCase String.toUpperCase [m public] : ? () returns java.lang.String throws [] sig java.lang.String#toUpperCase()Ljava/lang/String; : java.lang.String
+TOKEN @37:39
+TOKEN @37:50
+TOKEN @37:51
+IDENTIFIER @37:52 id findFirst Stream.findFirst [m abstract public] : ? () returns java.util.Optional<T erasure java.lang.Object> throws [] sig java.util.stream.Stream#findFirst()Ljava/util/Optional; : java.util.Optional<T erasure java.lang.Object>
+TOKEN @37:52
+ARGUMENTS @37:61
+TOKEN @37:61
+TOKEN @37:62
+TOKEN @37:63
+TOKEN @38:3
+METHOD @40:3 method Lambdas.total [m package] : ? (java.util.List<java.lang.String>) returns int throws [] sig Lambdas#total(Ljava/util/List;)I overrides false
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Lambdas flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [words] parameterMetadata []
+MODIFIERS
+TYPE_PARAMETERS
+PRIMITIVE_TYPE @40:3 : int
+TOKEN @40:3
+IDENTIFIER @40:7 id total Lambdas.total [m package] : ? (java.util.List<java.lang.String>) returns int throws [] sig Lambdas#total(Ljava/util/List;)I : int
+TOKEN @40:7
+TOKEN @40:12
+VARIABLE @40:13 var total.words [v package] : java.util.List<java.lang.String>
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Lambdas flags [package] local true parameter true effectivelyFinal true constant null owner total Lambdas#total(Ljava/util/List;)I [package] returns int parameters 1 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Lambdas type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+MODIFIERS
+PARAMETERIZED_TYPE @40:13 : java.util.List<java.lang.String>
+IDENTIFIER @40:13 id List java.util.List [t public interface] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
+TOKEN @40:13
+TYPE_ARGUMENTS @40:17
+TOKEN @40:17
+IDENTIFIER @40:18 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @40:18
+TOKEN @40:24
+IDENTIFIER @40:26 id words total.words [v package] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
+TOKEN @40:26
+TOKEN @40:31
+BLOCK @40:33
+TOKEN @40:33
+RETURN_STATEMENT @41:5
+TOKEN @41:5
+METHOD_INVOCATION @41:12 call IntStream.sum [m abstract public] : ? () returns int throws [] sig java.util.stream.IntStream#sum()I : int
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing IntStream flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @41:12 : ?
+METHOD_INVOCATION @41:12 call Stream.mapToInt [m abstract public] : ? (java.util.function.ToIntFunction<java.lang.Object>) returns java.util.stream.IntStream throws [] sig java.util.stream.Stream#mapToInt(Ljava/util/function/ToIntFunction;)Ljava/util/stream/IntStream; : java.util.stream.IntStream
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Stream flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+MEMBER_SELECT @41:12 : ?
+METHOD_INVOCATION @41:12 call Collection.stream [m public] : ? () returns java.util.stream.Stream<E erasure java.lang.Object> throws [] sig java.util.Collection#stream()Ljava/util/stream/Stream; : java.util.stream.Stream<E erasure java.lang.Object>
+  details declared false usages 4 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Collection flags [public] overridden [] overridable true generic false default true synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @41:12 : ?
+IDENTIFIER @41:12 id words total.words [v package] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
+TOKEN @41:12
+TOKEN @41:17
+IDENTIFIER @41:18 id stream Collection.stream [m public] : ? () returns java.util.stream.Stream<E erasure java.lang.Object> throws [] sig java.util.Collection#stream()Ljava/util/stream/Stream; : java.util.stream.Stream<E erasure java.lang.Object>
+TOKEN @41:18
+ARGUMENTS @41:24
+TOKEN @41:24
+TOKEN @41:25
+TOKEN @41:26
+IDENTIFIER @41:27 id mapToInt Stream.mapToInt [m abstract public] : ? (java.util.function.ToIntFunction<java.lang.Object>) returns java.util.stream.IntStream throws [] sig java.util.stream.Stream#mapToInt(Ljava/util/function/ToIntFunction;)Ljava/util/stream/IntStream; : java.util.stream.IntStream
+TOKEN @41:27
+ARGUMENTS @41:35
+TOKEN @41:35
+METHOD_REFERENCE @41:36 : java.util.function.ToIntFunction<java.lang.Object>
+IDENTIFIER @41:36 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @41:36
+TOKEN @41:42
+IDENTIFIER @41:44 id length String.length [m public] : ? () returns int throws [] sig java.lang.String#length()I : int
+TOKEN @41:44
+TOKEN @41:50
+TOKEN @41:51
+IDENTIFIER @41:52 id sum IntStream.sum [m abstract public] : ? () returns int throws [] sig java.util.stream.IntStream#sum()I : int
+TOKEN @41:52
+ARGUMENTS @41:55
+TOKEN @41:55
+TOKEN @41:56
+TOKEN @41:57
+TOKEN @42:3
+METHOD @44:3 method Lambdas.capture [m package] : ? (java.lang.String) returns java.util.function.Supplier<java.lang.String> throws [] sig Lambdas#capture(Ljava/lang/String;)Ljava/util/function/Supplier; overrides false
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Lambdas flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [prefix] parameterMetadata []
+MODIFIERS
+TYPE_PARAMETERS
+PARAMETERIZED_TYPE @44:3 : java.util.function.Supplier<java.lang.String>
+IDENTIFIER @44:3 id Supplier java.util.function.Supplier [t public interface] : java.util.function.Supplier<java.lang.String> : java.util.function.Supplier<java.lang.String>
+TOKEN @44:3
+TYPE_ARGUMENTS @44:11
+TOKEN @44:11
+IDENTIFIER @44:12 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @44:12
+TOKEN @44:18
+IDENTIFIER @44:20 id capture Lambdas.capture [m package] : ? (java.lang.String) returns java.util.function.Supplier<java.lang.String> throws [] sig Lambdas#capture(Ljava/lang/String;)Ljava/util/function/Supplier; : java.util.function.Supplier<java.lang.String>
+TOKEN @44:20
+TOKEN @44:27
+VARIABLE @44:28 var capture.prefix [v package] : java.lang.String
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Lambdas flags [package] local true parameter true effectivelyFinal true constant null owner capture Lambdas#capture(Ljava/lang/String;)Ljava/util/function/Supplier; [package] returns java.util.function.Supplier<java.lang.String> parameters 1 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Lambdas type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+MODIFIERS
+IDENTIFIER @44:28 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @44:28
+IDENTIFIER @44:35 id prefix capture.prefix [v package] : java.lang.String : java.lang.String
+TOKEN @44:35
+TOKEN @44:41
+BLOCK @44:43
+TOKEN @44:43
+VARIABLE @45:5 var capture.count [v package] : int
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Lambdas flags [package] local true parameter false effectivelyFinal true constant null owner capture Lambdas#capture(Ljava/lang/String;)Ljava/util/function/Supplier; [package] returns java.util.function.Supplier<java.lang.String> parameters 1 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Lambdas type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+MODIFIERS
+PRIMITIVE_TYPE @45:5 : int
+TOKEN @45:5
+IDENTIFIER @45:9 id count capture.count [v package] : int : int
+TOKEN @45:9
+TOKEN @45:15
+INT_LITERAL @45:17 : int = 3
+TOKEN @45:17
+TOKEN @45:18
+RETURN_STATEMENT @46:5
+TOKEN @46:5
+LAMBDA_EXPRESSION @46:12 : java.util.function.Supplier<java.lang.String>
+TOKEN @46:12
+TOKEN @46:13
+TOKEN @46:15
+PLUS @46:18 : java.lang.String
+PLUS @46:18 : java.lang.String
+IDENTIFIER @46:18 id prefix capture.prefix [v package] : java.lang.String : java.lang.String
+TOKEN @46:18
+TOKEN @46:25
+IDENTIFIER @46:27 id count capture.count [v package] : int : int
+TOKEN @46:27
+TOKEN @46:33
+METHOD_INVOCATION @46:35 call Object.hashCode [m public] : ? () returns int throws [] sig java.lang.Object#hashCode()I : int
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Object flags [public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @46:35 : ?
+IDENTIFIER @46:35 id this Lambdas.this [v final] : Lambdas : Lambdas
+TOKEN @46:35
+TOKEN @46:39
+IDENTIFIER @46:40 id hashCode Object.hashCode [m public] : ? () returns int throws [] sig java.lang.Object#hashCode()I : int
+TOKEN @46:40
+ARGUMENTS @46:48
+TOKEN @46:48
+TOKEN @46:49
+TOKEN @46:50
+TOKEN @47:3
+METHOD @49:3 method Lambdas.sort [m package] : ? (java.util.List<java.lang.String>) returns void throws [] sig Lambdas#sort(Ljava/util/List;)V overrides false
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Lambdas flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [words] parameterMetadata []
+MODIFIERS
+TYPE_PARAMETERS
+PRIMITIVE_TYPE @49:3 : void
+TOKEN @49:3
+IDENTIFIER @49:8 id sort Lambdas.sort [m package] : ? (java.util.List<java.lang.String>) returns void throws [] sig Lambdas#sort(Ljava/util/List;)V : void
+TOKEN @49:8
+TOKEN @49:12
+VARIABLE @49:13 var sort.words [v package] : java.util.List<java.lang.String>
+  details declared true usages 3 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Lambdas flags [package] local true parameter true effectivelyFinal true constant null owner sort Lambdas#sort(Ljava/util/List;)V [package] returns void parameters 1 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Lambdas type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+MODIFIERS
+PARAMETERIZED_TYPE @49:13 : java.util.List<java.lang.String>
+IDENTIFIER @49:13 id List java.util.List [t public interface] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
+TOKEN @49:13
+TYPE_ARGUMENTS @49:17
+TOKEN @49:17
+IDENTIFIER @49:18 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @49:18
+TOKEN @49:24
+IDENTIFIER @49:26 id words sort.words [v package] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
+TOKEN @49:26
+TOKEN @49:31
+BLOCK @49:33
+TOKEN @49:33
+EXPRESSION_STATEMENT @50:5
+METHOD_INVOCATION @50:5 call List.sort [m public] : ? (java.util.Comparator<java.lang.Object>) returns void throws [] sig java.util.List#sort(Ljava/util/Comparator;)V : void
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing List flags [public] overridden [] overridable true generic false default true synchronized false varargs false native false parameters [arg0] parameterMetadata []
+MEMBER_SELECT @50:5 : ?
+IDENTIFIER @50:5 id words sort.words [v package] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
+TOKEN @50:5
+TOKEN @50:10
+IDENTIFIER @50:11 id sort List.sort [m public] : ? (java.util.Comparator<java.lang.Object>) returns void throws [] sig java.util.List#sort(Ljava/util/Comparator;)V : void
+TOKEN @50:11
+ARGUMENTS @50:15
+TOKEN @50:15
+LAMBDA_EXPRESSION @50:16 : java.util.Comparator<java.lang.Object>
+TOKEN @50:16
+VARIABLE @50:17 var compare.a [v package] : java.lang.String
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Comparator flags [package] local true parameter true effectivelyFinal true constant null owner compare java.util.Comparator#compare(Ljava/lang/Object;Ljava/lang/Object;)I [abstract, public] returns int parameters 2 thrown 0 overridden 0 declared false usages 0 metadata 0 enclosing Comparator type true kinds truefalsefalse other falsefalsefalsefalsetruefalse2falsefalse
+MODIFIERS
+INFERED_TYPE
+IDENTIFIER @50:17 id a compare.a [v package] : java.lang.String : java.lang.String
+TOKEN @50:17
+TOKEN @50:18
+VARIABLE @50:20 var compare.b [v package] : java.lang.String
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Comparator flags [package] local true parameter true effectivelyFinal true constant null owner compare java.util.Comparator#compare(Ljava/lang/Object;Ljava/lang/Object;)I [abstract, public] returns int parameters 2 thrown 0 overridden 0 declared false usages 0 metadata 0 enclosing Comparator type true kinds truefalsefalse other falsefalsefalsefalsetruefalse2falsefalse
+MODIFIERS
+INFERED_TYPE
+IDENTIFIER @50:20 id b compare.b [v package] : java.lang.String : java.lang.String
+TOKEN @50:20
+TOKEN @50:21
+TOKEN @50:23
+METHOD_INVOCATION @50:26 call String.compareToIgnoreCase [m public] : ? (java.lang.String) returns int throws [] sig java.lang.String#compareToIgnoreCase(Ljava/lang/String;)I : int
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing String flags [public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+MEMBER_SELECT @50:26 : ?
+IDENTIFIER @50:26 id a compare.a [v package] : java.lang.String : java.lang.String
+TOKEN @50:26
+TOKEN @50:27
+IDENTIFIER @50:28 id compareToIgnoreCase String.compareToIgnoreCase [m public] : ? (java.lang.String) returns int throws [] sig java.lang.String#compareToIgnoreCase(Ljava/lang/String;)I : int
+TOKEN @50:28
+ARGUMENTS @50:47
+TOKEN @50:47
+IDENTIFIER @50:48 id b compare.b [v package] : java.lang.String : java.lang.String
+TOKEN @50:48
+TOKEN @50:49
+TOKEN @50:50
+TOKEN @50:51
+EXPRESSION_STATEMENT @51:5
+METHOD_INVOCATION @51:5 call Iterable.forEach [m public] : ? (java.util.function.Consumer<java.lang.Object>) returns void throws [] sig java.lang.Iterable#forEach(Ljava/util/function/Consumer;)V : void
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Iterable flags [public] overridden [] overridable true generic false default true synchronized false varargs false native false parameters [arg0] parameterMetadata []
+MEMBER_SELECT @51:5 : ?
+IDENTIFIER @51:5 id words sort.words [v package] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
+TOKEN @51:5
+TOKEN @51:10
+IDENTIFIER @51:11 id forEach Iterable.forEach [m public] : ? (java.util.function.Consumer<java.lang.Object>) returns void throws [] sig java.lang.Iterable#forEach(Ljava/util/function/Consumer;)V : void
+TOKEN @51:11
+ARGUMENTS @51:18
+TOKEN @51:18
+METHOD_REFERENCE @51:19 : java.util.function.Consumer<java.lang.Object>
+MEMBER_SELECT @51:19 : java.io.PrintStream
+IDENTIFIER @51:19 id System java.lang.System [t final public] : java.lang.System : java.lang.System
+TOKEN @51:19
+TOKEN @51:25
+IDENTIFIER @51:26 id out System.out [v static final public] : java.io.PrintStream : java.io.PrintStream
+TOKEN @51:26
+TOKEN @51:29
+IDENTIFIER @51:31 id println PrintStream.println [m public] : ? (java.lang.String) returns void throws [] sig java.io.PrintStream#println(Ljava/lang/String;)V : void
+TOKEN @51:31
+TOKEN @51:38
+TOKEN @51:39
+EXPRESSION_STATEMENT @52:5
+METHOD_INVOCATION @52:5 call Collection.removeIf [m public] : ? (java.util.function.Predicate<java.lang.Object>) returns boolean throws [] sig java.util.Collection#removeIf(Ljava/util/function/Predicate;)Z : boolean
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Collection flags [public] overridden [] overridable true generic false default true synchronized false varargs false native false parameters [arg0] parameterMetadata []
+MEMBER_SELECT @52:5 : ?
+IDENTIFIER @52:5 id words sort.words [v package] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
+TOKEN @52:5
+TOKEN @52:10
+IDENTIFIER @52:11 id removeIf Collection.removeIf [m public] : ? (java.util.function.Predicate<java.lang.Object>) returns boolean throws [] sig java.util.Collection#removeIf(Ljava/util/function/Predicate;)Z : boolean
+TOKEN @52:11
+ARGUMENTS @52:19
+TOKEN @52:19
+LAMBDA_EXPRESSION @52:20 : java.util.function.Predicate<java.lang.Object>
+VARIABLE @52:20 var test.word [v package] : java.lang.String
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Predicate flags [package] local true parameter true effectivelyFinal true constant null owner test java.util.function.Predicate#test(Ljava/lang/Object;)Z [abstract, public] returns boolean parameters 1 thrown 0 overridden 0 declared false usages 0 metadata 0 enclosing Predicate type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+MODIFIERS
+INFERED_TYPE
+IDENTIFIER @52:20 id word test.word [v package] : java.lang.String : java.lang.String
+TOKEN @52:20
+TOKEN @52:25
+METHOD_INVOCATION @52:28 call String.startsWith [m public] : ? (java.lang.String) returns boolean throws [] sig java.lang.String#startsWith(Ljava/lang/String;)Z : boolean
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing String flags [public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+MEMBER_SELECT @52:28 : ?
+IDENTIFIER @52:28 id word test.word [v package] : java.lang.String : java.lang.String
+TOKEN @52:28
+TOKEN @52:32
+IDENTIFIER @52:33 id startsWith String.startsWith [m public] : ? (java.lang.String) returns boolean throws [] sig java.lang.String#startsWith(Ljava/lang/String;)Z : boolean
+TOKEN @52:33
+ARGUMENTS @52:43
+TOKEN @52:43
+STRING_LITERAL @52:44 : java.lang.String = x
+TOKEN @52:44
+TOKEN @52:47
+TOKEN @52:48
+TOKEN @52:49
+TOKEN @53:3
+TOKEN @54:1
+TOKEN @55:1

@@ -1,0 +1,1119 @@
+COMPILATION_UNIT @1:1
+IMPORT @1:1
+TOKEN @1:1
+MEMBER_SELECT @1:8 : ?
+MEMBER_SELECT @1:8 : ?
+IDENTIFIER @1:8 id java unknown : ?
+TOKEN @1:8
+TOKEN @1:12
+IDENTIFIER @1:13 id util unknown : ?
+TOKEN @1:13
+TOKEN @1:17
+IDENTIFIER @1:18 id ArrayList unknown : ?
+TOKEN @1:18
+TOKEN @1:27
+IMPORT @2:1
+TOKEN @2:1
+MEMBER_SELECT @2:8 : ?
+MEMBER_SELECT @2:8 : ?
+IDENTIFIER @2:8 id java unknown : ?
+TOKEN @2:8
+TOKEN @2:12
+IDENTIFIER @2:13 id util unknown : ?
+TOKEN @2:13
+TOKEN @2:17
+IDENTIFIER @2:18 id List unknown : ?
+TOKEN @2:18
+TOKEN @2:22
+CLASS @4:1 class .Expressions [t package] : Expressions super java.lang.Object interfaces []
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Expressions flags [package] members [, <init>, BIG, FLAG, HEX, Inner, LETTER, NAME, RATIO, SIZE, SMALL, a, array, arrayType, assign, b, boxed, c, concat, created, d, deep, e, empty, first, init, inner, innerValue, isString, length, list, matrix, negated, nextLetter, o, qualified, s, self, shift, shortValue, size, small, superCall, text, type, unboxed] lookupToString 0 outermost Expressions annotation false subtypeOf [java.lang.Object] superTypes [java.lang.Object] numerical false wrapper false raw false declaring Expressions
+MODIFIERS
+TOKEN @4:1
+IDENTIFIER @4:7 id Expressions .Expressions [t package] : Expressions : Expressions
+TOKEN @4:7
+TYPE_PARAMETERS
+LIST
+LIST
+TOKEN @4:19
+VARIABLE @6:3 var Expressions.SIZE [v static final package] : int
+  details declared true usages 5 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Expressions flags [static, final, package] local false parameter false effectivelyFinal true constant 4
+MODIFIERS @6:3
+TOKEN @6:3
+TOKEN @6:10
+PRIMITIVE_TYPE @6:16 : int
+TOKEN @6:16
+IDENTIFIER @6:20 id SIZE Expressions.SIZE [v static final package] : int : int = 4
+TOKEN @6:20
+TOKEN @6:25
+INT_LITERAL @6:27 : int = 4
+TOKEN @6:27
+TOKEN @6:28
+VARIABLE @7:3 var Expressions.NAME [v static final package] : java.lang.String
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Expressions flags [static, final, package] local false parameter false effectivelyFinal true constant expr4
+MODIFIERS @7:3
+TOKEN @7:3
+TOKEN @7:10
+IDENTIFIER @7:16 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @7:16
+IDENTIFIER @7:23 id NAME Expressions.NAME [v static final package] : java.lang.String : java.lang.String = expr4
+TOKEN @7:23
+TOKEN @7:28
+PLUS @7:30 : java.lang.String = expr4
+STRING_LITERAL @7:30 : java.lang.String = expr
+TOKEN @7:30
+TOKEN @7:37
+IDENTIFIER @7:39 id SIZE Expressions.SIZE [v static final package] : int : int = 4
+TOKEN @7:39
+TOKEN @7:43
+VARIABLE @8:3 var Expressions.BIG [v static final package] : long
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Expressions flags [static, final, package] local false parameter false effectivelyFinal true constant 1099511627776
+MODIFIERS @8:3
+TOKEN @8:3
+TOKEN @8:10
+PRIMITIVE_TYPE @8:16 : long
+TOKEN @8:16
+IDENTIFIER @8:21 id BIG Expressions.BIG [v static final package] : long : long = 1099511627776
+TOKEN @8:21
+TOKEN @8:25
+LEFT_SHIFT @8:27 : long
+LONG_LITERAL @8:27 : long = 1
+TOKEN @8:27
+TOKEN @8:30
+INT_LITERAL @8:33 : int = 40
+TOKEN @8:33
+TOKEN @8:35
+VARIABLE @9:3 var Expressions.LETTER [v static final package] : char
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Expressions flags [static, final, package] local false parameter false effectivelyFinal true constant 97
+MODIFIERS @9:3
+TOKEN @9:3
+TOKEN @9:10
+PRIMITIVE_TYPE @9:16 : char
+TOKEN @9:16
+IDENTIFIER @9:21 id LETTER Expressions.LETTER [v static final package] : char : char = 97
+TOKEN @9:21
+TOKEN @9:28
+CHAR_LITERAL @9:30 : char = 97
+TOKEN @9:30
+TOKEN @9:33
+VARIABLE @10:3 var Expressions.RATIO [v static final package] : double
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Expressions flags [static, final, package] local false parameter false effectivelyFinal true constant 1500.0
+MODIFIERS @10:3
+TOKEN @10:3
+TOKEN @10:10
+PRIMITIVE_TYPE @10:16 : double
+TOKEN @10:16
+IDENTIFIER @10:23 id RATIO Expressions.RATIO [v static final package] : double : double = 1500.0
+TOKEN @10:23
+TOKEN @10:29
+DOUBLE_LITERAL @10:31 : double
+TOKEN @10:31
+TOKEN @10:36
+VARIABLE @11:3 var Expressions.SMALL [v static final package] : float
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Expressions flags [static, final, package] local false parameter false effectivelyFinal true constant 2.5
+MODIFIERS @11:3
+TOKEN @11:3
+TOKEN @11:10
+PRIMITIVE_TYPE @11:16 : float
+TOKEN @11:16
+IDENTIFIER @11:22 id SMALL Expressions.SMALL [v static final package] : float : float = 2.5
+TOKEN @11:22
+TOKEN @11:28
+FLOAT_LITERAL @11:30 : float
+TOKEN @11:30
+TOKEN @11:34
+VARIABLE @12:3 var Expressions.FLAG [v static final package] : boolean
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Expressions flags [static, final, package] local false parameter false effectivelyFinal true constant true
+MODIFIERS @12:3
+TOKEN @12:3
+TOKEN @12:10
+PRIMITIVE_TYPE @12:16 : boolean
+TOKEN @12:16
+IDENTIFIER @12:24 id FLAG Expressions.FLAG [v static final package] : boolean : boolean = true
+TOKEN @12:24
+TOKEN @12:29
+CONDITIONAL_AND @12:31 : boolean
+LOGICAL_COMPLEMENT @12:31 : boolean = true
+TOKEN @12:31
+BOOLEAN_LITERAL @12:32 : boolean = false
+TOKEN @12:32
+TOKEN @12:38
+PARENTHESIZED_EXPRESSION @12:41 : boolean
+TOKEN @12:41
+CONDITIONAL_OR @12:42 : boolean
+GREATER_THAN @12:42 : boolean
+IDENTIFIER @12:42 id SIZE Expressions.SIZE [v static final package] : int : int = 4
+TOKEN @12:42
+TOKEN @12:47
+INT_LITERAL @12:49 : int = 2
+TOKEN @12:49
+TOKEN @12:51
+LESS_THAN_OR_EQUAL_TO @12:54 : boolean
+IDENTIFIER @12:54 id SIZE Expressions.SIZE [v static final package] : int : int = 4
+TOKEN @12:54
+TOKEN @12:59
+INT_LITERAL @12:62 : int = 1
+TOKEN @12:62
+TOKEN @12:63
+TOKEN @12:64
+VARIABLE @13:3 var Expressions.HEX [v static final package] : int
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Expressions flags [static, final, package] local false parameter false effectivelyFinal true constant -5
+MODIFIERS @13:3
+TOKEN @13:3
+TOKEN @13:10
+PRIMITIVE_TYPE @13:16 : int
+TOKEN @13:16
+IDENTIFIER @13:20 id HEX Expressions.HEX [v static final package] : int : int = -5
+TOKEN @13:20
+TOKEN @13:24
+OR @13:26 : int
+AND @13:26 : int
+INT_LITERAL @13:26 : int = 255
+TOKEN @13:26
+TOKEN @13:31
+INT_LITERAL @13:33 : int = 10
+TOKEN @13:33
+TOKEN @13:40
+XOR @13:42 : int
+INT_LITERAL @13:42 : int = 15
+TOKEN @13:42
+TOKEN @13:46
+BITWISE_COMPLEMENT @13:48 : int = -4
+TOKEN @13:48
+INT_LITERAL @13:49 : int = 3
+TOKEN @13:49
+TOKEN @13:50
+VARIABLE @15:3 var Expressions.a [v package] : int
+  details declared true usages 7 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Expressions flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+PRIMITIVE_TYPE @15:3 : int
+TOKEN @15:3
+IDENTIFIER @15:7 id a Expressions.a [v package] : int : int
+TOKEN @15:7
+TOKEN @15:9
+INT_LITERAL @15:11 : int = 1
+TOKEN @15:11
+TOKEN @15:12
+VARIABLE @16:3 var Expressions.b [v package] : int
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Expressions flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+PRIMITIVE_TYPE @16:3 : int
+TOKEN @16:3
+IDENTIFIER @16:7 id b Expressions.b [v package] : int : int
+TOKEN @16:7
+TOKEN @16:9
+MINUS @16:11 : int
+PLUS @16:11 : int
+IDENTIFIER @16:11 id a Expressions.a [v package] : int : int
+TOKEN @16:11
+TOKEN @16:13
+MULTIPLY @16:15 : int = 6
+INT_LITERAL @16:15 : int = 2
+TOKEN @16:15
+TOKEN @16:17
+INT_LITERAL @16:19 : int = 3
+TOKEN @16:19
+TOKEN @16:21
+REMAINDER @16:23 : int = 2
+DIVIDE @16:23 : int = 2
+INT_LITERAL @16:23 : int = 4
+TOKEN @16:23
+TOKEN @16:25
+INT_LITERAL @16:27 : int = 2
+TOKEN @16:27
+TOKEN @16:29
+INT_LITERAL @16:31 : int = 3
+TOKEN @16:31
+TOKEN @16:32
+VARIABLE @17:3 var Expressions.c [v package] : long
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Expressions flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+PRIMITIVE_TYPE @17:3 : long
+TOKEN @17:3
+IDENTIFIER @17:8 id c Expressions.c [v package] : long : long
+TOKEN @17:8
+TOKEN @17:10
+PLUS @17:12 : long
+IDENTIFIER @17:12 id a Expressions.a [v package] : int : int
+TOKEN @17:12
+TOKEN @17:14
+LONG_LITERAL @17:16 : long = 1
+TOKEN @17:16
+TOKEN @17:18
+VARIABLE @18:3 var Expressions.d [v package] : double
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Expressions flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+PRIMITIVE_TYPE @18:3 : double
+TOKEN @18:3
+IDENTIFIER @18:10 id d Expressions.d [v package] : double : double
+TOKEN @18:10
+TOKEN @18:12
+DIVIDE @18:14 : double
+IDENTIFIER @18:14 id a Expressions.a [v package] : int : int
+TOKEN @18:14
+TOKEN @18:16
+DOUBLE_LITERAL @18:18 : double
+TOKEN @18:18
+TOKEN @18:21
+VARIABLE @19:3 var Expressions.e [v package] : int
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Expressions flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+PRIMITIVE_TYPE @19:3 : int
+TOKEN @19:3
+IDENTIFIER @19:7 id e Expressions.e [v package] : int : int
+TOKEN @19:7
+TOKEN @19:9
+TYPE_CAST @19:11 : int
+TOKEN @19:11
+PRIMITIVE_TYPE @19:12 : int
+TOKEN @19:12
+LIST
+TOKEN @19:15
+IDENTIFIER @19:17 id d Expressions.d [v package] : double : double
+TOKEN @19:17
+TOKEN @19:18
+VARIABLE @20:3 var Expressions.o [v package] : java.lang.Object
+  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Expressions flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+IDENTIFIER @20:3 id Object java.lang.Object [t public] : java.lang.Object : java.lang.Object
+TOKEN @20:3
+IDENTIFIER @20:10 id o Expressions.o [v package] : java.lang.Object : java.lang.Object
+TOKEN @20:10
+TOKEN @20:12
+STRING_LITERAL @20:14 : java.lang.String = text
+TOKEN @20:14
+TOKEN @20:20
+VARIABLE @21:3 var Expressions.isString [v package] : boolean
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Expressions flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+PRIMITIVE_TYPE @21:3 : boolean
+TOKEN @21:3
+IDENTIFIER @21:11 id isString Expressions.isString [v package] : boolean : boolean
+TOKEN @21:11
+TOKEN @21:20
+INSTANCE_OF @21:22 : boolean
+IDENTIFIER @21:22 id o Expressions.o [v package] : java.lang.Object : java.lang.Object
+TOKEN @21:22
+TOKEN @21:24
+IDENTIFIER @21:35 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @21:35
+TOKEN @21:41
+VARIABLE @22:3 var Expressions.s [v package] : java.lang.String
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Expressions flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+IDENTIFIER @22:3 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @22:3
+IDENTIFIER @22:10 id s Expressions.s [v package] : java.lang.String : java.lang.String
+TOKEN @22:10
+TOKEN @22:12
+CONDITIONAL_EXPRESSION @22:14 : java.lang.String
+IDENTIFIER @22:14 id isString Expressions.isString [v package] : boolean : boolean
+TOKEN @22:14
+TOKEN @22:23
+TYPE_CAST @22:25 : java.lang.String
+TOKEN @22:25
+IDENTIFIER @22:26 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @22:26
+LIST
+TOKEN @22:32
+IDENTIFIER @22:34 id o Expressions.o [v package] : java.lang.Object : java.lang.Object
+TOKEN @22:34
+TOKEN @22:36
+NULL_LITERAL @22:38 : <nulltype>
+TOKEN @22:38
+TOKEN @22:42
+VARIABLE @23:3 var Expressions.array [v package] : int[]
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Expressions flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+ARRAY_TYPE @23:3 : int[]
+PRIMITIVE_TYPE @23:3 : int
+TOKEN @23:3
+TOKEN @23:6
+TOKEN @23:7
+IDENTIFIER @23:9 id array Expressions.array [v package] : int[] : int[]
+TOKEN @23:9
+TOKEN @23:15
+NEW_ARRAY @23:17 : int[]
+TOKEN @23:17
+PRIMITIVE_TYPE @23:21 : int
+TOKEN @23:21
+ARRAY_DIMENSION @23:24
+TOKEN @23:24
+IDENTIFIER @23:25 id SIZE Expressions.SIZE [v static final package] : int : int = 4
+TOKEN @23:25
+TOKEN @23:29
+LIST
+TOKEN @23:30
+VARIABLE @24:3 var Expressions.matrix [v package] : int[][]
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Expressions flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+ARRAY_TYPE @24:3 : int[][]
+ARRAY_TYPE @24:3 : int[]
+PRIMITIVE_TYPE @24:3 : int
+TOKEN @24:3
+TOKEN @24:6
+TOKEN @24:7
+TOKEN @24:8
+TOKEN @24:9
+IDENTIFIER @24:11 id matrix Expressions.matrix [v package] : int[][] : int[][]
+TOKEN @24:11
+TOKEN @24:18
+NEW_ARRAY @24:20 : int[][]
+TOKEN @24:20
+LIST @24:21
+NEW_ARRAY @24:21 : int[]
+TOKEN @24:21
+LIST @24:22
+INT_LITERAL @24:22 : int = 1
+TOKEN @24:22
+TOKEN @24:23
+INT_LITERAL @24:25 : int = 2
+TOKEN @24:25
+TOKEN @24:26
+TOKEN @24:27
+NEW_ARRAY @24:29 : int[]
+TOKEN @24:29
+LIST @24:30
+INT_LITERAL @24:30 : int = 3
+TOKEN @24:30
+TOKEN @24:31
+TOKEN @24:32
+TOKEN @24:33
+VARIABLE @25:3 var Expressions.init [v package] : int[]
+  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Expressions flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+ARRAY_TYPE @25:3 : int[]
+PRIMITIVE_TYPE @25:3 : int
+TOKEN @25:3
+TOKEN @25:6
+TOKEN @25:7
+IDENTIFIER @25:9 id init Expressions.init [v package] : int[] : int[]
+TOKEN @25:9
+TOKEN @25:14
+NEW_ARRAY @25:16 : int[]
+TOKEN @25:16
+PRIMITIVE_TYPE @25:20 : int
+TOKEN @25:20
+ARRAY_DIMENSION @25:23
+TOKEN @25:23
+TOKEN @25:24
+TOKEN @25:26
+LIST @25:27
+INT_LITERAL @25:27 : int = 1
+TOKEN @25:27
+TOKEN @25:28
+INT_LITERAL @25:30 : int = 2
+TOKEN @25:30
+TOKEN @25:31
+INT_LITERAL @25:33 : int = 3
+TOKEN @25:33
+TOKEN @25:34
+TOKEN @25:35
+VARIABLE @26:3 var Expressions.first [v package] : int
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Expressions flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+PRIMITIVE_TYPE @26:3 : int
+TOKEN @26:3
+IDENTIFIER @26:7 id first Expressions.first [v package] : int : int
+TOKEN @26:7
+TOKEN @26:13
+ARRAY_ACCESS_EXPRESSION @26:15 : int
+IDENTIFIER @26:15 id init Expressions.init [v package] : int[] : int[]
+TOKEN @26:15
+ARRAY_DIMENSION @26:19
+TOKEN @26:19
+INT_LITERAL @26:20 : int = 0
+TOKEN @26:20
+TOKEN @26:21
+TOKEN @26:22
+VARIABLE @27:3 var Expressions.length [v package] : int
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Expressions flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+PRIMITIVE_TYPE @27:3 : int
+TOKEN @27:3
+IDENTIFIER @27:7 id length Expressions.length [v package] : int : int
+TOKEN @27:7
+TOKEN @27:14
+MEMBER_SELECT @27:16 : int
+IDENTIFIER @27:16 id init Expressions.init [v package] : int[] : int[]
+TOKEN @27:16
+TOKEN @27:20
+IDENTIFIER @27:21 id length !unknown!.length [v final public] : int : int
+TOKEN @27:21
+TOKEN @27:27
+VARIABLE @28:3 var Expressions.list [v package] : java.util.List<java.lang.String>
+  details declared true usages 3 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Expressions flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+PARAMETERIZED_TYPE @28:3 : java.util.List<java.lang.String>
+IDENTIFIER @28:3 id List java.util.List [t public interface] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
+TOKEN @28:3
+TYPE_ARGUMENTS @28:7
+TOKEN @28:7
+IDENTIFIER @28:8 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @28:8
+TOKEN @28:14
+IDENTIFIER @28:16 id list Expressions.list [v package] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
+TOKEN @28:16
+TOKEN @28:21
+NEW_CLASS @28:23 new ArrayList.<init> [m public] : ? () returns void throws [] sig java.util.ArrayList#<init>()V : java.util.ArrayList
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing ArrayList flags [public] overridden [AbstractList.<init>[], AbstractCollection.<init>[], Object.<init>[]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+TOKEN @28:23
+PARAMETERIZED_TYPE @28:27 : java.util.ArrayList
+IDENTIFIER @28:27 id ArrayList ArrayList.<init> [m public] : ? () returns void throws [] sig java.util.ArrayList#<init>()V : java.util.ArrayList
+TOKEN @28:27
+TYPE_ARGUMENTS @28:36
+TOKEN @28:36
+TOKEN @28:37
+ARGUMENTS @28:38
+TOKEN @28:38
+TOKEN @28:39
+TOKEN @28:40
+VARIABLE @29:3 var Expressions.type [v package] : java.lang.Class<java.lang.Object>
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Expressions flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+PARAMETERIZED_TYPE @29:3 : java.lang.Class<java.lang.Object>
+IDENTIFIER @29:3 id Class java.lang.Class [t final public] : java.lang.Class<java.lang.Object> : java.lang.Class<java.lang.Object>
+TOKEN @29:3
+TYPE_ARGUMENTS @29:8
+TOKEN @29:8
+UNBOUNDED_WILDCARD @29:9
+TOKEN @29:9
+TOKEN @29:10
+IDENTIFIER @29:12 id type Expressions.type [v package] : java.lang.Class<java.lang.Object> : java.lang.Class<java.lang.Object>
+TOKEN @29:12
+TOKEN @29:17
+MEMBER_SELECT @29:19 : java.lang.Class<java.lang.String>
+IDENTIFIER @29:19 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @29:19
+TOKEN @29:25
+IDENTIFIER @29:26 id class unknown : ?
+TOKEN @29:26
+TOKEN @29:31
+VARIABLE @30:3 var Expressions.arrayType [v package] : java.lang.Class<java.lang.Object>
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Expressions flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+PARAMETERIZED_TYPE @30:3 : java.lang.Class<java.lang.Object>
+IDENTIFIER @30:3 id Class java.lang.Class [t final public] : java.lang.Class<java.lang.Object> : java.lang.Class<java.lang.Object>
+TOKEN @30:3
+TYPE_ARGUMENTS @30:8
+TOKEN @30:8
+UNBOUNDED_WILDCARD @30:9
+TOKEN @30:9
+TOKEN @30:10
+IDENTIFIER @30:12 id arrayType Expressions.arrayType [v package] : java.lang.Class<java.lang.Object> : java.lang.Class<java.lang.Object>
+TOKEN @30:12
+TOKEN @30:22
+MEMBER_SELECT @30:24 : java.lang.Class<int[]>
+ARRAY_TYPE @30:24 : int[]
+PRIMITIVE_TYPE @30:24 : int
+TOKEN @30:24
+TOKEN @30:27
+TOKEN @30:28
+TOKEN @30:29
+IDENTIFIER @30:30 id class unknown : ?
+TOKEN @30:30
+TOKEN @30:35
+VARIABLE @31:3 var Expressions.concat [v package] : java.lang.String
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Expressions flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+IDENTIFIER @31:3 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @31:3
+IDENTIFIER @31:10 id concat Expressions.concat [v package] : java.lang.String : java.lang.String
+TOKEN @31:10
+TOKEN @31:17
+PLUS @31:19 : java.lang.String
+PLUS @31:19 : java.lang.String
+PLUS @31:19 : java.lang.String
+PLUS @31:19 : java.lang.String = a1c
+PLUS @31:19 : java.lang.String = a1
+STRING_LITERAL @31:19 : java.lang.String = a
+TOKEN @31:19
+TOKEN @31:23
+INT_LITERAL @31:25 : int = 1
+TOKEN @31:25
+TOKEN @31:27
+CHAR_LITERAL @31:29 : char = 99
+TOKEN @31:29
+TOKEN @31:33
+DOUBLE_LITERAL @31:35 : double
+TOKEN @31:35
+TOKEN @31:39
+BOOLEAN_LITERAL @31:41 : boolean = true
+TOKEN @31:41
+TOKEN @31:46
+NULL_LITERAL @31:48 : <nulltype>
+TOKEN @31:48
+TOKEN @31:52
+VARIABLE @32:3 var Expressions.self [v package] : java.lang.Object
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Expressions flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+IDENTIFIER @32:3 id Object java.lang.Object [t public] : java.lang.Object : java.lang.Object
+TOKEN @32:3
+IDENTIFIER @32:10 id self Expressions.self [v package] : java.lang.Object : java.lang.Object
+TOKEN @32:10
+TOKEN @32:15
+IDENTIFIER @32:17 id this Expressions.this [v final] : Expressions : Expressions
+TOKEN @32:17
+TOKEN @32:21
+VARIABLE @33:3 var Expressions.shift [v package] : int
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Expressions flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+PRIMITIVE_TYPE @33:3 : int
+TOKEN @33:3
+IDENTIFIER @33:7 id shift Expressions.shift [v package] : int : int
+TOKEN @33:7
+TOKEN @33:13
+UNSIGNED_RIGHT_SHIFT @33:15 : int
+RIGHT_SHIFT @33:15 : int
+IDENTIFIER @33:15 id a Expressions.a [v package] : int : int
+TOKEN @33:15
+TOKEN @33:17
+INT_LITERAL @33:20 : int = 1
+TOKEN @33:20
+TOKEN @33:22
+INT_LITERAL @33:26 : int = 2
+TOKEN @33:26
+TOKEN @33:27
+VARIABLE @34:3 var Expressions.negated [v package] : int
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Expressions flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+PRIMITIVE_TYPE @34:3 : int
+TOKEN @34:3
+IDENTIFIER @34:7 id negated Expressions.negated [v package] : int : int
+TOKEN @34:7
+TOKEN @34:15
+PLUS @34:17 : int
+UNARY_MINUS @34:17 : int
+TOKEN @34:17
+IDENTIFIER @34:18 id a Expressions.a [v package] : int : int
+TOKEN @34:18
+TOKEN @34:20
+UNARY_PLUS @34:22 : int
+TOKEN @34:22
+IDENTIFIER @34:23 id b Expressions.b [v package] : int : int
+TOKEN @34:23
+TOKEN @34:24
+VARIABLE @35:3 var Expressions.nextLetter [v package] : char
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Expressions flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+PRIMITIVE_TYPE @35:3 : char
+TOKEN @35:3
+IDENTIFIER @35:8 id nextLetter Expressions.nextLetter [v package] : char : char
+TOKEN @35:8
+TOKEN @35:19
+TYPE_CAST @35:21 : char
+TOKEN @35:21
+PRIMITIVE_TYPE @35:22 : char
+TOKEN @35:22
+LIST
+TOKEN @35:26
+PARENTHESIZED_EXPRESSION @35:28 : int = 98
+TOKEN @35:28
+PLUS @35:29 : int = 98
+IDENTIFIER @35:29 id LETTER Expressions.LETTER [v static final package] : char : char = 97
+TOKEN @35:29
+TOKEN @35:36
+INT_LITERAL @35:38 : int = 1
+TOKEN @35:38
+TOKEN @35:39
+TOKEN @35:40
+VARIABLE @36:3 var Expressions.small [v package] : byte
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Expressions flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+PRIMITIVE_TYPE @36:3 : byte
+TOKEN @36:3
+IDENTIFIER @36:8 id small Expressions.small [v package] : byte : byte
+TOKEN @36:8
+TOKEN @36:14
+TYPE_CAST @36:16 : byte
+TOKEN @36:16
+PRIMITIVE_TYPE @36:17 : byte
+TOKEN @36:17
+LIST
+TOKEN @36:21
+INT_LITERAL @36:23 : int = 200
+TOKEN @36:23
+TOKEN @36:26
+VARIABLE @37:3 var Expressions.shortValue [v package] : short
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Expressions flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+PRIMITIVE_TYPE @37:3 : short
+TOKEN @37:3
+IDENTIFIER @37:9 id shortValue Expressions.shortValue [v package] : short : short
+TOKEN @37:9
+TOKEN @37:20
+INT_LITERAL @37:22 : int = 10
+TOKEN @37:22
+TOKEN @37:24
+VARIABLE @38:3 var Expressions.boxed [v package] : java.lang.Integer
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Expressions flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+IDENTIFIER @38:3 id Integer java.lang.Integer [t final public] : java.lang.Integer : java.lang.Integer
+TOKEN @38:3
+IDENTIFIER @38:11 id boxed Expressions.boxed [v package] : java.lang.Integer : java.lang.Integer
+TOKEN @38:11
+TOKEN @38:17
+IDENTIFIER @38:19 id a Expressions.a [v package] : int : int
+TOKEN @38:19
+TOKEN @38:20
+VARIABLE @39:3 var Expressions.unboxed [v package] : int
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Expressions flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+PRIMITIVE_TYPE @39:3 : int
+TOKEN @39:3
+IDENTIFIER @39:7 id unboxed Expressions.unboxed [v package] : int : int
+TOKEN @39:7
+TOKEN @39:15
+IDENTIFIER @39:17 id boxed Expressions.boxed [v package] : java.lang.Integer : java.lang.Integer
+TOKEN @39:17
+TOKEN @39:22
+VARIABLE @40:3 var Expressions.text [v package] : java.lang.String
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Expressions flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+IDENTIFIER @40:3 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @40:3
+IDENTIFIER @40:10 id text Expressions.text [v package] : java.lang.String : java.lang.String
+TOKEN @40:10
+TOKEN @40:15
+METHOD_INVOCATION @40:17 call String.toUpperCase [m public] : ? () returns java.lang.String throws [] sig java.lang.String#toUpperCase()Ljava/lang/String; : java.lang.String
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing String flags [public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @40:17 : ?
+METHOD_INVOCATION @40:17 call String.trim [m public] : ? () returns java.lang.String throws [] sig java.lang.String#trim()Ljava/lang/String; : java.lang.String
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing String flags [public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @40:17 : ?
+METHOD_INVOCATION @40:17 call String.valueOf [m static public] : ? (int) returns java.lang.String throws [] sig java.lang.String#valueOf(I)Ljava/lang/String; : java.lang.String
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing String flags [static, public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+MEMBER_SELECT @40:17 : ?
+IDENTIFIER @40:17 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @40:17
+TOKEN @40:23
+IDENTIFIER @40:24 id valueOf String.valueOf [m static public] : ? (int) returns java.lang.String throws [] sig java.lang.String#valueOf(I)Ljava/lang/String; : java.lang.String
+TOKEN @40:24
+ARGUMENTS @40:31
+TOKEN @40:31
+IDENTIFIER @40:32 id a Expressions.a [v package] : int : int
+TOKEN @40:32
+TOKEN @40:33
+TOKEN @40:34
+IDENTIFIER @40:35 id trim String.trim [m public] : ? () returns java.lang.String throws [] sig java.lang.String#trim()Ljava/lang/String; : java.lang.String
+TOKEN @40:35
+ARGUMENTS @40:39
+TOKEN @40:39
+TOKEN @40:40
+TOKEN @40:41
+IDENTIFIER @40:42 id toUpperCase String.toUpperCase [m public] : ? () returns java.lang.String throws [] sig java.lang.String#toUpperCase()Ljava/lang/String; : java.lang.String
+TOKEN @40:42
+ARGUMENTS @40:53
+TOKEN @40:53
+TOKEN @40:54
+TOKEN @40:55
+VARIABLE @41:3 var Expressions.size [v package] : int
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Expressions flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+PRIMITIVE_TYPE @41:3 : int
+TOKEN @41:3
+IDENTIFIER @41:7 id size Expressions.size [v package] : int : int
+TOKEN @41:7
+TOKEN @41:12
+METHOD_INVOCATION @41:14 call List.size [m abstract public] : ? () returns int throws [] sig java.util.List#size()I : int
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing List flags [abstract, public] overridden [Collection.size[]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @41:14 : ?
+IDENTIFIER @41:14 id list Expressions.list [v package] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
+TOKEN @41:14
+TOKEN @41:18
+IDENTIFIER @41:19 id size List.size [m abstract public] : ? () returns int throws [] sig java.util.List#size()I : int
+TOKEN @41:19
+ARGUMENTS @41:23
+TOKEN @41:23
+TOKEN @41:24
+TOKEN @41:25
+VARIABLE @42:3 var Expressions.empty [v package] : boolean
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Expressions flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+PRIMITIVE_TYPE @42:3 : boolean
+TOKEN @42:3
+IDENTIFIER @42:11 id empty Expressions.empty [v package] : boolean : boolean
+TOKEN @42:11
+TOKEN @42:17
+CONDITIONAL_AND @42:19 : boolean
+METHOD_INVOCATION @42:19 call List.isEmpty [m abstract public] : ? () returns boolean throws [] sig java.util.List#isEmpty()Z : boolean
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing List flags [abstract, public] overridden [Collection.isEmpty[]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @42:19 : ?
+IDENTIFIER @42:19 id list Expressions.list [v package] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
+TOKEN @42:19
+TOKEN @42:23
+IDENTIFIER @42:24 id isEmpty List.isEmpty [m abstract public] : ? () returns boolean throws [] sig java.util.List#isEmpty()Z : boolean
+TOKEN @42:24
+ARGUMENTS @42:31
+TOKEN @42:31
+TOKEN @42:32
+TOKEN @42:34
+METHOD_INVOCATION @42:37 call List.contains [m abstract public] : ? (java.lang.Object) returns boolean throws [] sig java.util.List#contains(Ljava/lang/Object;)Z : boolean
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing List flags [abstract, public] overridden [Collection.contains[]] overridable true generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+MEMBER_SELECT @42:37 : ?
+IDENTIFIER @42:37 id list Expressions.list [v package] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
+TOKEN @42:37
+TOKEN @42:41
+IDENTIFIER @42:42 id contains List.contains [m abstract public] : ? (java.lang.Object) returns boolean throws [] sig java.util.List#contains(Ljava/lang/Object;)Z : boolean
+TOKEN @42:42
+ARGUMENTS @42:50
+TOKEN @42:50
+STRING_LITERAL @42:51 : java.lang.String = x
+TOKEN @42:51
+TOKEN @42:54
+TOKEN @42:55
+VARIABLE @43:3 var Expressions.created [v package] : java.lang.Object
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Expressions flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+IDENTIFIER @43:3 id Object java.lang.Object [t public] : java.lang.Object : java.lang.Object
+TOKEN @43:3
+IDENTIFIER @43:10 id created Expressions.created [v package] : java.lang.Object : java.lang.Object
+TOKEN @43:10
+TOKEN @43:18
+NEW_CLASS @43:20 new Object.<init> [m public] : ? () returns void throws [] sig java.lang.Object#<init>()V : Expressions$1
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Object flags [public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+TOKEN @43:20
+IDENTIFIER @43:24 id Object Object.<init> [m public] : ? () returns void throws [] sig java.lang.Object#<init>()V : java.lang.Object
+TOKEN @43:24
+ARGUMENTS @43:30
+TOKEN @43:30
+TOKEN @43:31
+CLASS @43:33 class Expressions. [t package] : Expressions$1 super java.lang.Object interfaces []
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Expressions flags [package] members [<init>, toString] lookupToString 1 outermost Expressions annotation false subtypeOf [java.lang.Object] superTypes [java.lang.Object] numerical false wrapper false raw false declaring 
+MODIFIERS
+TYPE_PARAMETERS
+LIST
+LIST
+TOKEN @43:33
+METHOD @44:5 method .toString [m public] : ? () returns java.lang.String throws [] sig Expressions$1#toString()Ljava/lang/String; overrides true
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing  flags [public] overridden [Object.toString[]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MODIFIERS @44:5
+ANNOTATION @44:5 : java.lang.Override
+TOKEN @44:5
+IDENTIFIER @44:6 id Override java.lang.Override [t public interface] : java.lang.Override : java.lang.Override
+TOKEN @44:6
+ARGUMENTS
+TOKEN @45:5
+TYPE_PARAMETERS
+IDENTIFIER @45:12 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @45:12
+IDENTIFIER @45:19 id toString .toString [m public] : ? () returns java.lang.String throws [] sig Expressions$1#toString()Ljava/lang/String; : java.lang.String
+TOKEN @45:19
+TOKEN @45:27
+TOKEN @45:28
+BLOCK @45:30
+TOKEN @45:30
+RETURN_STATEMENT @46:7
+TOKEN @46:7
+STRING_LITERAL @46:14 : java.lang.String = anonymous
+TOKEN @46:14
+TOKEN @46:25
+TOKEN @47:5
+TOKEN @48:3
+TOKEN @48:4
+VARIABLE @49:3 var Expressions.inner [v package] : Expressions$Inner
+  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Expressions flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+IDENTIFIER @49:3 id Inner Expressions.Inner [t package] : Expressions$Inner : Expressions$Inner
+TOKEN @49:3
+IDENTIFIER @49:9 id inner Expressions.inner [v package] : Expressions$Inner : Expressions$Inner
+TOKEN @49:9
+TOKEN @49:15
+NEW_CLASS @49:17 new Inner.<init> [m package] : ? () returns void throws [] sig Expressions$Inner#<init>(LExpressions;)V : Expressions$Inner
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Inner flags [package] overridden [Object.<init>[]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+TOKEN @49:17
+IDENTIFIER @49:21 id Inner Inner.<init> [m package] : ? () returns void throws [] sig Expressions$Inner#<init>(LExpressions;)V : Expressions$Inner
+TOKEN @49:21
+ARGUMENTS @49:26
+TOKEN @49:26
+TOKEN @49:27
+TOKEN @49:28
+VARIABLE @50:3 var Expressions.deep [v package] : Expressions$Inner$Deep
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Expressions flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+MEMBER_SELECT @50:3 : Expressions$Inner$Deep
+IDENTIFIER @50:3 id Inner Expressions.Inner [t package] : Expressions$Inner : Expressions$Inner
+TOKEN @50:3
+TOKEN @50:8
+IDENTIFIER @50:9 id Deep Inner.Deep [t package] : Expressions$Inner$Deep : Expressions$Inner$Deep
+TOKEN @50:9
+IDENTIFIER @50:14 id deep Expressions.deep [v package] : Expressions$Inner$Deep : Expressions$Inner$Deep
+TOKEN @50:14
+TOKEN @50:19
+NEW_CLASS @50:21 new unknown : ?
+IDENTIFIER @50:21 id inner Expressions.inner [v package] : Expressions$Inner : Expressions$Inner
+TOKEN @50:21
+TOKEN @50:26
+TOKEN @50:27
+IDENTIFIER @50:31 id Deep unknown : ?
+TOKEN @50:31
+ARGUMENTS @50:35
+TOKEN @50:35
+TOKEN @50:36
+TOKEN @50:37
+VARIABLE @51:3 var Expressions.innerValue [v package] : int
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Expressions flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+PRIMITIVE_TYPE @51:3 : int
+TOKEN @51:3
+IDENTIFIER @51:7 id innerValue Expressions.innerValue [v package] : int : int
+TOKEN @51:7
+TOKEN @51:18
+MEMBER_SELECT @51:20 : int
+IDENTIFIER @51:20 id inner Expressions.inner [v package] : Expressions$Inner : Expressions$Inner
+TOKEN @51:20
+TOKEN @51:25
+IDENTIFIER @51:26 id value Inner.value [v package] : int : int
+TOKEN @51:26
+TOKEN @51:31
+VARIABLE @52:3 var Expressions.qualified [v package] : java.lang.String
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Expressions flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+IDENTIFIER @52:3 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @52:3
+IDENTIFIER @52:10 id qualified Expressions.qualified [v package] : java.lang.String : java.lang.String
+TOKEN @52:10
+TOKEN @52:20
+METHOD_INVOCATION @52:22 call Locale.toString [m final public] : ? () returns java.lang.String throws [] sig java.util.Locale#toString()Ljava/lang/String; : java.lang.String
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Locale flags [final, public] overridden [Object.toString[]] overridable false generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @52:22 : ?
+MEMBER_SELECT @52:22 : java.util.Locale
+MEMBER_SELECT @52:22 : java.util.Locale
+MEMBER_SELECT @52:22 : ?
+IDENTIFIER @52:22 id java .java [p package] : ? : ?
+TOKEN @52:22
+TOKEN @52:26
+IDENTIFIER @52:27 id util .java.util [p package] : ? : ?
+TOKEN @52:27
+TOKEN @52:31
+IDENTIFIER @52:32 id Locale java.util.Locale [t final public] : java.util.Locale : java.util.Locale
+TOKEN @52:32
+TOKEN @52:38
+IDENTIFIER @52:39 id ROOT Locale.ROOT [v static final public] : java.util.Locale : java.util.Locale
+TOKEN @52:39
+TOKEN @52:43
+IDENTIFIER @52:44 id toString Locale.toString [m final public] : ? () returns java.lang.String throws [] sig java.util.Locale#toString()Ljava/lang/String; : java.lang.String
+TOKEN @52:44
+ARGUMENTS @52:52
+TOKEN @52:52
+TOKEN @52:53
+TOKEN @52:54
+METHOD @54:3 method Expressions.assign [m package] : ? () returns int throws [] sig Expressions#assign()I overrides false
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Expressions flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MODIFIERS
+TYPE_PARAMETERS
+PRIMITIVE_TYPE @54:3 : int
+TOKEN @54:3
+IDENTIFIER @54:7 id assign Expressions.assign [m package] : ? () returns int throws [] sig Expressions#assign()I : int
+TOKEN @54:7
+TOKEN @54:13
+TOKEN @54:14
+BLOCK @54:16
+TOKEN @54:16
+VARIABLE @55:5 var assign.x [v package] : int
+  details declared true usages 16 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Expressions flags [package] local true parameter false effectivelyFinal false constant null owner assign Expressions#assign()I [package] returns int parameters 0 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Expressions type true kinds truefalsefalse other falsefalsefalsefalsetruefalse0falsefalse
+MODIFIERS
+PRIMITIVE_TYPE @55:5 : int
+TOKEN @55:5
+IDENTIFIER @55:9 id x assign.x [v package] : int : int
+TOKEN @55:9
+TOKEN @55:11
+INT_LITERAL @55:13 : int = 0
+TOKEN @55:13
+TOKEN @55:14
+EXPRESSION_STATEMENT @56:5
+PLUS_ASSIGNMENT @56:5 : int
+IDENTIFIER @56:5 id x assign.x [v package] : int : int
+TOKEN @56:5
+TOKEN @56:7
+INT_LITERAL @56:10 : int = 1
+TOKEN @56:10
+TOKEN @56:11
+EXPRESSION_STATEMENT @57:5
+MINUS_ASSIGNMENT @57:5 : int
+IDENTIFIER @57:5 id x assign.x [v package] : int : int
+TOKEN @57:5
+TOKEN @57:7
+INT_LITERAL @57:10 : int = 2
+TOKEN @57:10
+TOKEN @57:11
+EXPRESSION_STATEMENT @58:5
+MULTIPLY_ASSIGNMENT @58:5 : int
+IDENTIFIER @58:5 id x assign.x [v package] : int : int
+TOKEN @58:5
+TOKEN @58:7
+INT_LITERAL @58:10 : int = 3
+TOKEN @58:10
+TOKEN @58:11
+EXPRESSION_STATEMENT @59:5
+DIVIDE_ASSIGNMENT @59:5 : int
+IDENTIFIER @59:5 id x assign.x [v package] : int : int
+TOKEN @59:5
+TOKEN @59:7
+INT_LITERAL @59:10 : int = 4
+TOKEN @59:10
+TOKEN @59:11
+EXPRESSION_STATEMENT @60:5
+REMAINDER_ASSIGNMENT @60:5 : int
+IDENTIFIER @60:5 id x assign.x [v package] : int : int
+TOKEN @60:5
+TOKEN @60:7
+INT_LITERAL @60:10 : int = 5
+TOKEN @60:10
+TOKEN @60:11
+EXPRESSION_STATEMENT @61:5
+LEFT_SHIFT_ASSIGNMENT @61:5 : int
+IDENTIFIER @61:5 id x assign.x [v package] : int : int
+TOKEN @61:5
+TOKEN @61:7
+INT_LITERAL @61:11 : int = 1
+TOKEN @61:11
+TOKEN @61:12
+EXPRESSION_STATEMENT @62:5
+RIGHT_SHIFT_ASSIGNMENT @62:5 : int
+IDENTIFIER @62:5 id x assign.x [v package] : int : int
+TOKEN @62:5
+TOKEN @62:7
+INT_LITERAL @62:11 : int = 1
+TOKEN @62:11
+TOKEN @62:12
+EXPRESSION_STATEMENT @63:5
+UNSIGNED_RIGHT_SHIFT_ASSIGNMENT @63:5 : int
+IDENTIFIER @63:5 id x assign.x [v package] : int : int
+TOKEN @63:5
+TOKEN @63:7
+INT_LITERAL @63:12 : int = 1
+TOKEN @63:12
+TOKEN @63:13
+EXPRESSION_STATEMENT @64:5
+AND_ASSIGNMENT @64:5 : int
+IDENTIFIER @64:5 id x assign.x [v package] : int : int
+TOKEN @64:5
+TOKEN @64:7
+INT_LITERAL @64:10 : int = 7
+TOKEN @64:10
+TOKEN @64:11
+EXPRESSION_STATEMENT @65:5
+OR_ASSIGNMENT @65:5 : int
+IDENTIFIER @65:5 id x assign.x [v package] : int : int
+TOKEN @65:5
+TOKEN @65:7
+INT_LITERAL @65:10 : int = 8
+TOKEN @65:10
+TOKEN @65:11
+EXPRESSION_STATEMENT @66:5
+XOR_ASSIGNMENT @66:5 : int
+IDENTIFIER @66:5 id x assign.x [v package] : int : int
+TOKEN @66:5
+TOKEN @66:7
+INT_LITERAL @66:10 : int = 9
+TOKEN @66:10
+TOKEN @66:11
+EXPRESSION_STATEMENT @67:5
+POSTFIX_INCREMENT @67:5 : int
+IDENTIFIER @67:5 id x assign.x [v package] : int : int
+TOKEN @67:5
+TOKEN @67:6
+TOKEN @67:8
+EXPRESSION_STATEMENT @68:5
+POSTFIX_DECREMENT @68:5 : int
+IDENTIFIER @68:5 id x assign.x [v package] : int : int
+TOKEN @68:5
+TOKEN @68:6
+TOKEN @68:8
+EXPRESSION_STATEMENT @69:5
+PREFIX_INCREMENT @69:5 : int
+TOKEN @69:5
+IDENTIFIER @69:7 id x assign.x [v package] : int : int
+TOKEN @69:7
+TOKEN @69:8
+EXPRESSION_STATEMENT @70:5
+PREFIX_DECREMENT @70:5 : int
+TOKEN @70:5
+IDENTIFIER @70:7 id x assign.x [v package] : int : int
+TOKEN @70:7
+TOKEN @70:8
+RETURN_STATEMENT @71:5
+TOKEN @71:5
+IDENTIFIER @71:12 id x assign.x [v package] : int : int
+TOKEN @71:12
+TOKEN @71:13
+TOKEN @72:3
+METHOD @74:3 method Expressions.superCall [m package] : ? () returns java.lang.String throws [] sig Expressions#superCall()Ljava/lang/String; overrides false
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Expressions flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MODIFIERS
+TYPE_PARAMETERS
+IDENTIFIER @74:3 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @74:3
+IDENTIFIER @74:10 id superCall Expressions.superCall [m package] : ? () returns java.lang.String throws [] sig Expressions#superCall()Ljava/lang/String; : java.lang.String
+TOKEN @74:10
+TOKEN @74:19
+TOKEN @74:20
+BLOCK @74:22
+TOKEN @74:22
+RETURN_STATEMENT @75:5
+TOKEN @75:5
+PLUS @75:12 : java.lang.String
+METHOD_INVOCATION @75:12 call Object.toString [m public] : ? () returns java.lang.String throws [] sig java.lang.Object#toString()Ljava/lang/String; : java.lang.String
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Object flags [public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @75:12 : ?
+IDENTIFIER @75:12 id super Expressions.super [v final] : java.lang.Object : java.lang.Object
+TOKEN @75:12
+TOKEN @75:17
+IDENTIFIER @75:18 id toString Object.toString [m public] : ? () returns java.lang.String throws [] sig java.lang.Object#toString()Ljava/lang/String; : java.lang.String
+TOKEN @75:18
+ARGUMENTS @75:26
+TOKEN @75:26
+TOKEN @75:27
+TOKEN @75:29
+METHOD_INVOCATION @75:31 call Object.hashCode [m public] : ? () returns int throws [] sig java.lang.Object#hashCode()I : int
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Object flags [public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @75:31 : ?
+MEMBER_SELECT @75:31 : Expressions
+IDENTIFIER @75:31 id Expressions .Expressions [t package] : Expressions : Expressions
+TOKEN @75:31
+TOKEN @75:42
+IDENTIFIER @75:43 id this Expressions.this [v final] : Expressions : Expressions
+TOKEN @75:43
+TOKEN @75:47
+IDENTIFIER @75:48 id hashCode Object.hashCode [m public] : ? () returns int throws [] sig java.lang.Object#hashCode()I : int
+TOKEN @75:48
+ARGUMENTS @75:56
+TOKEN @75:56
+TOKEN @75:57
+TOKEN @75:58
+TOKEN @76:3
+CLASS @78:3 class Expressions.Inner [t package] : Expressions$Inner super java.lang.Object interfaces []
+  details declared true usages 3 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Expressions flags [package] members [<init>, Deep, value] lookupToString 0 outermost Expressions annotation false subtypeOf [java.lang.Object] superTypes [java.lang.Object] numerical false wrapper false raw false declaring Inner
+MODIFIERS
+TOKEN @78:3
+IDENTIFIER @78:9 id Inner Expressions.Inner [t package] : Expressions$Inner : Expressions$Inner
+TOKEN @78:9
+TYPE_PARAMETERS
+LIST
+LIST
+TOKEN @78:15
+VARIABLE @79:5 var Inner.value [v package] : int
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Inner flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+PRIMITIVE_TYPE @79:5 : int
+TOKEN @79:5
+IDENTIFIER @79:9 id value Inner.value [v package] : int : int
+TOKEN @79:9
+TOKEN @79:15
+IDENTIFIER @79:17 id SIZE Expressions.SIZE [v static final package] : int : int = 4
+TOKEN @79:17
+TOKEN @79:21
+CLASS @81:5 class Inner.Deep [t package] : Expressions$Inner$Deep super java.lang.Object interfaces []
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Inner flags [package] members [<init>] lookupToString 0 outermost Expressions annotation false subtypeOf [java.lang.Object] superTypes [java.lang.Object] numerical false wrapper false raw false declaring Deep
+MODIFIERS
+TOKEN @81:5
+IDENTIFIER @81:11 id Deep Inner.Deep [t package] : Expressions$Inner$Deep : Expressions$Inner$Deep
+TOKEN @81:11
+TYPE_PARAMETERS
+LIST
+LIST
+TOKEN @81:16
+TOKEN @82:5
+TOKEN @83:3
+TOKEN @84:1
+TOKEN @85:1

@@ -1,0 +1,139 @@
+COMPILATION_UNIT @1:1
+PACKAGE @1:1
+TOKEN @1:1
+IDENTIFIER @1:9 id annotated .annotated [p package] : ? : ?
+TOKEN @1:9
+TOKEN @1:18
+IMPORT @3:1
+TOKEN @3:1
+MEMBER_SELECT @3:8 : ?
+MEMBER_SELECT @3:8 : ?
+IDENTIFIER @3:8 id annotated unknown : ?
+TOKEN @3:8
+TOKEN @3:17
+IDENTIFIER @3:18 id Tags unknown : ?
+TOKEN @3:18
+TOKEN @3:22
+IDENTIFIER @3:23 id Tag unknown : ?
+TOKEN @3:23
+TOKEN @3:26
+IMPORT @4:1
+TOKEN @4:1
+MEMBER_SELECT @4:8 : ?
+MEMBER_SELECT @4:8 : ?
+MEMBER_SELECT @4:8 : ?
+IDENTIFIER @4:8 id java unknown : ?
+TOKEN @4:8
+TOKEN @4:12
+IDENTIFIER @4:13 id lang unknown : ?
+TOKEN @4:13
+TOKEN @4:17
+IDENTIFIER @4:18 id annotation unknown : ?
+TOKEN @4:18
+TOKEN @4:28
+IDENTIFIER @4:29 id ElementType unknown : ?
+TOKEN @4:29
+TOKEN @4:40
+IMPORT @5:1
+TOKEN @5:1
+MEMBER_SELECT @5:8 : ?
+MEMBER_SELECT @5:8 : ?
+MEMBER_SELECT @5:8 : ?
+IDENTIFIER @5:8 id java unknown : ?
+TOKEN @5:8
+TOKEN @5:12
+IDENTIFIER @5:13 id lang unknown : ?
+TOKEN @5:13
+TOKEN @5:17
+IDENTIFIER @5:18 id annotation unknown : ?
+TOKEN @5:18
+TOKEN @5:28
+IDENTIFIER @5:29 id Target unknown : ?
+TOKEN @5:29
+TOKEN @5:35
+CLASS @7:1 class annotated.Tags [t package] : annotated.Tags super java.lang.Object interfaces []
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Tags flags [package] members [<init>, Tag] lookupToString 0 outermost Tags annotation false subtypeOf [java.lang.Object] superTypes [java.lang.Object] numerical false wrapper false raw false declaring Tags
+MODIFIERS
+TOKEN @7:1
+IDENTIFIER @7:7 id Tags annotated.Tags [t package] : annotated.Tags : annotated.Tags
+TOKEN @7:7
+TYPE_PARAMETERS
+LIST
+LIST
+TOKEN @7:12
+ANNOTATION_TYPE @8:3 class Tags.Tag [t static package interface] : annotated.Tags$Tag super java.lang.Object interfaces [java.lang.annotation.Annotation]
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Tags flags [static, package, interface] members [] lookupToString 0 outermost Tags annotation true subtypeOf [java.lang.Object, java.lang.annotation.Annotation] superTypes [java.lang.Object, java.lang.annotation.Annotation] numerical false wrapper false raw false declaring Tag
+MODIFIERS @8:3
+ANNOTATION @8:3 : java.lang.annotation.Target
+TOKEN @8:3
+IDENTIFIER @8:4 id Target java.lang.annotation.Target [t public interface] : java.lang.annotation.Target : java.lang.annotation.Target
+TOKEN @8:4
+ARGUMENTS @8:10
+TOKEN @8:10
+MEMBER_SELECT @8:11 : java.lang.annotation.ElementType
+IDENTIFIER @8:11 id ElementType java.lang.annotation.ElementType [t final public enum] : java.lang.annotation.ElementType : java.lang.annotation.ElementType
+TOKEN @8:11
+TOKEN @8:22
+IDENTIFIER @8:23 id TYPE_USE ElementType.TYPE_USE [v static final public enum] : java.lang.annotation.ElementType : java.lang.annotation.ElementType
+TOKEN @8:23
+TOKEN @8:31
+TOKEN @9:3
+TOKEN @9:4
+IDENTIFIER @9:14 id Tag Tags.Tag [t static package interface] : annotated.Tags$Tag : annotated.Tags$Tag
+TOKEN @9:14
+TYPE_PARAMETERS
+LIST
+LIST
+TOKEN @9:18
+TOKEN @10:3
+TOKEN @11:1
+CLASS @13:1 class annotated.QualifiedTypeAnnotations [t abstract package] : annotated.QualifiedTypeAnnotations super java.lang.Object interfaces []
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing QualifiedTypeAnnotations flags [abstract, package] members [<init>, Inner, m] lookupToString 0 outermost QualifiedTypeAnnotations annotation false subtypeOf [java.lang.Object] superTypes [java.lang.Object] numerical false wrapper false raw false declaring QualifiedTypeAnnotations
+MODIFIERS @13:1
+TOKEN @13:1
+TOKEN @13:10
+IDENTIFIER @13:16 id QualifiedTypeAnnotations annotated.QualifiedTypeAnnotations [t abstract package] : annotated.QualifiedTypeAnnotations : annotated.QualifiedTypeAnnotations
+TOKEN @13:16
+TYPE_PARAMETERS
+LIST
+LIST
+TOKEN @13:41
+CLASS @14:3 class QualifiedTypeAnnotations.Inner [t package] : annotated.QualifiedTypeAnnotations$Inner super java.lang.Object interfaces []
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing QualifiedTypeAnnotations flags [package] members [<init>] lookupToString 0 outermost QualifiedTypeAnnotations annotation false subtypeOf [java.lang.Object] superTypes [java.lang.Object] numerical false wrapper false raw false declaring Inner
+MODIFIERS
+TOKEN @14:3
+IDENTIFIER @14:9 id Inner QualifiedTypeAnnotations.Inner [t package] : annotated.QualifiedTypeAnnotations$Inner : annotated.QualifiedTypeAnnotations$Inner
+TOKEN @14:9
+TYPE_PARAMETERS
+LIST
+LIST
+TOKEN @14:15
+TOKEN @15:3
+METHOD @17:3 method QualifiedTypeAnnotations.m [m abstract package] : ? () returns annotated.QualifiedTypeAnnotations$Inner throws [] sig annotated.QualifiedTypeAnnotations#m()Lannotated/QualifiedTypeAnnotations$Inner; overrides false
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing QualifiedTypeAnnotations flags [abstract, package] overridden [] overridable true generic true default false synchronized false varargs false native false parameters [] parameterMetadata []
+MODIFIERS @17:3
+TOKEN @17:3
+TYPE_PARAMETERS @17:12
+TOKEN @17:12
+TYPE_PARAMETER @17:13
+IDENTIFIER @17:13 id T m.T [t package] : T erasure java.lang.Object : T erasure java.lang.Object
+TOKEN @17:13
+TOKEN @17:14
+MEMBER_SELECT @17:16 : annotated.QualifiedTypeAnnotations$Inner
+IDENTIFIER @17:16 id QualifiedTypeAnnotations annotated.QualifiedTypeAnnotations [t abstract package] : annotated.QualifiedTypeAnnotations : annotated.QualifiedTypeAnnotations
+ANNOTATION @17:16 : annotated.Tags$Tag
+TOKEN @17:16
+IDENTIFIER @17:17 id Tag Tags.Tag [t static package interface] : annotated.Tags$Tag : annotated.Tags$Tag
+TOKEN @17:17
+ARGUMENTS
+TOKEN @17:21
+TOKEN @17:45
+IDENTIFIER @17:46 id Inner QualifiedTypeAnnotations.Inner [t package] : annotated.QualifiedTypeAnnotations$Inner : annotated.QualifiedTypeAnnotations$Inner
+TOKEN @17:46
+IDENTIFIER @17:52 id m QualifiedTypeAnnotations.m [m abstract package] : ? () returns annotated.QualifiedTypeAnnotations$Inner throws [] sig annotated.QualifiedTypeAnnotations#m()Lannotated/QualifiedTypeAnnotations$Inner; : annotated.QualifiedTypeAnnotations$Inner
+TOKEN @17:52
+TOKEN @17:53
+TOKEN @17:54
+TOKEN @17:55
+TOKEN @18:1
+TOKEN @19:1

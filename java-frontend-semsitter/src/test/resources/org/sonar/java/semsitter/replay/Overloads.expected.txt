@@ -1,0 +1,687 @@
+COMPILATION_UNIT @1:1
+IMPORT @1:1
+TOKEN @1:1
+MEMBER_SELECT @1:8 : ?
+MEMBER_SELECT @1:8 : ?
+IDENTIFIER @1:8 id java unknown : ?
+TOKEN @1:8
+TOKEN @1:12
+IDENTIFIER @1:13 id util unknown : ?
+TOKEN @1:13
+TOKEN @1:17
+IDENTIFIER @1:18 id List unknown : ?
+TOKEN @1:18
+TOKEN @1:22
+CLASS @3:1 class .Overloads [t package] : Overloads super java.lang.Object interfaces []
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Overloads flags [package] members [<init>, call, call, call, call, call, call, call, call, call, calls] lookupToString 0 outermost Overloads annotation false subtypeOf [java.lang.Object] superTypes [java.lang.Object] numerical false wrapper false raw false declaring Overloads
+MODIFIERS
+TOKEN @3:1
+IDENTIFIER @3:7 id Overloads .Overloads [t package] : Overloads : Overloads
+TOKEN @3:7
+TYPE_PARAMETERS
+LIST
+LIST
+TOKEN @3:17
+METHOD @5:3 method Overloads.call [m package] : ? (int) returns void throws [] sig Overloads#call(I)V overrides false
+  details declared true usages 3 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Overloads flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [value] parameterMetadata []
+MODIFIERS
+TYPE_PARAMETERS
+PRIMITIVE_TYPE @5:3 : void
+TOKEN @5:3
+IDENTIFIER @5:8 id call Overloads.call [m package] : ? (int) returns void throws [] sig Overloads#call(I)V : void
+TOKEN @5:8
+TOKEN @5:12
+VARIABLE @5:13 var call.value [v package] : int
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Overloads flags [package] local true parameter true effectivelyFinal true constant null owner call Overloads#call(I)V [package] returns void parameters 1 thrown 0 overridden 0 declared true usages 3 metadata 0 enclosing Overloads type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+MODIFIERS
+PRIMITIVE_TYPE @5:13 : int
+TOKEN @5:13
+IDENTIFIER @5:17 id value call.value [v package] : int : int
+TOKEN @5:17
+TOKEN @5:22
+BLOCK @5:24
+TOKEN @5:24
+TOKEN @6:3
+METHOD @8:3 method Overloads.call [m package] : ? (long) returns void throws [] sig Overloads#call(J)V overrides false
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Overloads flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [value] parameterMetadata []
+MODIFIERS
+TYPE_PARAMETERS
+PRIMITIVE_TYPE @8:3 : void
+TOKEN @8:3
+IDENTIFIER @8:8 id call Overloads.call [m package] : ? (long) returns void throws [] sig Overloads#call(J)V : void
+TOKEN @8:8
+TOKEN @8:12
+VARIABLE @8:13 var call.value [v package] : long
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Overloads flags [package] local true parameter true effectivelyFinal true constant null owner call Overloads#call(J)V [package] returns void parameters 1 thrown 0 overridden 0 declared true usages 1 metadata 0 enclosing Overloads type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+MODIFIERS
+PRIMITIVE_TYPE @8:13 : long
+TOKEN @8:13
+IDENTIFIER @8:18 id value call.value [v package] : long : long
+TOKEN @8:18
+TOKEN @8:23
+BLOCK @8:25
+TOKEN @8:25
+TOKEN @9:3
+METHOD @11:3 method Overloads.call [m package] : ? (double) returns void throws [] sig Overloads#call(D)V overrides false
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Overloads flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [value] parameterMetadata []
+MODIFIERS
+TYPE_PARAMETERS
+PRIMITIVE_TYPE @11:3 : void
+TOKEN @11:3
+IDENTIFIER @11:8 id call Overloads.call [m package] : ? (double) returns void throws [] sig Overloads#call(D)V : void
+TOKEN @11:8
+TOKEN @11:12
+VARIABLE @11:13 var call.value [v package] : double
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Overloads flags [package] local true parameter true effectivelyFinal true constant null owner call Overloads#call(D)V [package] returns void parameters 1 thrown 0 overridden 0 declared true usages 1 metadata 0 enclosing Overloads type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+MODIFIERS
+PRIMITIVE_TYPE @11:13 : double
+TOKEN @11:13
+IDENTIFIER @11:20 id value call.value [v package] : double : double
+TOKEN @11:20
+TOKEN @11:25
+BLOCK @11:27
+TOKEN @11:27
+TOKEN @12:3
+METHOD @14:3 method Overloads.call [m package] : ? (java.lang.Integer) returns void throws [] sig Overloads#call(Ljava/lang/Integer;)V overrides false
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Overloads flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [value] parameterMetadata []
+MODIFIERS
+TYPE_PARAMETERS
+PRIMITIVE_TYPE @14:3 : void
+TOKEN @14:3
+IDENTIFIER @14:8 id call Overloads.call [m package] : ? (java.lang.Integer) returns void throws [] sig Overloads#call(Ljava/lang/Integer;)V : void
+TOKEN @14:8
+TOKEN @14:12
+VARIABLE @14:13 var call.value [v package] : java.lang.Integer
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Overloads flags [package] local true parameter true effectivelyFinal true constant null owner call Overloads#call(Ljava/lang/Integer;)V [package] returns void parameters 1 thrown 0 overridden 0 declared true usages 1 metadata 0 enclosing Overloads type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+MODIFIERS
+IDENTIFIER @14:13 id Integer java.lang.Integer [t final public] : java.lang.Integer : java.lang.Integer
+TOKEN @14:13
+IDENTIFIER @14:21 id value call.value [v package] : java.lang.Integer : java.lang.Integer
+TOKEN @14:21
+TOKEN @14:26
+BLOCK @14:28
+TOKEN @14:28
+TOKEN @15:3
+METHOD @17:3 method Overloads.call [m package] : ? (java.lang.Object) returns void throws [] sig Overloads#call(Ljava/lang/Object;)V overrides false
+  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Overloads flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [value] parameterMetadata []
+MODIFIERS
+TYPE_PARAMETERS
+PRIMITIVE_TYPE @17:3 : void
+TOKEN @17:3
+IDENTIFIER @17:8 id call Overloads.call [m package] : ? (java.lang.Object) returns void throws [] sig Overloads#call(Ljava/lang/Object;)V : void
+TOKEN @17:8
+TOKEN @17:12
+VARIABLE @17:13 var call.value [v package] : java.lang.Object
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Overloads flags [package] local true parameter true effectivelyFinal true constant null owner call Overloads#call(Ljava/lang/Object;)V [package] returns void parameters 1 thrown 0 overridden 0 declared true usages 2 metadata 0 enclosing Overloads type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+MODIFIERS
+IDENTIFIER @17:13 id Object java.lang.Object [t public] : java.lang.Object : java.lang.Object
+TOKEN @17:13
+IDENTIFIER @17:20 id value call.value [v package] : java.lang.Object : java.lang.Object
+TOKEN @17:20
+TOKEN @17:25
+BLOCK @17:27
+TOKEN @17:27
+TOKEN @18:3
+METHOD @20:3 method Overloads.call [m package] : ? (java.lang.String) returns void throws [] sig Overloads#call(Ljava/lang/String;)V overrides false
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Overloads flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [value] parameterMetadata []
+MODIFIERS
+TYPE_PARAMETERS
+PRIMITIVE_TYPE @20:3 : void
+TOKEN @20:3
+IDENTIFIER @20:8 id call Overloads.call [m package] : ? (java.lang.String) returns void throws [] sig Overloads#call(Ljava/lang/String;)V : void
+TOKEN @20:8
+TOKEN @20:12
+VARIABLE @20:13 var call.value [v package] : java.lang.String
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Overloads flags [package] local true parameter true effectivelyFinal true constant null owner call Overloads#call(Ljava/lang/String;)V [package] returns void parameters 1 thrown 0 overridden 0 declared true usages 1 metadata 0 enclosing Overloads type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+MODIFIERS
+IDENTIFIER @20:13 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @20:13
+IDENTIFIER @20:20 id value call.value [v package] : java.lang.String : java.lang.String
+TOKEN @20:20
+TOKEN @20:25
+BLOCK @20:27
+TOKEN @20:27
+TOKEN @21:3
+METHOD @23:3 method Overloads.call [m package] : ? (java.lang.String,java.lang.Object[]) returns void throws [] sig Overloads#call(Ljava/lang/String;[Ljava/lang/Object;)V overrides false
+  details declared true usages 3 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Overloads flags [package] overridden [] overridable true generic false default false synchronized false varargs true native false parameters [first, rest] parameterMetadata []
+MODIFIERS
+TYPE_PARAMETERS
+PRIMITIVE_TYPE @23:3 : void
+TOKEN @23:3
+IDENTIFIER @23:8 id call Overloads.call [m package] : ? (java.lang.String,java.lang.Object[]) returns void throws [] sig Overloads#call(Ljava/lang/String;[Ljava/lang/Object;)V : void
+TOKEN @23:8
+TOKEN @23:12
+VARIABLE @23:13 var call.first [v package] : java.lang.String
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Overloads flags [package] local true parameter true effectivelyFinal true constant null owner call Overloads#call(Ljava/lang/String;[Ljava/lang/Object;)V [package] returns void parameters 2 thrown 0 overridden 0 declared true usages 3 metadata 0 enclosing Overloads type true kinds truefalsefalse other falsefalsetruefalsetruefalse2falsefalse
+MODIFIERS
+IDENTIFIER @23:13 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @23:13
+IDENTIFIER @23:20 id first call.first [v package] : java.lang.String : java.lang.String
+TOKEN @23:20
+TOKEN @23:25
+VARIABLE @23:27 var call.rest [v package] : java.lang.Object[]
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Overloads flags [package] local true parameter true effectivelyFinal true constant null owner call Overloads#call(Ljava/lang/String;[Ljava/lang/Object;)V [package] returns void parameters 2 thrown 0 overridden 0 declared true usages 3 metadata 0 enclosing Overloads type true kinds truefalsefalse other falsefalsetruefalsetruefalse2falsefalse
+MODIFIERS
+ARRAY_TYPE @23:27 : java.lang.Object[]
+IDENTIFIER @23:27 id Object java.lang.Object [t public] : java.lang.Object : java.lang.Object
+TOKEN @23:27
+TOKEN @23:33
+IDENTIFIER @23:37 id rest call.rest [v package] : java.lang.Object[] : java.lang.Object[]
+TOKEN @23:37
+TOKEN @23:41
+BLOCK @23:43
+TOKEN @23:43
+TOKEN @24:3
+METHOD @26:3 method Overloads.call [m package] : ? (int,int) returns void throws [] sig Overloads#call(II)V overrides false
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Overloads flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [first, second] parameterMetadata []
+MODIFIERS
+TYPE_PARAMETERS
+PRIMITIVE_TYPE @26:3 : void
+TOKEN @26:3
+IDENTIFIER @26:8 id call Overloads.call [m package] : ? (int,int) returns void throws [] sig Overloads#call(II)V : void
+TOKEN @26:8
+TOKEN @26:12
+VARIABLE @26:13 var call.first [v package] : int
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Overloads flags [package] local true parameter true effectivelyFinal true constant null owner call Overloads#call(II)V [package] returns void parameters 2 thrown 0 overridden 0 declared true usages 1 metadata 0 enclosing Overloads type true kinds truefalsefalse other falsefalsefalsefalsetruefalse2falsefalse
+MODIFIERS
+PRIMITIVE_TYPE @26:13 : int
+TOKEN @26:13
+IDENTIFIER @26:17 id first call.first [v package] : int : int
+TOKEN @26:17
+TOKEN @26:22
+VARIABLE @26:24 var call.second [v package] : int
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Overloads flags [package] local true parameter true effectivelyFinal true constant null owner call Overloads#call(II)V [package] returns void parameters 2 thrown 0 overridden 0 declared true usages 1 metadata 0 enclosing Overloads type true kinds truefalsefalse other falsefalsefalsefalsetruefalse2falsefalse
+MODIFIERS
+PRIMITIVE_TYPE @26:24 : int
+TOKEN @26:24
+IDENTIFIER @26:28 id second call.second [v package] : int : int
+TOKEN @26:28
+TOKEN @26:34
+BLOCK @26:36
+TOKEN @26:36
+TOKEN @27:3
+METHOD @29:3 method Overloads.call [m package] : ? (java.util.List<java.lang.String>) returns void throws [] sig Overloads#call(Ljava/util/List;)V overrides false
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Overloads flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [values] parameterMetadata []
+MODIFIERS
+TYPE_PARAMETERS
+PRIMITIVE_TYPE @29:3 : void
+TOKEN @29:3
+IDENTIFIER @29:8 id call Overloads.call [m package] : ? (java.util.List<java.lang.String>) returns void throws [] sig Overloads#call(Ljava/util/List;)V : void
+TOKEN @29:8
+TOKEN @29:12
+VARIABLE @29:13 var call.values [v package] : java.util.List<java.lang.String>
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Overloads flags [package] local true parameter true effectivelyFinal true constant null owner call Overloads#call(Ljava/util/List;)V [package] returns void parameters 1 thrown 0 overridden 0 declared true usages 1 metadata 0 enclosing Overloads type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+MODIFIERS
+PARAMETERIZED_TYPE @29:13 : java.util.List<java.lang.String>
+IDENTIFIER @29:13 id List java.util.List [t public interface] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
+TOKEN @29:13
+TYPE_ARGUMENTS @29:17
+TOKEN @29:17
+IDENTIFIER @29:18 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @29:18
+TOKEN @29:24
+IDENTIFIER @29:26 id values call.values [v package] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
+TOKEN @29:26
+TOKEN @29:32
+BLOCK @29:34
+TOKEN @29:34
+TOKEN @30:3
+METHOD @32:3 method Overloads.calls [m package] : ? () returns void throws [] sig Overloads#calls()V overrides false
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Overloads flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MODIFIERS
+TYPE_PARAMETERS
+PRIMITIVE_TYPE @32:3 : void
+TOKEN @32:3
+IDENTIFIER @32:8 id calls Overloads.calls [m package] : ? () returns void throws [] sig Overloads#calls()V : void
+TOKEN @32:8
+TOKEN @32:13
+TOKEN @32:14
+BLOCK @32:16
+TOKEN @32:16
+EXPRESSION_STATEMENT @33:5
+METHOD_INVOCATION @33:5 call Overloads.call [m package] : ? (int) returns void throws [] sig Overloads#call(I)V : void
+  details declared true usages 3 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Overloads flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [value] parameterMetadata []
+IDENTIFIER @33:5 id call Overloads.call [m package] : ? (int) returns void throws [] sig Overloads#call(I)V : void
+TOKEN @33:5
+ARGUMENTS @33:9
+TOKEN @33:9
+INT_LITERAL @33:10 : int = 1
+TOKEN @33:10
+TOKEN @33:11
+TOKEN @33:12
+EXPRESSION_STATEMENT @34:5
+METHOD_INVOCATION @34:5 call Overloads.call [m package] : ? (long) returns void throws [] sig Overloads#call(J)V : void
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Overloads flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [value] parameterMetadata []
+IDENTIFIER @34:5 id call Overloads.call [m package] : ? (long) returns void throws [] sig Overloads#call(J)V : void
+TOKEN @34:5
+ARGUMENTS @34:9
+TOKEN @34:9
+LONG_LITERAL @34:10 : long = 1
+TOKEN @34:10
+TOKEN @34:12
+TOKEN @34:13
+EXPRESSION_STATEMENT @35:5
+METHOD_INVOCATION @35:5 call Overloads.call [m package] : ? (double) returns void throws [] sig Overloads#call(D)V : void
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Overloads flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [value] parameterMetadata []
+IDENTIFIER @35:5 id call Overloads.call [m package] : ? (double) returns void throws [] sig Overloads#call(D)V : void
+TOKEN @35:5
+ARGUMENTS @35:9
+TOKEN @35:9
+FLOAT_LITERAL @35:10 : float
+TOKEN @35:10
+TOKEN @35:14
+TOKEN @35:15
+EXPRESSION_STATEMENT @36:5
+METHOD_INVOCATION @36:5 call Overloads.call [m package] : ? (int) returns void throws [] sig Overloads#call(I)V : void
+  details declared true usages 3 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Overloads flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [value] parameterMetadata []
+IDENTIFIER @36:5 id call Overloads.call [m package] : ? (int) returns void throws [] sig Overloads#call(I)V : void
+TOKEN @36:5
+ARGUMENTS @36:9
+TOKEN @36:9
+CHAR_LITERAL @36:10 : char = 99
+TOKEN @36:10
+TOKEN @36:13
+TOKEN @36:14
+EXPRESSION_STATEMENT @37:5
+METHOD_INVOCATION @37:5 call Overloads.call [m package] : ? (int) returns void throws [] sig Overloads#call(I)V : void
+  details declared true usages 3 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Overloads flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [value] parameterMetadata []
+IDENTIFIER @37:5 id call Overloads.call [m package] : ? (int) returns void throws [] sig Overloads#call(I)V : void
+TOKEN @37:5
+ARGUMENTS @37:9
+TOKEN @37:9
+TYPE_CAST @37:10 : short
+TOKEN @37:10
+PRIMITIVE_TYPE @37:11 : short
+TOKEN @37:11
+LIST
+TOKEN @37:16
+INT_LITERAL @37:18 : int = 2
+TOKEN @37:18
+TOKEN @37:19
+TOKEN @37:20
+EXPRESSION_STATEMENT @38:5
+METHOD_INVOCATION @38:5 call Overloads.call [m package] : ? (java.lang.Integer) returns void throws [] sig Overloads#call(Ljava/lang/Integer;)V : void
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Overloads flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [value] parameterMetadata []
+IDENTIFIER @38:5 id call Overloads.call [m package] : ? (java.lang.Integer) returns void throws [] sig Overloads#call(Ljava/lang/Integer;)V : void
+TOKEN @38:5
+ARGUMENTS @38:9
+TOKEN @38:9
+METHOD_INVOCATION @38:10 call Integer.valueOf [m static public] : ? (int) returns java.lang.Integer throws [] sig java.lang.Integer#valueOf(I)Ljava/lang/Integer; : java.lang.Integer
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Integer flags [static, public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+MEMBER_SELECT @38:10 : ?
+IDENTIFIER @38:10 id Integer java.lang.Integer [t final public] : java.lang.Integer : java.lang.Integer
+TOKEN @38:10
+TOKEN @38:17
+IDENTIFIER @38:18 id valueOf Integer.valueOf [m static public] : ? (int) returns java.lang.Integer throws [] sig java.lang.Integer#valueOf(I)Ljava/lang/Integer; : java.lang.Integer
+TOKEN @38:18
+ARGUMENTS @38:25
+TOKEN @38:25
+INT_LITERAL @38:26 : int = 3
+TOKEN @38:26
+TOKEN @38:27
+TOKEN @38:28
+TOKEN @38:29
+EXPRESSION_STATEMENT @39:5
+METHOD_INVOCATION @39:5 call Overloads.call [m package] : ? (java.lang.String) returns void throws [] sig Overloads#call(Ljava/lang/String;)V : void
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Overloads flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [value] parameterMetadata []
+IDENTIFIER @39:5 id call Overloads.call [m package] : ? (java.lang.String) returns void throws [] sig Overloads#call(Ljava/lang/String;)V : void
+TOKEN @39:5
+ARGUMENTS @39:9
+TOKEN @39:9
+STRING_LITERAL @39:10 : java.lang.String = text
+TOKEN @39:10
+TOKEN @39:16
+TOKEN @39:17
+EXPRESSION_STATEMENT @40:5
+METHOD_INVOCATION @40:5 call Overloads.call [m package] : ? (java.lang.Object) returns void throws [] sig Overloads#call(Ljava/lang/Object;)V : void
+  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Overloads flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [value] parameterMetadata []
+IDENTIFIER @40:5 id call Overloads.call [m package] : ? (java.lang.Object) returns void throws [] sig Overloads#call(Ljava/lang/Object;)V : void
+TOKEN @40:5
+ARGUMENTS @40:9
+TOKEN @40:9
+NEW_CLASS @40:10 new Object.<init> [m public] : ? () returns void throws [] sig java.lang.Object#<init>()V : java.lang.Object
+  details declared false usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Object flags [public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+TOKEN @40:10
+IDENTIFIER @40:14 id Object Object.<init> [m public] : ? () returns void throws [] sig java.lang.Object#<init>()V : java.lang.Object
+TOKEN @40:14
+ARGUMENTS @40:20
+TOKEN @40:20
+TOKEN @40:21
+TOKEN @40:22
+TOKEN @40:23
+EXPRESSION_STATEMENT @41:5
+METHOD_INVOCATION @41:5 call Overloads.call [m package] : ? (java.lang.String,java.lang.Object[]) returns void throws [] sig Overloads#call(Ljava/lang/String;[Ljava/lang/Object;)V : void
+  details declared true usages 3 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Overloads flags [package] overridden [] overridable true generic false default false synchronized false varargs true native false parameters [first, rest] parameterMetadata []
+IDENTIFIER @41:5 id call Overloads.call [m package] : ? (java.lang.String,java.lang.Object[]) returns void throws [] sig Overloads#call(Ljava/lang/String;[Ljava/lang/Object;)V : void
+TOKEN @41:5
+ARGUMENTS @41:9
+TOKEN @41:9
+STRING_LITERAL @41:10 : java.lang.String = a
+TOKEN @41:10
+TOKEN @41:13
+INT_LITERAL @41:15 : int = 1
+TOKEN @41:15
+TOKEN @41:16
+INT_LITERAL @41:18 : int = 2
+TOKEN @41:18
+TOKEN @41:19
+TOKEN @41:20
+EXPRESSION_STATEMENT @42:5
+METHOD_INVOCATION @42:5 call Overloads.call [m package] : ? (java.lang.String,java.lang.Object[]) returns void throws [] sig Overloads#call(Ljava/lang/String;[Ljava/lang/Object;)V : void
+  details declared true usages 3 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Overloads flags [package] overridden [] overridable true generic false default false synchronized false varargs true native false parameters [first, rest] parameterMetadata []
+IDENTIFIER @42:5 id call Overloads.call [m package] : ? (java.lang.String,java.lang.Object[]) returns void throws [] sig Overloads#call(Ljava/lang/String;[Ljava/lang/Object;)V : void
+TOKEN @42:5
+ARGUMENTS @42:9
+TOKEN @42:9
+STRING_LITERAL @42:10 : java.lang.String = a
+TOKEN @42:10
+TOKEN @42:13
+STRING_LITERAL @42:15 : java.lang.String = b
+TOKEN @42:15
+TOKEN @42:18
+TOKEN @42:19
+EXPRESSION_STATEMENT @43:5
+METHOD_INVOCATION @43:5 call Overloads.call [m package] : ? (int,int) returns void throws [] sig Overloads#call(II)V : void
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Overloads flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [first, second] parameterMetadata []
+IDENTIFIER @43:5 id call Overloads.call [m package] : ? (int,int) returns void throws [] sig Overloads#call(II)V : void
+TOKEN @43:5
+ARGUMENTS @43:9
+TOKEN @43:9
+INT_LITERAL @43:10 : int = 1
+TOKEN @43:10
+TOKEN @43:11
+INT_LITERAL @43:13 : int = 2
+TOKEN @43:13
+TOKEN @43:14
+TOKEN @43:15
+EXPRESSION_STATEMENT @44:5
+METHOD_INVOCATION @44:5 call Overloads.call [m package] : ? (java.util.List<java.lang.String>) returns void throws [] sig Overloads#call(Ljava/util/List;)V : void
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Overloads flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [values] parameterMetadata []
+IDENTIFIER @44:5 id call Overloads.call [m package] : ? (java.util.List<java.lang.String>) returns void throws [] sig Overloads#call(Ljava/util/List;)V : void
+TOKEN @44:5
+ARGUMENTS @44:9
+TOKEN @44:9
+METHOD_INVOCATION @44:10 call List.of [m static public] : ? (java.lang.String) returns java.util.List throws [] sig java.util.List#of(Ljava/lang/Object;)Ljava/util/List; : java.util.List
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing List flags [static, public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+MEMBER_SELECT @44:10 : ?
+IDENTIFIER @44:10 id List java.util.List [t public interface] : java.util.List : java.util.List
+TOKEN @44:10
+TOKEN @44:14
+IDENTIFIER @44:15 id of List.of [m static public] : ? (java.lang.String) returns java.util.List throws [] sig java.util.List#of(Ljava/lang/Object;)Ljava/util/List; : java.util.List
+TOKEN @44:15
+ARGUMENTS @44:17
+TOKEN @44:17
+STRING_LITERAL @44:18 : java.lang.String = x
+TOKEN @44:18
+TOKEN @44:21
+TOKEN @44:22
+TOKEN @44:23
+EXPRESSION_STATEMENT @45:5
+METHOD_INVOCATION @45:5 call Overloads.call [m package] : ? (java.lang.Object) returns void throws [] sig Overloads#call(Ljava/lang/Object;)V : void
+  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Overloads flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [value] parameterMetadata []
+IDENTIFIER @45:5 id call Overloads.call [m package] : ? (java.lang.Object) returns void throws [] sig Overloads#call(Ljava/lang/Object;)V : void
+TOKEN @45:5
+ARGUMENTS @45:9
+TOKEN @45:9
+TYPE_CAST @45:10 : java.lang.Object
+TOKEN @45:10
+IDENTIFIER @45:11 id Object java.lang.Object [t public] : java.lang.Object : java.lang.Object
+TOKEN @45:11
+LIST
+TOKEN @45:17
+STRING_LITERAL @45:19 : java.lang.String = cast
+TOKEN @45:19
+TOKEN @45:25
+TOKEN @45:26
+EXPRESSION_STATEMENT @46:5
+METHOD_INVOCATION @46:5 call Overloads.call [m package] : ? (java.lang.String,java.lang.Object[]) returns void throws [] sig Overloads#call(Ljava/lang/String;[Ljava/lang/Object;)V : void
+  details declared true usages 3 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Overloads flags [package] overridden [] overridable true generic false default false synchronized false varargs true native false parameters [first, rest] parameterMetadata []
+IDENTIFIER @46:5 id call Overloads.call [m package] : ? (java.lang.String,java.lang.Object[]) returns void throws [] sig Overloads#call(Ljava/lang/String;[Ljava/lang/Object;)V : void
+TOKEN @46:5
+ARGUMENTS @46:9
+TOKEN @46:9
+NULL_LITERAL @46:10 : <nulltype>
+TOKEN @46:10
+TOKEN @46:14
+NULL_LITERAL @46:16 : <nulltype>
+TOKEN @46:16
+TOKEN @46:20
+TOKEN @46:21
+VARIABLE @47:5 var calls.builder [v package] : java.lang.StringBuilder
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Overloads flags [package] local true parameter false effectivelyFinal true constant null owner calls Overloads#calls()V [package] returns void parameters 0 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Overloads type true kinds truefalsefalse other falsefalsefalsefalsetruefalse0falsefalse
+MODIFIERS
+IDENTIFIER @47:5 id StringBuilder java.lang.StringBuilder [t final public] : java.lang.StringBuilder : java.lang.StringBuilder
+TOKEN @47:5
+IDENTIFIER @47:19 id builder calls.builder [v package] : java.lang.StringBuilder : java.lang.StringBuilder
+TOKEN @47:19
+TOKEN @47:27
+NEW_CLASS @47:29 new StringBuilder.<init> [m public] : ? () returns void throws [] sig java.lang.StringBuilder#<init>()V : java.lang.StringBuilder
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing StringBuilder flags [public] overridden [AbstractStringBuilder.<init>[], Object.<init>[]] overridable false generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+TOKEN @47:29
+IDENTIFIER @47:33 id StringBuilder StringBuilder.<init> [m public] : ? () returns void throws [] sig java.lang.StringBuilder#<init>()V : java.lang.StringBuilder
+TOKEN @47:33
+ARGUMENTS @47:46
+TOKEN @47:46
+TOKEN @47:47
+TOKEN @47:48
+EXPRESSION_STATEMENT @48:5
+METHOD_INVOCATION @48:5 call StringBuilder.append [m public] : ? (char[]) returns java.lang.StringBuilder throws [] sig java.lang.StringBuilder#append([C)Ljava/lang/StringBuilder; : java.lang.StringBuilder
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing StringBuilder flags [public] overridden [AbstractStringBuilder.append[]] overridable false generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+MEMBER_SELECT @48:5 : ?
+METHOD_INVOCATION @48:5 call StringBuilder.append [m public] : ? (boolean) returns java.lang.StringBuilder throws [] sig java.lang.StringBuilder#append(Z)Ljava/lang/StringBuilder; : java.lang.StringBuilder
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing StringBuilder flags [public] overridden [AbstractStringBuilder.append[]] overridable false generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+MEMBER_SELECT @48:5 : ?
+METHOD_INVOCATION @48:5 call StringBuilder.append [m public] : ? (double) returns java.lang.StringBuilder throws [] sig java.lang.StringBuilder#append(D)Ljava/lang/StringBuilder; : java.lang.StringBuilder
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing StringBuilder flags [public] overridden [AbstractStringBuilder.append[]] overridable false generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+MEMBER_SELECT @48:5 : ?
+METHOD_INVOCATION @48:5 call StringBuilder.append [m public] : ? (java.lang.String) returns java.lang.StringBuilder throws [] sig java.lang.StringBuilder#append(Ljava/lang/String;)Ljava/lang/StringBuilder; : java.lang.StringBuilder
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing StringBuilder flags [public] overridden [AbstractStringBuilder.append[]] overridable false generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+MEMBER_SELECT @48:5 : ?
+METHOD_INVOCATION @48:5 call StringBuilder.append [m public] : ? (char) returns java.lang.StringBuilder throws [] sig java.lang.StringBuilder#append(C)Ljava/lang/StringBuilder; : java.lang.StringBuilder
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing StringBuilder flags [public] overridden [AbstractStringBuilder.append[], Appendable.append[]] overridable false generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+MEMBER_SELECT @48:5 : ?
+METHOD_INVOCATION @48:5 call StringBuilder.append [m public] : ? (int) returns java.lang.StringBuilder throws [] sig java.lang.StringBuilder#append(I)Ljava/lang/StringBuilder; : java.lang.StringBuilder
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing StringBuilder flags [public] overridden [AbstractStringBuilder.append[]] overridable false generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+MEMBER_SELECT @48:5 : ?
+IDENTIFIER @48:5 id builder calls.builder [v package] : java.lang.StringBuilder : java.lang.StringBuilder
+TOKEN @48:5
+TOKEN @48:12
+IDENTIFIER @48:13 id append StringBuilder.append [m public] : ? (int) returns java.lang.StringBuilder throws [] sig java.lang.StringBuilder#append(I)Ljava/lang/StringBuilder; : java.lang.StringBuilder
+TOKEN @48:13
+ARGUMENTS @48:19
+TOKEN @48:19
+INT_LITERAL @48:20 : int = 1
+TOKEN @48:20
+TOKEN @48:21
+TOKEN @48:22
+IDENTIFIER @48:23 id append StringBuilder.append [m public] : ? (char) returns java.lang.StringBuilder throws [] sig java.lang.StringBuilder#append(C)Ljava/lang/StringBuilder; : java.lang.StringBuilder
+TOKEN @48:23
+ARGUMENTS @48:29
+TOKEN @48:29
+CHAR_LITERAL @48:30 : char = 99
+TOKEN @48:30
+TOKEN @48:33
+TOKEN @48:34
+IDENTIFIER @48:35 id append StringBuilder.append [m public] : ? (java.lang.String) returns java.lang.StringBuilder throws [] sig java.lang.StringBuilder#append(Ljava/lang/String;)Ljava/lang/StringBuilder; : java.lang.StringBuilder
+TOKEN @48:35
+ARGUMENTS @48:41
+TOKEN @48:41
+STRING_LITERAL @48:42 : java.lang.String = s
+TOKEN @48:42
+TOKEN @48:45
+TOKEN @48:46
+IDENTIFIER @48:47 id append StringBuilder.append [m public] : ? (double) returns java.lang.StringBuilder throws [] sig java.lang.StringBuilder#append(D)Ljava/lang/StringBuilder; : java.lang.StringBuilder
+TOKEN @48:47
+ARGUMENTS @48:53
+TOKEN @48:53
+DOUBLE_LITERAL @48:54 : double
+TOKEN @48:54
+TOKEN @48:57
+TOKEN @48:58
+IDENTIFIER @48:59 id append StringBuilder.append [m public] : ? (boolean) returns java.lang.StringBuilder throws [] sig java.lang.StringBuilder#append(Z)Ljava/lang/StringBuilder; : java.lang.StringBuilder
+TOKEN @48:59
+ARGUMENTS @48:65
+TOKEN @48:65
+BOOLEAN_LITERAL @48:66 : boolean = true
+TOKEN @48:66
+TOKEN @48:70
+TOKEN @48:71
+IDENTIFIER @48:72 id append StringBuilder.append [m public] : ? (char[]) returns java.lang.StringBuilder throws [] sig java.lang.StringBuilder#append([C)Ljava/lang/StringBuilder; : java.lang.StringBuilder
+TOKEN @48:72
+ARGUMENTS @48:78
+TOKEN @48:78
+NEW_ARRAY @48:79 : char[]
+TOKEN @48:79
+PRIMITIVE_TYPE @48:83 : char
+TOKEN @48:83
+ARRAY_DIMENSION @48:87
+TOKEN @48:87
+TOKEN @48:88
+TOKEN @48:90
+LIST @48:91
+CHAR_LITERAL @48:91 : char = 97
+TOKEN @48:91
+TOKEN @48:94
+TOKEN @48:95
+TOKEN @48:96
+EXPRESSION_STATEMENT @49:5
+METHOD_INVOCATION @49:5 call PrintStream.println [m public] : ? (int) returns void throws [] sig java.io.PrintStream#println(I)V : void
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing PrintStream flags [public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+MEMBER_SELECT @49:5 : ?
+MEMBER_SELECT @49:5 : java.io.PrintStream
+IDENTIFIER @49:5 id System java.lang.System [t final public] : java.lang.System : java.lang.System
+TOKEN @49:5
+TOKEN @49:11
+IDENTIFIER @49:12 id out System.out [v static final public] : java.io.PrintStream : java.io.PrintStream
+TOKEN @49:12
+TOKEN @49:15
+IDENTIFIER @49:16 id println PrintStream.println [m public] : ? (int) returns void throws [] sig java.io.PrintStream#println(I)V : void
+TOKEN @49:16
+ARGUMENTS @49:23
+TOKEN @49:23
+INT_LITERAL @49:24 : int = 1
+TOKEN @49:24
+TOKEN @49:25
+TOKEN @49:26
+EXPRESSION_STATEMENT @50:5
+METHOD_INVOCATION @50:5 call PrintStream.println [m public] : ? (java.lang.String) returns void throws [] sig java.io.PrintStream#println(Ljava/lang/String;)V : void
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing PrintStream flags [public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+MEMBER_SELECT @50:5 : ?
+MEMBER_SELECT @50:5 : java.io.PrintStream
+IDENTIFIER @50:5 id System java.lang.System [t final public] : java.lang.System : java.lang.System
+TOKEN @50:5
+TOKEN @50:11
+IDENTIFIER @50:12 id out System.out [v static final public] : java.io.PrintStream : java.io.PrintStream
+TOKEN @50:12
+TOKEN @50:15
+IDENTIFIER @50:16 id println PrintStream.println [m public] : ? (java.lang.String) returns void throws [] sig java.io.PrintStream#println(Ljava/lang/String;)V : void
+TOKEN @50:16
+ARGUMENTS @50:23
+TOKEN @50:23
+STRING_LITERAL @50:24 : java.lang.String = text
+TOKEN @50:24
+TOKEN @50:30
+TOKEN @50:31
+EXPRESSION_STATEMENT @51:5
+METHOD_INVOCATION @51:5 call PrintStream.println [m public] : ? (char) returns void throws [] sig java.io.PrintStream#println(C)V : void
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing PrintStream flags [public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+MEMBER_SELECT @51:5 : ?
+MEMBER_SELECT @51:5 : java.io.PrintStream
+IDENTIFIER @51:5 id System java.lang.System [t final public] : java.lang.System : java.lang.System
+TOKEN @51:5
+TOKEN @51:11
+IDENTIFIER @51:12 id out System.out [v static final public] : java.io.PrintStream : java.io.PrintStream
+TOKEN @51:12
+TOKEN @51:15
+IDENTIFIER @51:16 id println PrintStream.println [m public] : ? (char) returns void throws [] sig java.io.PrintStream#println(C)V : void
+TOKEN @51:16
+ARGUMENTS @51:23
+TOKEN @51:23
+CHAR_LITERAL @51:24 : char = 99
+TOKEN @51:24
+TOKEN @51:27
+TOKEN @51:28
+EXPRESSION_STATEMENT @52:5
+METHOD_INVOCATION @52:5 call PrintStream.println [m public] : ? (java.lang.Object) returns void throws [] sig java.io.PrintStream#println(Ljava/lang/Object;)V : void
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing PrintStream flags [public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+MEMBER_SELECT @52:5 : ?
+MEMBER_SELECT @52:5 : java.io.PrintStream
+IDENTIFIER @52:5 id System java.lang.System [t final public] : java.lang.System : java.lang.System
+TOKEN @52:5
+TOKEN @52:11
+IDENTIFIER @52:12 id out System.out [v static final public] : java.io.PrintStream : java.io.PrintStream
+TOKEN @52:12
+TOKEN @52:15
+IDENTIFIER @52:16 id println PrintStream.println [m public] : ? (java.lang.Object) returns void throws [] sig java.io.PrintStream#println(Ljava/lang/Object;)V : void
+TOKEN @52:16
+ARGUMENTS @52:23
+TOKEN @52:23
+NEW_CLASS @52:24 new Object.<init> [m public] : ? () returns void throws [] sig java.lang.Object#<init>()V : java.lang.Object
+  details declared false usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Object flags [public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+TOKEN @52:24
+IDENTIFIER @52:28 id Object Object.<init> [m public] : ? () returns void throws [] sig java.lang.Object#<init>()V : java.lang.Object
+TOKEN @52:28
+ARGUMENTS @52:34
+TOKEN @52:34
+TOKEN @52:35
+TOKEN @52:36
+TOKEN @52:37
+EXPRESSION_STATEMENT @53:5
+METHOD_INVOCATION @53:5 call String.format [m static public] : ? (java.lang.String,java.lang.Object[]) returns java.lang.String throws [] sig java.lang.String#format(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String; : java.lang.String
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing String flags [static, public] overridden [] overridable false generic false default false synchronized false varargs true native false parameters [arg0, arg1] parameterMetadata []
+MEMBER_SELECT @53:5 : ?
+IDENTIFIER @53:5 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @53:5
+TOKEN @53:11
+IDENTIFIER @53:12 id format String.format [m static public] : ? (java.lang.String,java.lang.Object[]) returns java.lang.String throws [] sig java.lang.String#format(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String; : java.lang.String
+TOKEN @53:12
+ARGUMENTS @53:18
+TOKEN @53:18
+STRING_LITERAL @53:19 : java.lang.String = %s %d
+TOKEN @53:19
+TOKEN @53:26
+STRING_LITERAL @53:28 : java.lang.String = a
+TOKEN @53:28
+TOKEN @53:31
+INT_LITERAL @53:33 : int = 1
+TOKEN @53:33
+TOKEN @53:34
+TOKEN @53:35
+EXPRESSION_STATEMENT @54:5
+METHOD_INVOCATION @54:5 call Math.max [m static public] : ? (long,long) returns long throws [] sig java.lang.Math#max(JJ)J : long
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Math flags [static, public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [arg0, arg1] parameterMetadata []
+MEMBER_SELECT @54:5 : ?
+IDENTIFIER @54:5 id Math java.lang.Math [t final public] : java.lang.Math : java.lang.Math
+TOKEN @54:5
+TOKEN @54:9
+IDENTIFIER @54:10 id max Math.max [m static public] : ? (long,long) returns long throws [] sig java.lang.Math#max(JJ)J : long
+TOKEN @54:10
+ARGUMENTS @54:13
+TOKEN @54:13
+INT_LITERAL @54:14 : int = 1
+TOKEN @54:14
+TOKEN @54:15
+LONG_LITERAL @54:17 : long = 2
+TOKEN @54:17
+TOKEN @54:19
+TOKEN @54:20
+EXPRESSION_STATEMENT @55:5
+METHOD_INVOCATION @55:5 call Math.abs [m static public] : ? (double) returns double throws [] sig java.lang.Math#abs(D)D : double
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Math flags [static, public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+MEMBER_SELECT @55:5 : ?
+IDENTIFIER @55:5 id Math java.lang.Math [t final public] : java.lang.Math : java.lang.Math
+TOKEN @55:5
+TOKEN @55:9
+IDENTIFIER @55:10 id abs Math.abs [m static public] : ? (double) returns double throws [] sig java.lang.Math#abs(D)D : double
+TOKEN @55:10
+ARGUMENTS @55:13
+TOKEN @55:13
+UNARY_MINUS @55:14 : double
+TOKEN @55:14
+DOUBLE_LITERAL @55:15 : double
+TOKEN @55:15
+TOKEN @55:18
+TOKEN @55:19
+TOKEN @56:3
+TOKEN @57:1
+TOKEN @58:1
