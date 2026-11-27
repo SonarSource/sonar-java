@@ -18,7 +18,7 @@ mise run doctor
 mise run check
 ```
 
-`doctor` reports prerequisites for each task without installing tools or displaying credentials. Maven tasks require Repox access and Maven credentials. `check` runs the unit tests, dependency license check, custom-rules example and sanity test. Use `build` to install reactor artifacts without running tests. `test:unit` runs without JaCoCo unless you add `--coverage`.
+`doctor` reports prerequisites for each task without installing tools or displaying credentials. It exits nonzero if any task is unavailable; check the status of the task you need. Maven tasks require Repox access and Maven credentials. Use a mise task when available. For ad hoc reactor Maven commands, select JDK 26 with mise as shown in [rule test verification](rule-tests.md#verify). `check` runs the unit tests, dependency license check, custom-rules example and sanity test. Use `build` to install reactor artifacts without running tests. `test:unit` runs without JaCoCo unless you add `--coverage`.
 
 ```bash
 mise run test:unit --module java-checks --test AbsOnNegativeCheckTest
@@ -26,7 +26,7 @@ mise run check:changed
 mise run analyze:vortex
 ```
 
-The changed tasks include committed, staged, unstaged and untracked changes relative to the merge base with `origin/master`. Set `MISE_CHANGE_BASE` to the intended branch or commit if that ref is missing, stale or not your review base. A changed rule with a matching test runs that test; changes that cannot be mapped to a focused test use the relevant modules instead. Focused changed checks skip the reactor-wide license-header scan. Changed checks do not replace full CI. The sanity task uses a test scanner context, not SonarQube Server.
+The changed tasks include committed, staged, unstaged and untracked changes relative to the merge base with the origin/master ref. Set `MISE_CHANGE_BASE` to the intended branch or commit if that ref is missing, stale or not your review base. A changed rule with a matching test runs that test; changes that cannot be mapped to a focused test use the relevant modules instead. Focused changed checks skip the reactor-wide license-header scan. Changed checks do not replace full CI. The sanity task uses a test scanner context, not SonarQube Server.
 
 `pom.xml` keeps the JAR manifest's `Build-Time` constant so identical inputs remain eligible for Develocity cache hits. Do not restore a time-varying value.
 
@@ -41,3 +41,7 @@ mise run its:plugin --sq-version LATEST_RELEASE --test JavaTestSuite
 The full plugin and ruling suites need a GitHub token with read access to the QA licenses. A nonblank `GITHUB_TOKEN` overrides `github.token` from the Orchestrator file for these tests. `--community-only` skips the commercial JSP test but does not remove the license requirement for `JavaTestSuite`. Use Plugin QA in CI if those prerequisites are unavailable locally.
 
 `mise run ci` runs `check`, Plugin QA and both Linux ruling profiles. Ruling needs `git submodule update --init --recursive its/sources`. For authorized troubleshooting, use `mise run ruling without-sonarqube-project --rules S100,S101 --project guava`. Use CI for [ruling baselines and review](ruling-tests.md), not a local run.
+
+## What you cannot run locally
+
+`mise run ci` does not reproduce the Windows unit-test and Ruling QA jobs. It also does not deploy or promote candidate artifacts or upload failed ruling reports. Those steps need the operating system, CI credentials, or workflow context provided by the [build workflow](../../.github/workflows/build.yml); use the CI results for that evidence.

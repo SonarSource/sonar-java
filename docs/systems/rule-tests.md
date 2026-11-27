@@ -20,32 +20,22 @@ For the default main-code case, name the sample after the check with a **Sample.
 
 Reuse the prepared test dependencies or use focused stubs. Do not add dependencies just to exercise an API when the existing test reactor can model it.
 
-## Assert both analysis modes
+## Write verifier assertions
 
-Use JUnit Jupiter (see [JUnit 5](../adrs/junit-5.md)) and `java-checks-testkit/src/main/java/org/sonar/java/checks/verifier/CheckVerifier.java`. Every new rule needs a semantic test and a `withoutSemantic()` test. Resolution can fail when code is incomplete or the classpath is missing; check that the rule neither crashes nor speculates on unresolved types. Use `verifyNoIssues()` if the rule needs resolution, or `verifyIssues()` with the expected remaining findings if it can safely report from syntax alone.
-
-For a concrete pair, see `java-checks/src/test/java/org/sonar/java/checks/DurationTimeUnitAgreementCheckTest.java`. Share sample-path constants when tests load the same sample. If behavior depends on a library version, add a case for an absent or incompatible dependency as well as the supported one; `withoutSemantic()` alone does not simulate a change to dependency version discovery.
-
-## Mark expected issues in the sample
-
-Cover both triggering and similar-looking compliant cases. Put `// Noncompliant {{Expected message.}}` on the line with an expected issue. Put carets directly below to assert the primary range; a bare marker cannot catch a regression that moves highlighting to the wrong expression. Mark secondary ranges with carets and a direction marker: `<` points back to a primary above and `>` points forward to a primary below.
-
-```java
-    new Thread(() -> {
-//      ^^^^^^>
-      Thread.sleep(1000); // Noncompliant {{Do not sleep here.}}
-//           ^^^^^
-    });
-```
-
-If a caret cannot express the span (for example at column 1 or across multiple lines), use the explicit attributes such as `sc`, `el`, `ec` or `secondary`. Prefer relative lines to absolute lines so unrelated edits above the marker do not break the test. See [Quick-fix tests](quickfix-tests.md) for fix declarations that accompany an issue marker.
+Follow the [new-rule skill](../../.agents/skills/new-rule/SKILL.md#rule-test-assertions) for test cases, verifier methods, and primary and secondary location markers. See [Quick-fix tests](quickfix-tests.md) for fix declarations that accompany an issue marker.
 
 ## Verify
 
-From the repository root with the project dependencies and compiled samples available, run the targeted rule test; substitute the test class for the example:
+From the repository root after [toolchain setup](build.md), run the targeted test and its prerequisite reactor modules. Substitute the test class for the example:
 
 ```bash
-mvn test -pl java-checks -Dtest=DurationTimeUnitAgreementCheckTest
+mise run test:unit --module java-checks --test DurationTimeUnitAgreementCheckTest
 ```
 
-From `java-checks-test-sources`, `mvn clean compile` compiles the shared samples as in CI. It does not compile test-scope samples; use `mvn test-compile` from the same directory when changing those.
+To compile the shared samples as in CI, run from the root:
+
+```bash
+mise exec java@26 -- mvn -f java-checks-test-sources/pom.xml clean compile
+```
+
+Use `test-compile` instead of `compile` when changing test-scope samples.
