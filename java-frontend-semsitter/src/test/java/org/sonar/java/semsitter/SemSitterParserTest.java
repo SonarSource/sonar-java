@@ -37,7 +37,10 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.AnalysisProgress;
 import org.sonar.java.model.JParseResult;
 import org.sonar.java.model.JParser;
+import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.JavaVersionImpl;
+import org.sonarsource.semsitter.wire.Document;
+import org.sonarsource.semsitter.wire.Node;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -52,8 +55,6 @@ class SemSitterParserTest {
   private final Map<String, JParseResult> results = new LinkedHashMap<>();
 
   private final JParser fallback = (files, canceled, progress, action) -> files.forEach(fallbackFiles::add);
-
-  private final DocumentTranslator translator = (document, types, packages, noLibraries, javaVersion) -> JParseResult.failure(new RecognitionException(1, "translated"));
 
   @Test
   void every_file_is_parsed_against_one_server_started_on_the_common_directory() throws Exception {
@@ -75,7 +76,7 @@ class SemSitterParserTest {
     assertThat(server.closed).isTrue();
     assertThat(results.keySet()).containsExactly("B.java", "A.java");
     for (JParseResult result : results.values()) {
-      assertThatThrownBy(result::get).isInstanceOf(RecognitionException.class).hasMessage("translated");
+      assertThat(result.get()).isInstanceOf(JavaTree.CompilationUnitTreeImpl.class);
     }
     assertThat(fallbackFiles).isEmpty();
   }
@@ -164,7 +165,21 @@ class SemSitterParserTest {
     assertThatThrownBy(results.get("A.java")::get)
       .isInstanceOf(RecognitionException.class)
       .hasMessageContaining("SemSitter: unable to parse file.");
-    assertThatThrownBy(results.get("B.java")::get).isInstanceOf(RecognitionException.class).hasMessage("translated");
+    assertThat(results.get("B.java").get()).isNotNull();
+  }
+
+  @Test
+  void syntax_error_is_reported_as_a_parse_error_at_its_position() {
+    Node problem = Node.newBuilder().setKind("ERROR").setStartLine(3).setStartCol(4).build();
+    server.documents.put("A.java", Document.newBuilder().setPath("A.java").setHasError(true)
+      .setTree(Node.newBuilder().setKind("program").addChildren(problem)).build());
+
+    parser(JParser.Mode.FILE_BY_FILE, new JavaVersionImpl(), List.of(), root -> server)
+      .parse(List.of(file("A.java")), () -> false, new AnalysisProgress(1), this::collect);
+
+    assertThatThrownBy(results.get("A.java")::get)
+      .isInstanceOf(RecognitionException.class)
+      .hasMessage("Parse error at line 3 column 5: Syntax error");
   }
 
   @Test
@@ -216,7 +231,7 @@ class SemSitterParserTest {
   }
 
   private SemSitterParser parser(JParser.Mode mode, JavaVersionImpl version, List<File> classpath, SemSitterParser.Launcher launcher) {
-    return new SemSitterParser(mode, version, classpath, launcher, () -> fallback, translator, project.resolve("no-jdk"));
+    return new SemSitterParser(mode, version, classpath, launcher, () -> fallback, SemSitterTranslator::translate, project.resolve("no-jdk"));
   }
 
   private void collect(InputFile file, JParseResult result) {

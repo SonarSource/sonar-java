@@ -1,0 +1,4030 @@
+/*
+ * SonarQube Java
+ * Copyright (C) SonarSource Sàrl
+ * mailto:info AT sonarsource DOT com
+ *
+ * You can redistribute and/or modify this program under the terms of
+ * the Sonar Source-Available License Version 1, as published by SonarSource Sàrl.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the Sonar Source-Available License for more details.
+ *
+ * You should have received a copy of the Sonar Source-Available License
+ * along with this program; if not, see https://sonarsource.com/license/ssal/
+ */
+package org.sonar.java.semsitter;
+
+import com.google.gson.JsonObject;
+import com.sonar.sslr.api.RecognitionException;
+import java.nio.file.Path;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import javax.annotation.Nullable;
+import org.sonar.java.ast.parser.ArgumentListTreeImpl;
+import org.sonar.java.ast.parser.FormalParametersListTreeImpl;
+import org.sonar.java.ast.parser.InitializerListTreeImpl;
+import org.sonar.java.ast.parser.ModuleNameListTreeImpl;
+import org.sonar.java.ast.parser.ModuleNameTreeImpl;
+import org.sonar.java.ast.parser.QualifiedIdentifierListTreeImpl;
+import org.sonar.java.ast.parser.ResourceListTreeImpl;
+import org.sonar.java.ast.parser.StatementListTreeImpl;
+import org.sonar.java.ast.parser.TypeParameterListTreeImpl;
+import org.sonar.java.model.AbstractTypedTree;
+import org.sonar.java.model.ArrayDimensionTreeImpl;
+import org.sonar.java.model.InternalSyntaxToken;
+import org.sonar.java.model.InternalSyntaxTrivia;
+import org.sonar.java.model.JLabelSymbol;
+import org.sonar.java.model.JParseResult;
+import org.sonar.java.model.JavaTree;
+import org.sonar.java.model.KeywordSuper;
+import org.sonar.java.model.KeywordThis;
+import org.sonar.java.model.ModifiersUtils;
+import org.sonar.java.model.Symbols;
+import org.sonar.java.model.TypeParameterTreeImpl;
+import org.sonar.java.model.declaration.AnnotationTreeImpl;
+import org.sonar.java.model.declaration.ClassTreeImpl;
+import org.sonar.java.model.declaration.EnumConstantTreeImpl;
+import org.sonar.java.model.declaration.ExportsDirectiveTreeImpl;
+import org.sonar.java.model.declaration.MethodTreeImpl;
+import org.sonar.java.model.declaration.ModifierKeywordTreeImpl;
+import org.sonar.java.model.declaration.ModifiersTreeImpl;
+import org.sonar.java.model.declaration.ModuleDeclarationTreeImpl;
+import org.sonar.java.model.declaration.OpensDirectiveTreeImpl;
+import org.sonar.java.model.declaration.ProvidesDirectiveTreeImpl;
+import org.sonar.java.model.declaration.RequiresDirectiveTreeImpl;
+import org.sonar.java.model.declaration.UsesDirectiveTreeImpl;
+import org.sonar.java.model.declaration.VariableTreeImpl;
+import org.sonar.java.model.expression.ArrayAccessExpressionTreeImpl;
+import org.sonar.java.model.expression.AssignmentExpressionTreeImpl;
+import org.sonar.java.model.expression.BinaryExpressionTreeImpl;
+import org.sonar.java.model.expression.ConditionalExpressionTreeImpl;
+import org.sonar.java.model.expression.IdentifierTreeImpl;
+import org.sonar.java.model.expression.InstanceOfTreeImpl;
+import org.sonar.java.model.expression.InternalPostfixUnaryExpression;
+import org.sonar.java.model.expression.InternalPrefixUnaryExpression;
+import org.sonar.java.model.expression.LambdaExpressionTreeImpl;
+import org.sonar.java.model.expression.LiteralTreeImpl;
+import org.sonar.java.model.expression.MemberSelectExpressionTreeImpl;
+import org.sonar.java.model.expression.MethodInvocationTreeImpl;
+import org.sonar.java.model.expression.MethodReferenceTreeImpl;
+import org.sonar.java.model.expression.NewArrayTreeImpl;
+import org.sonar.java.model.expression.NewClassTreeImpl;
+import org.sonar.java.model.expression.ParenthesizedTreeImpl;
+import org.sonar.java.model.expression.TypeArgumentListTreeImpl;
+import org.sonar.java.model.expression.TypeCastExpressionTreeImpl;
+import org.sonar.java.model.expression.VarTypeTreeImpl;
+import org.sonar.java.model.pattern.DefaultPatternTreeImpl;
+import org.sonar.java.model.pattern.GuardedPatternTreeImpl;
+import org.sonar.java.model.pattern.NullPatternTreeImpl;
+import org.sonar.java.model.pattern.RecordPatternTreeImpl;
+import org.sonar.java.model.pattern.TypePatternTreeImpl;
+import org.sonar.java.model.statement.AssertStatementTreeImpl;
+import org.sonar.java.model.statement.BlockTreeImpl;
+import org.sonar.java.model.statement.BreakStatementTreeImpl;
+import org.sonar.java.model.statement.CaseGroupTreeImpl;
+import org.sonar.java.model.statement.CaseLabelTreeImpl;
+import org.sonar.java.model.statement.CatchTreeImpl;
+import org.sonar.java.model.statement.ContinueStatementTreeImpl;
+import org.sonar.java.model.statement.DoWhileStatementTreeImpl;
+import org.sonar.java.model.statement.EmptyStatementTreeImpl;
+import org.sonar.java.model.statement.ExpressionStatementTreeImpl;
+import org.sonar.java.model.statement.ForEachStatementImpl;
+import org.sonar.java.model.statement.ForStatementTreeImpl;
+import org.sonar.java.model.statement.IfStatementTreeImpl;
+import org.sonar.java.model.statement.LabeledStatementTreeImpl;
+import org.sonar.java.model.statement.ReturnStatementTreeImpl;
+import org.sonar.java.model.statement.StaticInitializerTreeImpl;
+import org.sonar.java.model.statement.SwitchExpressionTreeImpl;
+import org.sonar.java.model.statement.SwitchStatementTreeImpl;
+import org.sonar.java.model.statement.SynchronizedStatementTreeImpl;
+import org.sonar.java.model.statement.ThrowStatementTreeImpl;
+import org.sonar.java.model.statement.TryStatementTreeImpl;
+import org.sonar.java.model.statement.WhileStatementTreeImpl;
+import org.sonar.java.model.statement.YieldStatementTreeImpl;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.AnnotationTree;
+import org.sonar.plugins.java.api.tree.ArrayDimensionTree;
+import org.sonar.plugins.java.api.tree.ArrayTypeTree;
+import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.CaseGroupTree;
+import org.sonar.plugins.java.api.tree.CaseLabelTree;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
+import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.ImportClauseTree;
+import org.sonar.plugins.java.api.tree.InferedTypeTree;
+import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.ModifierTree;
+import org.sonar.plugins.java.api.tree.ModuleDeclarationTree;
+import org.sonar.plugins.java.api.tree.ModuleDirectiveTree;
+import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
+import org.sonar.plugins.java.api.tree.PatternTree;
+import org.sonar.plugins.java.api.tree.ReturnStatementTree;
+import org.sonar.plugins.java.api.tree.StatementTree;
+import org.sonar.plugins.java.api.tree.SwitchExpressionTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
+import org.sonar.plugins.java.api.tree.SyntaxTrivia;
+import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeParameterTree;
+import org.sonar.plugins.java.api.tree.TypeTree;
+import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonar.plugins.java.api.tree.WildcardTree;
+import org.sonar.plugins.java.api.tree.YieldStatementTree;
+import org.sonarsource.semsitter.wire.Document;
+import org.sonarsource.semsitter.wire.Ref;
+
+/**
+ * Builds the SonarJava AST from one SemSitter CST document.
+ * Positions come from the CST. Symbols and types come from {@link JSema}.
+ */
+final class SemSitterTranslator {
+
+  private static final String BOUND = "bound";
+
+  private static final Pattern ARITY_ONLY = Pattern.compile("[^#]+#[^#(]+\\(\\d+\\)");
+  private final JSema sema;
+  private final Map<org.sonarsource.semsitter.wire.Node, InternalSyntaxToken> tokens = new IdentityHashMap<>();
+  private final Deque<JLabelSymbol> labels = new ArrayDeque<>();
+  private final Deque<Symbol.TypeSymbol> types = new ArrayDeque<>();
+  private InternalSyntaxToken eof = new InternalSyntaxToken(1, 0, "", List.of(), true);
+  private boolean switchExpression;
+  private static final List<String> FINAL_MODIFIER = List.of("final");
+  private String implicitClassName = "";
+  private String packageName = "";
+  private boolean naming;
+  private final Map<String, String> singleImports = new HashMap<>();
+  private final List<String> onDemandImports = new ArrayList<>();
+  private final Map<String, String> staticImports = new HashMap<>();
+  private final List<String> staticOnDemandImports = new ArrayList<>();
+  private final Deque<Map<String, Symbol>> scopes = new ArrayDeque<>();
+  private final Deque<Type> returnTargets = new ArrayDeque<>();
+  private final Set<Tree> rawResults = new HashSet<>();
+
+  /** Whether {@code _} declares an unnamed variable (Java 22 and later) instead of a plain name. */
+  private boolean unnamedVariables = true;
+  private boolean records = true;
+  /** Whether consecutive {@code ///} lines form one Markdown comment (Java 23 and later). */
+  private boolean markdownComments = true;
+
+  /** Work that needs declarations met later in the file. */
+  private final List<Runnable> deferred = new ArrayList<>();
+
+  private SemSitterTranslator(JSema sema) {
+    this.sema = sema;
+  }
+
+  static JParseResult translate(Document document, Function<Set<String>, JsonObject> types, Function<String, Boolean> packages, boolean noLibraries,
+    int javaVersion) {
+    JSema sema = new JSema();
+    sema.noLibraries(noLibraries);
+    sema.ingestDocument(document);
+    sema.loadTypes(types);
+    sema.loadPackages(packages);
+    return JParseResult.success(translate(sema, document, javaVersion));
+  }
+
+  static JavaTree.CompilationUnitTreeImpl translate(JSema sema, Document document) {
+    return translate(sema, document, Integer.MAX_VALUE);
+  }
+
+  static JavaTree.CompilationUnitTreeImpl translate(JSema sema, Document document, int javaVersion) {
+    boolean broken = document.getHasError();
+    SemSitterTranslator translator = new SemSitterTranslator(sema);
+    translator.unnamedVariables = javaVersion >= 22;
+    translator.records = javaVersion >= 16;
+    translator.markdownComments = javaVersion >= 23;
+    if (!document.getPath().isEmpty()) {
+      String fileName = Path.of(document.getPath()).getFileName().toString();
+      translator.implicitClassName = fileName.endsWith(".java") ? fileName.substring(0, fileName.length() - 5) : fileName;
+    }
+    Node root = new Node(document.getTree());
+    if (broken) {
+      Node problem = firstProblem(root);
+      int line = problem == null ? 1 : problem.line();
+      int column = problem == null ? 1 : problem.col() + 1;
+      throw new RecognitionException(line, String.format("Parse error at line %d column %d: Syntax error", line, column));
+    }
+    translator.indexTokens(root);
+    translator.declareGenericReturns(root);
+    JavaTree.CompilationUnitTreeImpl unit = translator.compilationUnit(root);
+    translator.deferred.forEach(Runnable::run);
+    unit.setSemanticModel(sema, sema.undefinedTypes(), sema.getEnvironmentCleaner());
+    setParents(unit);
+    CompilerWarnings.addTo(unit);
+    EffectivelyFinalVariables.mark(unit);
+    return unit;
+  }
+
+  @Nullable
+  private static Node firstProblem(Node node) {
+    if ("ERROR".equals(node.k()) || node.missing()) {
+      return node;
+    }
+    for (org.sonarsource.semsitter.wire.Node child : node.proto.getChildrenList()) {
+      Node problem = firstProblem(new Node(child));
+      if (problem != null) {
+        return problem;
+      }
+    }
+    return null;
+  }
+
+  private void indexTokens(Node root) {
+    List<Node> leaves = new ArrayList<>();
+    collectLeaves(root, leaves);
+    List<SyntaxTrivia> pending = new ArrayList<>();
+    for (Node leaf : leaves) {
+      if (isComment(leaf)) {
+        SyntaxTrivia previous = pending.isEmpty() ? null : pending.get(pending.size() - 1);
+        if (markdownComments && previous != null && previous.isComment(SyntaxTrivia.CommentKind.MARKDOWN) && leaf.text().startsWith("///")
+          && previous.range().end().line() + 1 == leaf.line()) {
+          pending.set(pending.size() - 1, new InternalSyntaxTrivia(SyntaxTrivia.CommentKind.MARKDOWN,
+            previous.comment() + "\n" + " ".repeat(leaf.col()) + trivia(leaf).comment(), previous.range().start().line(), previous.range().start().columnOffset()));
+        } else {
+          pending.add(trivia(leaf));
+        }
+      } else {
+        tokens.put(leaf.proto, new InternalSyntaxToken(leaf.line(), leaf.col(), leaf.text(), pending, false));
+        pending = new ArrayList<>();
+      }
+    }
+    eof = new InternalSyntaxToken(root.proto.getEndLine(), root.proto.getEndCol(), "", pending, true);
+  }
+
+  private static void collectLeaves(Node node, List<Node> leaves) {
+    if (node.missing()) {
+      return;
+    }
+    if (isComment(node) || node.allChildren().isEmpty() || isLiteral(node.k())) {
+      if (!node.text().isEmpty() || isComment(node)) {
+        leaves.add(node);
+      }
+      return;
+    }
+    for (Node child : node.allChildren()) {
+      collectLeaves(child, leaves);
+    }
+  }
+
+  private JavaTree.CompilationUnitTreeImpl compilationUnit(Node program) {
+    JavaTree.PackageDeclarationTreeImpl packageDeclaration = null;
+    List<ImportClauseTree> imports = new ArrayList<>();
+    List<Tree> types = new ArrayList<>();
+    List<Tree> compactMembers = new ArrayList<>();
+    ModuleDeclarationTree module = null;
+    boolean[] compact = {false};
+    for (Node child : program.children()) {
+      TopLevel collected = addTopLevel(child, imports, types, compactMembers, compact[0]);
+      packageDeclaration = collected.packageDeclaration == null ? packageDeclaration : collected.packageDeclaration;
+      module = collected.module == null ? module : collected.module;
+      compact[0] = collected.compact;
+    }
+    if (compact[0]) {
+      ClassTreeImpl implicitClass = new ClassTreeImpl(Tree.Kind.IMPLICIT_CLASS, null, compactMembers, null);
+      bindImplicitClass(implicitClass, compactMembers);
+      types.add(implicitClass);
+    }
+    return new JavaTree.CompilationUnitTreeImpl(packageDeclaration, imports, types, module, eof);
+  }
+
+  /** One top-level construct. Children of an error node are kept, so a syntax error does not drop the rest of the file. */
+  private TopLevel addTopLevel(Node child, List<ImportClauseTree> imports, List<Tree> types, List<Tree> compactMembers, boolean compact) {
+    if ("ERROR".equals(child.k())) {
+      JavaTree.PackageDeclarationTreeImpl packageDeclaration = null;
+      ModuleDeclarationTree module = null;
+      for (Node nested : child.children()) {
+        TopLevel collected = addTopLevel(nested, imports, types, compactMembers, compact);
+        packageDeclaration = collected.packageDeclaration == null ? packageDeclaration : collected.packageDeclaration;
+        module = collected.module == null ? module : collected.module;
+        compact = collected.compact;
+      }
+      return new TopLevel(packageDeclaration, module, compact);
+    }
+    return switch (child.k()) {
+      case "package_declaration" -> new TopLevel(packageDeclaration(child), null, compact);
+      case "module_declaration" -> new TopLevel(null, moduleDeclaration(child), compact);
+      case "import_declaration" -> {
+        imports.add(importDeclaration(child));
+        yield new TopLevel(null, null, compact);
+      }
+      case ";" -> {
+        EmptyStatementTreeImpl empty = new EmptyStatementTreeImpl(token(child));
+        if (compact) {
+          compactMembers.add(empty);
+        } else if (types.isEmpty()) {
+          imports.add(empty);
+        } else {
+          types.add(empty);
+        }
+        yield new TopLevel(null, null, compact);
+      }
+      case "class_declaration", "interface_declaration", "enum_declaration", "record_declaration", "annotation_type_declaration" -> {
+        addMember(compact ? compactMembers : types, child);
+        yield new TopLevel(null, null, compact);
+      }
+      case "method_declaration", "constructor_declaration", "field_declaration", "constant_declaration", "local_variable_declaration", "static_initializer", "block" -> {
+        if (!compact) {
+          compact = true;
+          compactMembers.addAll(types);
+          types.clear();
+        }
+        addMember(compactMembers, child);
+        yield new TopLevel(null, null, compact);
+      }
+      default -> new TopLevel(null, null, compact);
+    };
+  }
+
+  private record TopLevel(@Nullable JavaTree.PackageDeclarationTreeImpl packageDeclaration, @Nullable ModuleDeclarationTree module, boolean compact) {
+  }
+
+  private ModuleDeclarationTreeImpl moduleDeclaration(Node node) {
+    Node body = requiredField(node, "body", childKind(node, "module_body"));
+    List<ModuleDirectiveTree> directives = new ArrayList<>();
+    for (Node child : body.children()) {
+      if (child.k().endsWith("_module_directive")) {
+        directives.add(moduleDirective(child));
+      }
+    }
+    return new ModuleDeclarationTreeImpl(
+      node.children().stream().filter(SemSitterTranslator::isAnnotation).<AnnotationTree>map(this::annotation).toList(),
+      optionalToken(node, "open"),
+      token(required(node, "module")),
+      moduleName(requiredField(node, "name", firstNamed(node))),
+      token(required(body, "{")),
+      directives,
+      token(required(body, "}")));
+  }
+
+  private ModuleDirectiveTree moduleDirective(Node node) {
+    InternalSyntaxToken keyword = token(node.children().get(0));
+    InternalSyntaxToken semicolon = token(required(node, ";"));
+    return switch (node.k()) {
+      case "requires_module_directive" -> new RequiresDirectiveTreeImpl(keyword, requiresModifiers(node), moduleName(requiredField(node, "module", lastNamed(node))), semicolon);
+      case "exports_module_directive" -> new ExportsDirectiveTreeImpl(keyword, expression(requiredField(node, "package", firstNamed(node))), optionalToken(node, "to"), moduleNames(node), semicolon);
+      case "opens_module_directive" -> new OpensDirectiveTreeImpl(keyword, expression(requiredField(node, "package", firstNamed(node))), optionalToken(node, "to"), moduleNames(node), semicolon);
+      case "uses_module_directive" -> new UsesDirectiveTreeImpl(keyword, (TypeTree) expression(requiredField(node, "type", firstNamed(node))), semicolon);
+      default -> new ProvidesDirectiveTreeImpl(keyword, (TypeTree) expression(requiredField(node, "provided", firstNamed(node))), token(required(node, "with")), providers(node), semicolon);
+    };
+  }
+
+  private ModifiersTreeImpl requiresModifiers(Node node) {
+    List<ModifierTree> modifiers = new ArrayList<>();
+    for (Node child : node.children()) {
+      if ("requires_modifier".equals(child.k())) {
+        Node keyword = child.children().get(0);
+        modifiers.add(new ModifierKeywordTreeImpl("static".equals(keyword.text()) ? Modifier.STATIC : Modifier.TRANSITIVE, token(keyword)));
+      }
+    }
+    return new ModifiersTreeImpl(modifiers);
+  }
+
+  private ModuleNameListTreeImpl moduleNames(Node node) {
+    ModuleNameListTreeImpl names = ModuleNameListTreeImpl.emptyList();
+    for (Node child : node.children()) {
+      if ("modules".equals(child.f())) {
+        names.add(moduleName(child));
+      } else if (",".equals(child.text())) {
+        names.separators().add(token(child));
+      }
+    }
+    return names;
+  }
+
+  private QualifiedIdentifierListTreeImpl providers(Node node) {
+    QualifiedIdentifierListTreeImpl providers = QualifiedIdentifierListTreeImpl.emptyList();
+    boolean afterWith = false;
+    for (Node child : node.children()) {
+      if ("with".equals(child.text())) {
+        afterWith = true;
+      } else if (",".equals(child.text())) {
+        providers.separators().add(token(child));
+      } else if (afterWith && !";".equals(child.text())) {
+        providers.add((TypeTree) expression(child));
+      }
+    }
+    return providers;
+  }
+
+  private ModuleNameTreeImpl moduleName(Node node) {
+    ModuleNameTreeImpl name = ModuleNameTreeImpl.emptyList();
+    addModuleName(name, node);
+    return name;
+  }
+
+  private void addModuleName(ModuleNameTreeImpl name, Node node) {
+    if ("scoped_identifier".equals(node.k())) {
+      addModuleName(name, requiredField(node, "scope", firstNamed(node)));
+      name.add(new IdentifierTreeImpl(token(requiredField(node, "name", lastNamed(node)))));
+    } else {
+      name.add(new IdentifierTreeImpl(token(node)));
+    }
+  }
+
+  private JavaTree.PackageDeclarationTreeImpl packageDeclaration(Node node) {
+    naming = true;
+    ExpressionTree name = expression(requiredField(node, "name", firstOf(node, "scoped_identifier", "identifier")));
+    naming = false;
+    packageName = dottedName(name);
+    bindPackage(name, packageName);
+    return new JavaTree.PackageDeclarationTreeImpl(annotations(node), token(required(node, "package")), name, token(required(node, ";")));
+  }
+
+  private JavaTree.ImportTreeImpl importDeclaration(Node node) {
+    InternalSyntaxToken staticToken = optionalToken(node, "static");
+    naming = true;
+    ExpressionTree name = expression(requiredField(node, "name", firstNamed(node)));
+    naming = false;
+    if (keyword(node, "*") != null || keyword(node, "asterisk") != null) {
+      Node star = keyword(node, "*");
+      if (star == null) {
+        star = keyword(node, "asterisk");
+      }
+      (staticToken == null ? onDemandImports : staticOnDemandImports).add(dottedName(name));
+      name = new MemberSelectExpressionTreeImpl(name, token(lastKeyword(node, ".")), new IdentifierTreeImpl(token(star)));
+    } else if (name instanceof MemberSelectExpressionTree select) {
+      if (staticToken == null) {
+        singleImports.putIfAbsent(select.identifier().name(), dottedName(name));
+      } else {
+        staticImports.putIfAbsent(select.identifier().name(), dottedName(select.expression()));
+      }
+    }
+    JavaTree.ImportTreeImpl imported = new JavaTree.ImportTreeImpl(token(required(node, "import")), staticToken, optionalToken(node, "module"), name, token(required(node, ";")));
+    if (staticToken == null && name instanceof MemberSelectExpressionTree select && !"*".equals(select.identifier().name())) {
+      String fqn = dottedName(name);
+      if (sema.declaresType(fqn) && sema.resolve(fqn) instanceof Symbol.TypeSymbol type) {
+        imported.setSymbol(type);
+      } else if (!imported.isModule()) {
+        imported.setSymbol(Symbol.TypeSymbol.UNKNOWN_TYPE);
+      }
+    }
+    return imported;
+  }
+
+  private void addMember(List<Tree> members, Node node) {
+    switch (node.k()) {
+      case "field_declaration", "constant_declaration", "local_variable_declaration" -> members.addAll(variables(node));
+      case "method_declaration", "constructor_declaration", "compact_constructor_declaration" -> members.add(method(node));
+      case "annotation_type_element_declaration" -> members.add(annotationElement(node));
+      case "class_declaration", "interface_declaration", "enum_declaration", "record_declaration", "annotation_type_declaration" -> members.add(typeDeclaration(node));
+      case "static_initializer" -> members.add(staticInitializer(node));
+      case "block" -> members.add(initializer(node));
+      case "enum_constant" -> members.add(enumConstant(node, null));
+      case ";" -> members.add(new EmptyStatementTreeImpl(token(node)));
+      case "{", "}" -> {
+        // punctuation of the body
+      }
+      case "ERROR" -> {
+        for (Node nested : node.children()) {
+          addMember(members, nested);
+        }
+      }
+      default -> {
+        // skipped construct
+      }
+    }
+  }
+
+  private ClassTreeImpl typeDeclaration(Node node) {
+    Tree.Kind kind = switch (node.k()) {
+      case "interface_declaration" -> Tree.Kind.INTERFACE;
+      case "enum_declaration" -> Tree.Kind.ENUM;
+      case "record_declaration" -> records ? Tree.Kind.RECORD : Tree.Kind.CLASS;
+      case "annotation_type_declaration" -> Tree.Kind.ANNOTATION_TYPE;
+      default -> Tree.Kind.CLASS;
+    };
+    Node body = field(node, "body");
+    Node declaredName = nameNode(node);
+    if (declaredName != null && declaredName.decl() != null && sema.resolve(declaredName.decl()) instanceof Symbol.TypeSymbol typeSymbol) {
+      types.push(typeSymbol);
+    } else {
+      types.push(Symbol.TypeSymbol.UNKNOWN_TYPE);
+    }
+    // translated before the members so that the bounds of the type parameters are known inside the bodies
+    Node typeParameters = field(node, "type_parameters");
+    TypeParameterListTreeImpl typeParameterList = typeParameters == null ? null : typeParameters(typeParameters);
+    List<Tree> members;
+    try {
+      members = body == null ? new ArrayList<>() : membersOf(body);
+    } finally {
+      types.pop();
+    }
+    InternalSyntaxToken open = body == null ? synthetic("{") : token(required(body, "{"));
+    InternalSyntaxToken close = body == null ? synthetic("}") : token(required(body, "}"));
+    ClassTreeImpl tree = new ClassTreeImpl(kind, open, members, close);
+    String keyword = switch (kind) {
+      case INTERFACE, ANNOTATION_TYPE -> "interface";
+      case ENUM -> "enum";
+      case RECORD -> "record";
+      default -> "record_declaration".equals(node.k()) ? "record" : "class";
+    };
+    IdentifierTreeImpl name = identifier(requiredField(node, "name", firstOf(node, "identifier", "type_identifier")));
+    InternalSyntaxToken keywordToken = token(required(node, keyword));
+    InternalSyntaxToken atToken = null;
+    if (kind == Tree.Kind.ANNOTATION_TYPE && "@interface".equals(keywordToken.text())) {
+      // The grammar has one token for both; the tree keeps the at sign and the keyword apart.
+      atToken = new InternalSyntaxToken(keywordToken.line(), keywordToken.column(), "@", keywordToken.trivias(), false);
+      keywordToken = new InternalSyntaxToken(keywordToken.line(), keywordToken.column() + 1, "interface", List.of(), false);
+    }
+    tree.complete(modifiers(node), keywordToken, name);
+    if (typeParameterList != null) {
+      tree.completeTypeParameters(typeParameterList);
+    }
+    if (kind == Tree.Kind.ANNOTATION_TYPE) {
+      Node at = keyword(node, "@");
+      if (atToken != null) {
+        tree.completeAtToken(atToken);
+      } else if (at != null) {
+        tree.completeAtToken(token(at));
+      }
+    }
+    if (kind == Tree.Kind.RECORD) {
+      Node parameters = field(node, "parameters");
+      // the components must not shadow same-named variables of the enclosing method after the record
+      scopes.addFirst(new HashMap<>());
+      try {
+        tree.completeRecordComponents(
+          parameters == null ? synthetic("(") : token(required(parameters, "(")),
+          parameters == null ? List.of() : parameters(parameters),
+          parameters == null ? synthetic(")") : token(required(parameters, ")")));
+      } finally {
+        scopes.removeFirst();
+      }
+    }
+    Node superclass = childKind(node, "superclass");
+    if (superclass != null) {
+      tree.completeSuperclass(token(required(superclass, "extends")), type(firstType(superclass)));
+    }
+    Node interfaces = childKind(node, "super_interfaces");
+    if (interfaces == null) {
+      interfaces = childKind(node, "extends_interfaces");
+    }
+    if (interfaces != null) {
+      tree.completeInterfaces(firstKeyword(interfaces), separatedTypes(interfaces));
+    }
+    Node permits = childKind(node, "permits");
+    if (permits != null) {
+      tree.completePermittedTypes(token(required(permits, "permits")), separatedTypes(permits));
+    }
+    bindDeclaration(tree, nameNode(node), name);
+    if (kind == Tree.Kind.RECORD && tree.symbol() instanceof JTypeSymbol record) {
+      // the components of a record belong to the record, not to its canonical constructor
+      tree.recordComponents().stream().map(VariableTree::symbol).filter(JVariableSymbol.class::isInstance).map(JVariableSymbol.class::cast).forEach(component -> component.owner(record));
+    }
+    if (tree.symbol() instanceof JTypeSymbol declared) {
+      if (tree.superClass() != null
+        && tree.superClass().symbolType().symbol() instanceof JTypeSymbol parent && parent.id != null && !parent.isUnknown() && !parent.equals(declared)) {
+        declared.superName(parent.id);
+      } else if (kind == Tree.Kind.RECORD) {
+        declared.superName("java.lang.Record");
+      } else if (kind == Tree.Kind.ENUM) {
+        declared.superName("java.lang.Enum");
+      }
+      declared.declaredSupertypes(tree.superClass() == null ? null : tree.superClass().symbolType(),
+        tree.superInterfaces().stream().map(TypeTree::symbolType).toList());
+    }
+    return tree;
+  }
+
+  private List<Tree> membersOf(Node body) {
+    List<Tree> members = new ArrayList<>();
+    List<Node> children = body.children();
+    for (int i = 0; i < children.size(); i++) {
+      Node child = children.get(i);
+      if ("enum_constant".equals(child.k())) {
+        members.add(enumConstant(child, enumSeparator(children, i)));
+      } else if ("enum_body_declarations".equals(child.k())) {
+        List<Node> declarations = child.children();
+        int j = 0;
+        while (childKind(body, "enum_constant") != null && j < declarations.size() && ";".equals(declarations.get(j).text())) {
+          j++;
+        }
+        for (; j < declarations.size(); j++) {
+          addMember(members, declarations.get(j));
+        }
+      } else if (i + 1 < children.size() && brokenCompactConstructor(child, children.get(i + 1))) {
+        members.add(recoveredRecordConstructor(child, children.get(i + 1)));
+        i++;
+      } else {
+        addMember(members, child);
+      }
+    }
+    return members;
+  }
+
+  /** Tree-sitter splits {@code Record throws Ex} into a field named {@code throws} and a compact constructor named {@code Ex}. */
+  private static boolean brokenCompactConstructor(Node field, Node next) {
+    if (!"field_declaration".equals(field.k()) || !"compact_constructor_declaration".equals(next.k())) {
+      return false;
+    }
+    for (Node child : field.children()) {
+      if ("variable_declarator".equals(child.k())) {
+        Node name = field(child, "name");
+        return name != null && "throws".equals(name.text());
+      }
+    }
+    return false;
+  }
+
+  private MethodTreeImpl recoveredRecordConstructor(Node field, Node compact) {
+    Node typeNode = field(field, "type");
+    IdentifierTreeImpl name = identifier(typeNode == null ? field : typeNode);
+    Node throwsName = null;
+    for (Node child : field.children()) {
+      if ("variable_declarator".equals(child.k())) {
+        throwsName = field(child, "name");
+      }
+    }
+    Node thrownName = nameNode(compact);
+    QualifiedIdentifierListTreeImpl thrown = QualifiedIdentifierListTreeImpl.emptyList();
+    if (thrownName != null && !"throws".equals(thrownName.text())) {
+      thrown.add(type(thrownName));
+    }
+    Node body = field(compact, "body");
+    BlockTreeImpl block = body == null ? null : block(body);
+    MethodTreeImpl tree = new MethodTreeImpl(
+      null,
+      name,
+      new FormalParametersListTreeImpl(null, null),
+      throwsName == null ? null : token(throwsName),
+      thrown,
+      block,
+      null)
+      .completeWithModifiers(modifiers(field));
+    bindDeclaration(tree, nameNode(compact), name);
+    return tree;
+  }
+
+  @Nullable
+  private static Node enumSeparator(List<Node> siblings, int index) {
+    if (index + 1 >= siblings.size()) {
+      return null;
+    }
+    Node next = siblings.get(index + 1);
+    if (",".equals(next.text())) {
+      return next;
+    }
+    if ("enum_body_declarations".equals(next.k())) {
+      List<Node> declarations = next.children();
+      if (!declarations.isEmpty() && ";".equals(declarations.get(0).text())) {
+        return declarations.get(0);
+      }
+    }
+    return null;
+  }
+
+  private EnumConstantTreeImpl enumConstant(Node node, @Nullable Node separatorNode) {
+    IdentifierTreeImpl name = identifier(requiredField(node, "name", firstOf(node, "identifier")));
+    Node arguments = field(node, "arguments");
+    ArgumentListTreeImpl args = arguments == null ? ArgumentListTreeImpl.emptyList() : arguments(arguments);
+    Node body = field(node, "body");
+    ClassTreeImpl classBody = null;
+    if (body != null) {
+      classBody = new ClassTreeImpl(Tree.Kind.CLASS, token(required(body, "{")), membersOf(body), token(required(body, "}")));
+      bindType(classBody, node.decl() != null ? node : body);
+    }
+    InternalSyntaxToken separator = separatorNode == null ? null : token(separatorNode);
+    EnumConstantTreeImpl tree = new EnumConstantTreeImpl(modifiers(node), name, new NewClassTreeImpl(name, args, classBody), separator);
+    bindDeclaration(tree, nameNode(node), name);
+    Symbol.TypeSymbol enumType = types.peek();
+    if (classBody != null && enumType instanceof JSymbol enumSymbol) {
+      // An enum with a constant body is not final.
+      enumSymbol.removeModifier("final");
+    }
+    boolean knownEnum = enumType != null && !enumType.isUnknown();
+    bindEnumConstructor(name, args, knownEnum ? enumType : null);
+    if (knownEnum) {
+      ascribe(name, enumType.type());
+      if (tree.symbol() instanceof JSymbol field && field.type().isUnknown()) {
+        field.type(enumType.type());
+      }
+    }
+    return tree;
+  }
+
+  /** The name of an enum constant is also its constructor call: it names the constructor of {@code enumType}, or nothing. */
+  private void bindEnumConstructor(IdentifierTreeImpl name, ArgumentListTreeImpl args, @Nullable Symbol.TypeSymbol enumType) {
+    Symbol constructor = null;
+    if (enumType != null) {
+      String owner = enumType.type().fullyQualifiedName();
+      Symbol.MethodSymbol declared = sema.declaredMethod(owner, "<init>", argumentTypes(args));
+      constructor = declared != null || !args.isEmpty() ? declared : sema.resolve(owner + "#<init>()");
+    }
+    bind(name, constructor instanceof Symbol.MethodSymbol ? constructor : null);
+    if (name.symbol() instanceof Symbol.MethodSymbol method && !method.isUnknown()) {
+      recordUse(method, name);
+    }
+  }
+
+  private MethodTreeImpl annotationElement(Node node) {
+    FormalParametersListTreeImpl formals = new FormalParametersListTreeImpl(token(required(node, "(")), token(required(node, ")")));
+    Node value = field(node, "value");
+    IdentifierTreeImpl name = identifier(requiredField(node, "name", firstOf(node, "identifier")));
+    MethodTreeImpl tree = new MethodTreeImpl(formals, value == null ? null : token(required(node, "default")), value == null ? null : expression(value))
+      .complete(arrayType(type(requiredField(node, "type", firstType(node))), field(node, "dimensions")), name, token(required(node, ";")))
+      .completeWithModifiers(modifiers(node));
+    bindDeclaration(tree, nameNode(node), name);
+    return tree;
+  }
+
+  private MethodTreeImpl method(Node node) {
+    scopes.addFirst(new HashMap<>());
+    Node typeNode = field(node, "type");
+    returnTargets.push(typeNode == null || field(node, "dimensions") != null ? Type.UNKNOWN : syntacticType(typeNode));
+    try {
+      return methodInScope(node);
+    } finally {
+      scopes.removeFirst();
+      returnTargets.pop();
+    }
+  }
+
+  private MethodTreeImpl methodInScope(Node node) {
+    // translated before the parameters and the body so that the bounds of the type parameters are known there
+    Node typeParameters = field(node, "type_parameters");
+    TypeParameterListTreeImpl typeParameterList = typeParameters == null ? null : typeParameters(typeParameters);
+    Node parameters = field(node, "parameters");
+    FormalParametersListTreeImpl formals = new FormalParametersListTreeImpl(
+      parameters == null ? null : token(required(parameters, "(")),
+      parameters == null ? null : token(required(parameters, ")")));
+    if (parameters != null) {
+      VariableTree previous = null;
+      for (Node child : parameters.children()) {
+        if ("formal_parameter".equals(child.k()) || "spread_parameter".equals(child.k()) || "receiver_parameter".equals(child.k())) {
+          VariableTreeImpl parameter = variable(child, false);
+          formals.add(parameter);
+          previous = parameter;
+        } else if (",".equals(child.text()) && previous != null) {
+          ((VariableTreeImpl) previous).setEndToken(token(child));
+        }
+      }
+    }
+    Node body = field(node, "body");
+    BlockTreeImpl block = body == null ? null : block(body);
+    Node typeNode = field(node, "type");
+    TypeTree returnType = null;
+    if (typeNode != null && !"constructor_declaration".equals(node.k())) {
+      TypeTree written = recoverQualifiedType(type(typeNode));
+      List<AnnotationTree> afterTypeParameters = node.children().stream().filter(SemSitterTranslator::isAnnotation).<AnnotationTree>map(this::annotation).toList();
+      TypeTree element = written;
+      while (element instanceof ArrayTypeTree array) {
+        element = array.type();
+      }
+      if (!afterTypeParameters.isEmpty() && element instanceof JavaTree.AnnotatedTypeTree annotated) {
+        annotated.complete(afterTypeParameters);
+      }
+      returnType = arrayType(written, field(node, "dimensions"));
+    }
+    IdentifierTreeImpl name = identifier(requiredField(node, "name", firstOf(node, "identifier")));
+    Node thrown = childKind(node, "throws");
+    MethodTreeImpl tree = new MethodTreeImpl(
+      returnType,
+      name,
+      formals,
+      thrown == null ? null : token(required(thrown, "throws")),
+      thrown == null ? QualifiedIdentifierListTreeImpl.emptyList() : separatedTypes(thrown),
+      block,
+      body == null ? token(required(node, ";")) : null)
+      .completeWithModifiers(modifiers(node));
+    if (typeParameterList != null) {
+      tree.completeWithTypeParameters(typeParameterList);
+    }
+    bindDeclaration(tree, nameNode(node), name);
+    return tree;
+  }
+
+  private List<VariableTree> parameters(Node parameters) {
+    List<VariableTree> trees = new ArrayList<>();
+    VariableTreeImpl previous = null;
+    for (Node child : parameters.children()) {
+      if ("formal_parameter".equals(child.k()) || "spread_parameter".equals(child.k())) {
+        previous = variable(child, false);
+        trees.add(previous);
+      } else if (",".equals(child.text()) && previous != null) {
+        previous.setEndToken(token(child));
+      }
+    }
+    return trees;
+  }
+
+  private List<VariableTreeImpl> variables(Node declaration) {
+    ModifiersTreeImpl modifiers = modifiers(declaration);
+    Node typeNode = field(declaration, "type");
+    TypeTree type;
+    if (typeNode != null) {
+      type = type(typeNode);
+      if ("field_declaration".equals(declaration.k()) || "constant_declaration".equals(declaration.k())) {
+        type = recoverQualifiedType(type);
+      } else if (!naming && type instanceof MemberSelectExpressionTreeImpl select && select.symbolType().isUnknown()) {
+        // an unresolved qualified name of a local or a parameter is not typed by what is written
+        ascribe(select, JType.unknown(sema));
+      }
+    } else if ("spread_parameter".equals(declaration.k())) {
+      type = spreadType(declaration);
+    } else {
+      Node catchTypeNode = childKind(declaration, "catch_type");
+      type = catchTypeNode == null ? new VarTypeTreeImpl(synthetic("var")) : catchType(catchTypeNode);
+    }
+    List<VariableTreeImpl> trees = new ArrayList<>();
+    VariableTreeImpl previous = null;
+    for (Node child : declaration.children()) {
+      if ("variable_declarator".equals(child.k()) || "formal_parameter".equals(child.k())) {
+        previous = declarator(child, modifiers, type);
+        trees.add(previous);
+      } else if ("ERROR".equals(child.k()) && previous != null && previous.initializer() == null && containsNew(child)) {
+        InternalSyntaxToken equals = null;
+        for (Node part : child.children()) {
+          if ("=".equals(part.text())) {
+            equals = token(part);
+          }
+        }
+        previous.completeTypeAndInitializer(previous.type(), equals == null ? synthetic("=") : equals, arrayFromError(child));
+      } else if ((",".equals(child.text()) || ";".equals(child.text())) && previous != null) {
+        previous.setEndToken(token(child));
+      }
+    }
+    if (trees.isEmpty() && field(declaration, "name") != null) {
+      trees.add(declarator(declaration, modifiers, type));
+    }
+    return trees;
+  }
+
+  private static boolean containsNew(Node node) {
+    for (Node child : node.children()) {
+      if ("new".equals(child.text()) || containsNew(child)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /** {@code new byte[]} left inside an error node beside the declarator. */
+  private NewArrayTreeImpl arrayFromError(Node error) {
+    InternalSyntaxToken newKeyword = synthetic("new");
+    Node typeNode = null;
+    List<ArrayDimensionTree> dims = new ArrayList<>();
+    for (Node child : error.children()) {
+      if ("new".equals(child.text())) {
+        newKeyword = token(child);
+      } else if (isTypeKind(child.k())) {
+        typeNode = child;
+      } else if ("dimensions".equals(child.k()) || "dimensions_expr".equals(child.k())) {
+        dims.addAll(dimensions(child));
+      }
+    }
+    if (dims.isEmpty()) {
+      dims.addAll(dimensions(error));
+    }
+    NewArrayTreeImpl tree = new NewArrayTreeImpl(dims, InitializerListTreeImpl.emptyList())
+      .complete(type(typeNode == null ? error : typeNode))
+      .completeWithNewKeyword(newKeyword);
+    ascribe(tree, arrayTypeOf(tree.type(), Math.max(dims.size(), 1)));
+    return tree;
+  }
+
+  private TypeTree spreadType(Node node) {
+    TypeTree element = type(firstType(node));
+    List<AnnotationTreeImpl> annotations = node.children().stream().filter(SemSitterTranslator::isAnnotation).map(this::annotation).toList();
+    JavaTree.ArrayTypeTreeImpl array = new JavaTree.ArrayTypeTreeImpl(element, annotations, token(required(node, "...")));
+    ascribe(array, JType.array(sema, element.symbolType() instanceof JType elementType ? elementType : JType.unknown(sema)));
+    return array;
+  }
+
+  private VariableTreeImpl variable(Node parameter, boolean sharedModifiers) {
+    return variables(parameter).get(0);
+  }
+
+  private VariableTreeImpl declarator(Node node, ModifiersTreeImpl modifiers, TypeTree type) {
+    IdentifierTreeImpl name = identifier(requiredField(node, "name", firstOf(node, "identifier")));
+    VariableTreeImpl tree = new VariableTreeImpl(name).completeModifiersAndType(modifiers, applyDimensions(type, node));
+    Node value = field(node, "value");
+    if (value != null) {
+      ExpressionTree initializer = expression(value);
+      ascribeTarget(initializer, tree.type().symbolType());
+      tree.completeTypeAndInitializer(tree.type(), token(required(node, "=")), initializer);
+    }
+    bindDeclaration(tree, nameNode(node) == null ? node : nameNode(node), name);
+    Type declared = tree.type().symbolType();
+    if (tree.type() instanceof VarTypeTreeImpl && tree.initializer() != null && tree.initializer().symbolType().isIntersectionType() && tree.symbol() instanceof JSymbol symbol) {
+      symbol.type(tree.initializer().symbolType());
+      ascribe(tree.type(), tree.initializer().symbolType());
+    } else if (keepsArguments(declared) && tree.symbol() instanceof JSymbol symbol) {
+      symbol.type(declared);
+    } else if (tree.symbol().type() != null && !tree.symbol().type().isUnknown()) {
+      ascribe(tree.type(), tree.symbol().type());
+    }
+    return tree;
+  }
+
+  private TypeTree applyDimensions(TypeTree type, Node node) {
+    Node dimensions = field(node, "dimensions");
+    if (dimensions == null) {
+      return type;
+    }
+    return arrayType(type, dimensions);
+  }
+
+  private BlockTreeImpl staticInitializer(Node node) {
+    Node body = field(node, "body");
+    if (body == null) {
+      body = node;
+    }
+    BlockTreeImpl block = block(body);
+    ownInitializerVariables(block, true);
+    return new StaticInitializerTreeImpl(token(required(node, "static")), (InternalSyntaxToken) block.openBraceToken(), block.body(), (InternalSyntaxToken) block.closeBraceToken());
+  }
+
+  /** Variables declared in an initializer block belong to the block, not to the class. */
+  private void ownInitializerVariables(BlockTreeImpl block, boolean isStatic) {
+    Symbol.TypeSymbol enclosing = types.peek();
+    if (!(enclosing instanceof JTypeSymbol enclosingType)) {
+      return;
+    }
+    JInitializerBlockSymbol owner = isStatic ? sema.staticInitializerBlockSymbol(enclosingType) : sema.initializerBlockSymbol(enclosingType);
+    block.accept(new BaseTreeVisitor() {
+      @Override
+      public void visitVariable(VariableTree tree) {
+        if (tree.symbol() instanceof JVariableSymbol variable && enclosing.equals(variable.owner())) {
+          variable.owner(owner);
+        }
+        super.visitVariable(tree);
+      }
+
+      @Override
+      public void visitClass(ClassTree tree) {
+        // members of local and anonymous classes keep their own owner
+      }
+
+      @Override
+      public void visitLambdaExpression(LambdaExpressionTree tree) {
+        // lambda variables belong to the lambda
+      }
+    });
+  }
+
+  private BlockTreeImpl initializer(Node node) {
+    BlockTreeImpl block = block(node);
+    ownInitializerVariables(block, false);
+    return new BlockTreeImpl(Tree.Kind.INITIALIZER, (InternalSyntaxToken) block.openBraceToken(), block.body(), (InternalSyntaxToken) block.closeBraceToken());
+  }
+
+  private BlockTreeImpl block(Node node) {
+    scopes.addFirst(new HashMap<>());
+    try {
+      return blockInScope(node);
+    } finally {
+      scopes.removeFirst();
+    }
+  }
+
+  private BlockTreeImpl blockInScope(Node node) {
+    if (!"block".equals(node.k())) {
+      Node nested = childKind(node, "block");
+      if (nested != null) {
+        node = nested;
+      }
+    }
+    InternalSyntaxToken open = token(required(node, "{"));
+    InternalSyntaxToken close = token(required(node, "}"));
+    List<StatementTree> statements = new ArrayList<>();
+    for (Node child : node.children()) {
+      if ("{".equals(child.text()) || "}".equals(child.text())) {
+        continue;
+      }
+      addStatement(statements, child);
+    }
+    return new BlockTreeImpl(open, statements, close);
+  }
+
+  private void addStatement(List<StatementTree> statements, Node node) {
+    if ("ERROR".equals(node.k())) {
+      for (Node nested : node.children()) {
+        if (nested.children().isEmpty() && nested.text().equals(nested.k())) {
+          continue;
+        }
+        addStatement(statements, nested);
+      }
+      return;
+    }
+    if ("local_variable_declaration".equals(node.k())) {
+      statements.addAll(variables(node));
+      return;
+    }
+    if (";".equals(node.text())) {
+      statements.add(new EmptyStatementTreeImpl(token(node)));
+      return;
+    }
+    Node switchNode = childKind(node, "switch_expression");
+    if ("expression_statement".equals(node.k()) && switchNode != null) {
+      statements.add(switchStatement(switchNode));
+      statements.add(new EmptyStatementTreeImpl(token(required(node, ";"))));
+      return;
+    }
+    statements.add(statement(node));
+  }
+
+  private StatementTree statement(Node node) {
+    return switch (node.k()) {
+      case "block" -> block(node);
+      case "expression_statement" -> expressionStatement(node);
+      case "explicit_constructor_invocation" -> constructorInvocation(node);
+      case "if_statement" -> ifStatement(node);
+      case "while_statement" -> whileStatement(node);
+      case "do_statement" -> doStatement(node);
+      case "for_statement" -> forStatement(node);
+      case "enhanced_for_statement" -> forEach(node);
+      case "break_statement" -> breakStatement(node);
+      case "continue_statement" -> continueStatement(node);
+      case "return_statement" -> returnStatement(node);
+      case "yield_statement" -> yieldStatement(node);
+      case "throw_statement" -> throwStatement(node);
+      case "assert_statement" -> assertStatement(node);
+      case "labeled_statement" -> labeled(node);
+      case "try_statement", "try_with_resources_statement" -> tryStatement(node);
+      case "synchronized_statement" -> synchronizedStatement(node);
+      case "switch_statement", "switch_expression" -> switchStatement(node);
+      case "local_variable_declaration" -> variables(node).get(0);
+      case "class_declaration", "interface_declaration", "enum_declaration", "record_declaration" -> typeDeclaration(node);
+      case "ERROR" -> recoveredStatement(node);
+      default -> new EmptyStatementTreeImpl(";".equals(node.text()) ? token(node) : token(required(node, ";")));
+    };
+  }
+
+  private ExpressionStatementTreeImpl expressionStatement(Node node) {
+    ExpressionTree expression = null;
+    InternalSyntaxToken semicolon = null;
+    for (Node child : node.children()) {
+      if (";".equals(child.text())) {
+        semicolon = token(child);
+      } else if (expression == null) {
+        expression = expression(child);
+      }
+    }
+    return new ExpressionStatementTreeImpl(expression == null ? literal(Tree.Kind.NULL_LITERAL, synthetic("null"), sema.getClassType("<nulltype>")) : expression, semicolon);
+  }
+
+  private ExpressionStatementTreeImpl constructorInvocation(Node node) {
+    Node constructor = requiredField(node, "constructor", firstOf(node, "super", "this"));
+    IdentifierTreeImpl identifier = identifier(constructor);
+    bindUse(identifier, constructor);
+    Node object = field(node, "object");
+    ExpressionTree select = object == null
+      ? identifier
+      : new MemberSelectExpressionTreeImpl(expression(object), token(required(node, ".")), identifier);
+    Node typeArguments = field(node, "type_arguments");
+    MethodInvocationTreeImpl invocation = new MethodInvocationTreeImpl(select, typeArguments == null ? null : typeArguments(typeArguments),
+      arguments(requiredField(node, "arguments", childKind(node, "argument_list"))));
+    if (identifier.symbol() instanceof Symbol.MethodSymbol method) {
+      bindMethod(invocation, method);
+      ascribe(invocation, method.owner().type());
+      ascribe(identifier, Type.UNKNOWN);
+    }
+    Symbol.TypeSymbol enclosing = types.peek();
+    if (invocation.symbolType().isUnknown() && enclosing != null) {
+      Type constructed = "this".equals(identifier.name()) ? enclosing.type() : enclosing.superClass();
+      ascribe(invocation, constructed == null ? Type.UNKNOWN : constructed);
+    }
+    return new ExpressionStatementTreeImpl(invocation, token(required(node, ";")));
+  }
+
+  private IfStatementTreeImpl ifStatement(Node node) {
+    Parens condition = parens(requiredField(node, "condition", childKind(node, "parenthesized_expression")));
+    Node consequence = field(node, "consequence");
+    Node alternative = field(node, "alternative");
+    return new IfStatementTreeImpl(
+      token(required(node, "if")),
+      condition.open,
+      condition.expr,
+      condition.close,
+      consequence == null ? new EmptyStatementTreeImpl(synthetic(";")) : statement(consequence),
+      alternative == null ? null : token(required(node, "else")),
+      alternative == null ? null : statement(alternative));
+  }
+
+  private WhileStatementTreeImpl whileStatement(Node node) {
+    Parens condition = parens(requiredField(node, "condition", childKind(node, "parenthesized_expression")));
+    return new WhileStatementTreeImpl(token(required(node, "while")), condition.open, condition.expr, condition.close, statement(requiredField(node, "body", lastNamed(node))));
+  }
+
+  private DoWhileStatementTreeImpl doStatement(Node node) {
+    Node body = field(node, "body");
+    Parens condition = parens(requiredField(node, "condition", childKind(node, "parenthesized_expression")));
+    return new DoWhileStatementTreeImpl(
+      token(required(node, "do")),
+      body == null ? new EmptyStatementTreeImpl(synthetic(";")) : statement(body),
+      token(required(node, "while")),
+      condition.open,
+      condition.expr,
+      condition.close,
+      token(lastKeyword(node, ";")));
+  }
+
+  private ForStatementTreeImpl forStatement(Node node) {
+    scopes.addFirst(new HashMap<>());
+    try {
+      return forStatementInScope(node);
+    } finally {
+      scopes.removeFirst();
+    }
+  }
+
+  private ForStatementTreeImpl forStatementInScope(Node node) {
+    StatementListTreeImpl init = StatementListTreeImpl.emptyList();
+    StatementListTreeImpl update = StatementListTreeImpl.emptyList();
+    InternalSyntaxToken firstSemicolon = null;
+    InternalSyntaxToken secondSemicolon = null;
+    ExpressionTree condition = null;
+    int semicolons = 0;
+    for (Node child : node.children()) {
+      if (")".equals(child.text())) {
+        break;
+      }
+      if ("for".equals(child.text()) || "(".equals(child.text())) {
+        continue;
+      }
+      if (";".equals(child.text())) {
+        semicolons++;
+        if (semicolons == 1) {
+          firstSemicolon = token(child);
+        } else {
+          secondSemicolon = token(child);
+        }
+        continue;
+      }
+      if (",".equals(child.text())) {
+        (semicolons == 0 ? init : update).separators().add(token(child));
+        continue;
+      }
+      if ("local_variable_declaration".equals(child.k()) && semicolons == 0) {
+        List<VariableTreeImpl> declared = variables(child);
+        init.addAll(declared);
+        InternalSyntaxToken semi = optionalToken(child, ";");
+        if (semi != null) {
+          if (!declared.isEmpty()) {
+            declared.get(declared.size() - 1).setEndToken(null);
+          }
+          firstSemicolon = semi;
+          semicolons = 1;
+        }
+      } else if (semicolons == 0) {
+        init.add(new ExpressionStatementTreeImpl(expression(child), null));
+      } else if (semicolons == 1 && condition == null && !"block".equals(child.k()) && !same(field(node, "body"), child)) {
+        condition = expression(child);
+      } else if (semicolons >= 1 && same(child, field(node, "body"))) {
+        break;
+      } else if (semicolons >= 2 || same(field(node, "update"), child)) {
+        update.add(new ExpressionStatementTreeImpl(expression(child), null));
+      }
+    }
+    Node body = field(node, "body");
+    return new ForStatementTreeImpl(
+      token(required(node, "for")),
+      token(required(node, "(")),
+      init,
+      firstSemicolon == null ? synthetic(";") : firstSemicolon,
+      condition,
+      secondSemicolon == null ? synthetic(";") : secondSemicolon,
+      update,
+      token(required(node, ")")),
+      body == null ? new EmptyStatementTreeImpl(synthetic(";")) : statement(body));
+  }
+
+  private ForEachStatementImpl forEach(Node node) {
+    scopes.addFirst(new HashMap<>());
+    try {
+      return forEachInScope(node);
+    } finally {
+      scopes.removeFirst();
+    }
+  }
+
+  private ForEachStatementImpl forEachInScope(Node node) {
+    TypeTree type = arrayType(type(requiredField(node, "type", firstType(node))), field(node, "dimensions"));
+    IdentifierTreeImpl name = identifier(requiredField(node, "name", firstOf(node, "identifier")));
+    VariableTreeImpl variable = new VariableTreeImpl(modifiers(node), type, name);
+    bindDeclaration(variable, requiredField(node, "name", nameNode(node)), name);
+    return new ForEachStatementImpl(
+      token(required(node, "for")),
+      token(required(node, "(")),
+      variable,
+      token(required(node, ":")),
+      expression(requiredField(node, "value", firstNamed(node))),
+      token(required(node, ")")),
+      statement(requiredField(node, "body", lastNamed(node))));
+  }
+
+  private BreakStatementTreeImpl breakStatement(Node node) {
+    IdentifierTreeImpl label = labelUse(node);
+    return new BreakStatementTreeImpl(token(required(node, "break")), label, token(required(node, ";")));
+  }
+
+  private ContinueStatementTreeImpl continueStatement(Node node) {
+    return new ContinueStatementTreeImpl(token(required(node, "continue")), labelUse(node), token(required(node, ";")));
+  }
+
+  private ReturnStatementTreeImpl returnStatement(Node node) {
+    ExpressionTree expression = null;
+    for (Node child : node.children()) {
+      if (!"return".equals(child.text()) && !";".equals(child.text())) {
+        expression = expression(child);
+      }
+    }
+    if (expression instanceof NewClassTreeImpl newClass && !returnTargets.isEmpty()) {
+      inferDiamond(newClass, returnTargets.peek());
+    }
+    if (expression != null && expression.is(Tree.Kind.LAMBDA_EXPRESSION, Tree.Kind.METHOD_REFERENCE, Tree.Kind.METHOD_INVOCATION) && !returnTargets.isEmpty() && !returnTargets.peek().isUnknown()) {
+      ascribeTarget(expression, returnTargets.peek());
+    }
+    return new ReturnStatementTreeImpl(token(required(node, "return")), expression, token(required(node, ";")));
+  }
+
+  private YieldStatementTreeImpl yieldStatement(Node node) {
+    ExpressionTree expression = null;
+    for (Node child : node.children()) {
+      if (!"yield".equals(child.text()) && !";".equals(child.text())) {
+        expression = expression(child);
+      }
+    }
+    Node keyword = keyword(node, "yield");
+    return new YieldStatementTreeImpl(keyword == null ? null : token(keyword), expression, token(required(node, ";")));
+  }
+
+  private ThrowStatementTreeImpl throwStatement(Node node) {
+    return new ThrowStatementTreeImpl(token(required(node, "throw")), expression(firstNamed(node)), token(required(node, ";")));
+  }
+
+  private AssertStatementTreeImpl assertStatement(Node node) {
+    List<ExpressionTree> expressions = new ArrayList<>();
+    InternalSyntaxToken colon = null;
+    for (Node child : node.children()) {
+      if (":".equals(child.text())) {
+        colon = token(child);
+      } else if (!"assert".equals(child.text()) && !";".equals(child.text())) {
+        expressions.add(expression(child));
+      }
+    }
+    AssertStatementTreeImpl tree = new AssertStatementTreeImpl(token(required(node, "assert")), expressions.get(0), token(required(node, ";")));
+    if (expressions.size() > 1) {
+      tree.complete(colon == null ? synthetic(":") : colon, expressions.get(1));
+    }
+    return tree;
+  }
+
+  private LabeledStatementTreeImpl labeled(Node node) {
+    IdentifierTreeImpl name = identifier(firstOf(node, "identifier"));
+    JLabelSymbol symbol = new JLabelSymbol(name.name());
+    labels.push(symbol);
+    List<Node> children = node.children();
+    LabeledStatementTreeImpl tree = new LabeledStatementTreeImpl(name, token(required(node, ":")), statement(children.get(children.size() - 1)));
+    labels.pop();
+    symbol.setDeclaration(tree);
+    tree.labelSymbol = symbol;
+    name.labelSymbol = symbol;
+    String id = nameNode(node) == null ? null : firstOf(node, "identifier").decl();
+    if (id != null) {
+      sema.declare(id, tree);
+    }
+    return tree;
+  }
+
+  private TryStatementTreeImpl tryStatement(Node node) {
+    ResourceListTreeImpl resources = ResourceListTreeImpl.emptyList();
+    Node resourceNode = field(node, "resources");
+    if (resourceNode != null) {
+      for (Node child : resourceNode.children()) {
+        if ("resource".equals(child.k()) && field(child, "name") == null) {
+          resources.add(expression(firstNamed(child)));
+        } else if ("resource".equals(child.k()) || "local_variable_declaration".equals(child.k())) {
+          for (VariableTreeImpl resource : variables(child)) {
+            // A resource variable is implicitly final.
+            if (resource.symbol() instanceof JSymbol symbol) {
+              symbol.addModifiers(FINAL_MODIFIER);
+            }
+            resources.add(resource);
+          }
+        } else if (";".equals(child.text())) {
+          resources.separators().add(token(child));
+        } else if (!"(".equals(child.text()) && !")".equals(child.text())) {
+          resources.add(expression(child));
+        }
+      }
+    }
+    List<org.sonar.plugins.java.api.tree.CatchTree> catches = new ArrayList<>();
+    for (Node child : node.children()) {
+      if ("catch_clause".equals(child.k())) {
+        scopes.addFirst(new HashMap<>());
+        try {
+          Node parameter = field(child, "parameter");
+          if (parameter == null) {
+            parameter = childKind(child, "formal_parameter") == null ? childKind(child, "catch_formal_parameter") : childKind(child, "formal_parameter");
+          }
+          VariableTreeImpl variable = parameter == null ? variables(child).get(0) : variable(parameter, false);
+          catches.add(new CatchTreeImpl(token(required(child, "catch")), token(required(child, "(")), variable, token(required(child, ")")), block(requiredField(child, "body", childKind(child, "block")))));
+        } finally {
+          scopes.removeFirst();
+        }
+      }
+    }
+    Node body = field(node, "body");
+    Node finallyBlock = childKind(node, "finally_clause");
+    if (finallyBlock == null) {
+      finallyBlock = field(node, "finally");
+    }
+    return new TryStatementTreeImpl(
+      token(required(node, "try")),
+      resources.isEmpty() ? null : token(required(resourceNode, "(")),
+      resources,
+      resources.isEmpty() ? null : token(required(resourceNode, ")")),
+      body == null ? block(node) : block(body),
+      catches,
+      finallyBlock == null ? null : token(required(finallyBlock, "finally")),
+      finallyBlock == null ? null : block(childKind(finallyBlock, "block") == null ? finallyBlock : childKind(finallyBlock, "block")));
+  }
+
+  private SynchronizedStatementTreeImpl synchronizedStatement(Node node) {
+    Parens parens = parens(requiredField(node, "condition", childKind(node, "parenthesized_expression")));
+    return new SynchronizedStatementTreeImpl(token(required(node, "synchronized")), parens.open, parens.expr, parens.close, block(requiredField(node, "body", childKind(node, "block"))));
+  }
+
+  private SwitchStatementTreeImpl switchStatement(Node node) {
+    Parens parens = parens(requiredField(node, "condition", childKind(node, "parenthesized_expression")));
+    Node body = field(node, "body");
+    return new SwitchStatementTreeImpl(
+      token(required(node, "switch")),
+      parens.open,
+      parens.expr,
+      parens.close,
+      body == null ? synthetic("{") : token(required(body, "{")),
+      body == null ? List.of() : switchGroups(body, false),
+      body == null ? synthetic("}") : token(required(body, "}")));
+  }
+
+  private SwitchExpressionTreeImpl switchExpression(Node node) {
+    boolean previous = switchExpression;
+    switchExpression = true;
+    Parens parens = parens(requiredField(node, "condition", childKind(node, "parenthesized_expression")));
+    Node body = field(node, "body");
+    SwitchExpressionTreeImpl tree = new SwitchExpressionTreeImpl(
+      token(required(node, "switch")),
+      parens.open,
+      parens.expr,
+      parens.close,
+      body == null ? synthetic("{") : token(required(body, "{")),
+      body == null ? List.of() : switchGroups(body, true),
+      body == null ? synthetic("}") : token(required(body, "}")));
+    switchExpression = previous;
+    ascribe(tree, switchResultType(tree));
+    return tree;
+  }
+
+  private static Type switchResultType(SwitchExpressionTreeImpl tree) {
+    List<Type> results = new ArrayList<>();
+    for (CaseGroupTree group : tree.cases()) {
+      List<StatementTree> body = group.body();
+      if (group.labels().stream().noneMatch(CaseLabelTree::isFallThrough) && body.size() == 1 && body.get(0) instanceof ExpressionStatementTree statement) {
+        results.add(statement.expression().symbolType());
+      }
+      body.forEach(statement -> statement.accept(new BaseTreeVisitor() {
+        @Override
+        public void visitYieldStatement(YieldStatementTree yield) {
+          results.add(yield.expression().symbolType());
+        }
+
+        @Override
+        public void visitSwitchExpression(SwitchExpressionTree nested) {
+          // nested switch expressions yield their own results
+        }
+
+        @Override
+        public void visitLambdaExpression(LambdaExpressionTree lambda) {
+          // lambdas cannot yield to the enclosing switch
+        }
+
+        @Override
+        public void visitClass(ClassTree type) {
+          // classes cannot yield to the enclosing switch
+        }
+      }));
+    }
+    if (results.isEmpty() || results.stream().anyMatch(Type::isUnknown) || results.stream().distinct().count() != 1) {
+      return Type.UNKNOWN;
+    }
+    return results.get(0);
+  }
+
+  private List<CaseGroupTreeImpl> switchGroups(Node body, boolean expression) {
+    List<CaseGroupTreeImpl> groups = new ArrayList<>();
+    List<CaseLabelTreeImpl> labels = new ArrayList<>();
+    List<CaseLabelTreeImpl> carried = new ArrayList<>();
+    StatementListTreeImpl statements = StatementListTreeImpl.emptyList();
+    List<Node> children = body.children();
+    for (int i = 0; i < children.size(); i++) {
+      Node child = children.get(i);
+      if ("{".equals(child.text()) || "}".equals(child.text())) {
+        continue;
+      }
+      if ("switch_label".equals(child.k()) || "switch_rule".equals(child.k()) || "switch_block_statement_group".equals(child.k())) {
+        if ("switch_label".equals(child.k())) {
+          if (!statements.isEmpty()) {
+            groups.add(new CaseGroupTreeImpl(labels, statements));
+            labels = new ArrayList<>();
+            statements = StatementListTreeImpl.emptyList();
+          }
+          Node next = i + 1 < children.size() ? children.get(i + 1) : null;
+          boolean separator = next != null && ":".equals(next.text());
+          labels.add(caseLabel(child, separator ? token(next) : null));
+          if (separator) {
+            i++;
+          }
+        } else {
+          CaseGroupTreeImpl group = switchArm(child, expression, carried);
+          if (group.body().isEmpty() && "switch_block_statement_group".equals(child.k()) && nextIsGroup(children, i)) {
+            carried = group.labels().stream().map(CaseLabelTreeImpl.class::cast).collect(Collectors.toCollection(ArrayList::new));
+          } else {
+            groups.add(group);
+            carried = new ArrayList<>();
+          }
+        }
+      } else if (!labels.isEmpty()) {
+        addStatement(statements, child);
+      }
+    }
+    if (!labels.isEmpty()) {
+      groups.add(new CaseGroupTreeImpl(labels, statements));
+    }
+    return groups;
+  }
+
+  private static boolean nextIsGroup(List<Node> siblings, int index) {
+    return index + 1 < siblings.size() && "switch_block_statement_group".equals(siblings.get(index + 1).k());
+  }
+
+  private CaseGroupTreeImpl switchArm(Node node, boolean expression, List<CaseLabelTreeImpl> carried) {
+    List<CaseLabelTreeImpl> labels = new ArrayList<>(carried);
+    StatementListTreeImpl body = StatementListTreeImpl.emptyList();
+    List<Node> children = node.children();
+    for (int i = 0; i < children.size(); i++) {
+      Node child = children.get(i);
+      if ("switch_label".equals(child.k())) {
+        Node next = i + 1 < children.size() ? children.get(i + 1) : null;
+        boolean separator = next != null && (":".equals(next.text()) || "->".equals(next.text()));
+        labels.add(caseLabel(child, separator ? token(next) : null));
+        if (separator) {
+          i++;
+        }
+        continue;
+      }
+      if ("->".equals(child.text()) || ":".equals(child.text())) {
+        continue;
+      }
+      if ("expression_statement".equals(child.k()) && "switch_rule".equals(node.k())) {
+        ExpressionStatementTreeImpl statement = expressionStatement(child);
+        body.add(new YieldStatementTreeImpl(null, statement.expression(), (InternalSyntaxToken) statement.semicolonToken()));
+      } else if (expression && !isStatementKind(child.k())) {
+        ExpressionTree value = expression(child);
+        body.add(new YieldStatementTreeImpl(null, value, optionalToken(node, ";")));
+      } else {
+        addStatement(body, child);
+      }
+    }
+    return new CaseGroupTreeImpl(labels, body);
+  }
+
+  private CaseLabelTreeImpl caseLabel(Node node, @Nullable InternalSyntaxToken separator) {
+    InternalSyntaxToken keyword = keyword(node, "case") != null ? token(keyword(node, "case")) : token(required(node, "default"));
+    List<ExpressionTree> expressions = new ArrayList<>();
+    InternalSyntaxToken end = separator;
+    boolean caseLabel = keyword(node, "case") != null;
+    for (Node child : node.children()) {
+      if ("case".equals(child.text())) {
+        continue;
+      }
+      if ("default".equals(child.text())) {
+        if (caseLabel) {
+          expressions.add(new DefaultPatternTreeImpl(token(child), Type.UNKNOWN));
+        }
+      } else if (":".equals(child.text()) || "->".equals(child.text())) {
+        end = token(child);
+      } else if (",".equals(child.text())) {
+        continue;
+      } else if ("pattern".equals(child.k()) || "record_pattern".equals(child.k()) || "type_pattern".equals(child.k())) {
+        expressions.add(pattern(child));
+      } else if ("guard".equals(child.k()) && !expressions.isEmpty() && expressions.get(expressions.size() - 1) instanceof PatternTree guarded) {
+        GuardedPatternTreeImpl pattern = new GuardedPatternTreeImpl(guarded, token(required(child, "when")), expression(firstNamed(child)), guarded.symbolType());
+        expressions.set(expressions.size() - 1, pattern);
+      } else if ("null_literal".equals(child.k())) {
+        expressions.add(new NullPatternTreeImpl((LiteralTreeImpl) expression(child)));
+      } else {
+        expressions.add(expression(child));
+      }
+    }
+    return new CaseLabelTreeImpl(keyword, expressions, end == null ? synthetic(":") : end);
+  }
+
+  private ExpressionTree expression(Node node) {
+    if (node == null) {
+      return literal(Tree.Kind.NULL_LITERAL, synthetic("null"), JType.nullType(sema));
+    }
+    ExpressionTree tree = switch (node.k()) {
+      case "identifier", "type_identifier", "this", "super", "true", "false", "null_literal" -> primary(node);
+      case "decimal_integer_literal", "hex_integer_literal", "octal_integer_literal", "binary_integer_literal" -> integerLiteral(node);
+      case "decimal_floating_point_literal", "hex_floating_point_literal" -> floatingLiteral(node);
+      case "string_literal", "string_fragment" -> literal(node.text().startsWith("\"\"\"") ? Tree.Kind.TEXT_BLOCK : Tree.Kind.STRING_LITERAL, token(node), sema.getClassType("java.lang.String"));
+      case "character_literal" -> literal(Tree.Kind.CHAR_LITERAL, token(node), sema.getClassType("char"));
+      case "text_block" -> literal(Tree.Kind.TEXT_BLOCK, token(node), sema.getClassType("java.lang.String"));
+      case "scoped_identifier", "scoped_type_identifier", "field_access" -> memberSelect(node);
+      case "method_invocation" -> invocation(node);
+      case "object_creation_expression" -> creation(node);
+      case "array_creation_expression" -> arrayCreation(node);
+      case "array_initializer", "element_value_array_initializer" -> arrayInitializer(node);
+      case "element_value_pair" -> elementValuePair(node);
+      case "class_literal" -> classLiteral(node);
+      case "annotation", "marker_annotation" -> annotation(node);
+      case "array_access" -> arrayAccess(node);
+      case "assignment_expression" -> assignment(node);
+      case "binary_expression" -> binary(node);
+      case "unary_expression" -> unary(node, true);
+      case "update_expression" -> update(node);
+      case "parenthesized_expression" -> parenthesized(node);
+      case "ternary_expression" -> ternary(node);
+      case "cast_expression" -> cast(node);
+      case "instanceof_expression" -> instanceOf(node);
+      case "lambda_expression" -> lambda(node);
+      case "method_reference" -> methodReference(node);
+      case "switch_expression" -> switchExpression(node);
+      case "generic_type", "array_type", "integral_type", "floating_point_type", "boolean_type", "void_type", "wildcard", "annotated_type" -> typeExpression(node);
+      case "ERROR" -> recoveredExpression(node);
+      default -> primary(node);
+    };
+    return tree;
+  }
+
+  /** The first recognizable expression inside a syntax error, so the surrounding code keeps a tree. */
+  private ExpressionTree recoveredExpression(Node node) {
+    for (Node child : node.children()) {
+      String kind = child.k();
+      if ("ERROR".equals(kind) || kind.endsWith("_expression") || kind.endsWith("_literal") || kind.endsWith("_identifier")
+        || "identifier".equals(kind) || "array_creation_expression".equals(kind) || "object_creation_expression".equals(kind)
+        || "method_invocation".equals(kind) || "field_access".equals(kind) || "array_access".equals(kind)
+        || "lambda_expression".equals(kind) || "method_reference".equals(kind) || "class_literal".equals(kind)
+        || "array_initializer".equals(kind) || "this".equals(kind) || "super".equals(kind)) {
+        return expression(child);
+      }
+    }
+    return literal(Tree.Kind.NULL_LITERAL, synthetic("null"), JType.nullType(sema));
+  }
+
+  /** The first recognizable statement inside a syntax error. */
+  private StatementTree recoveredStatement(Node node) {
+    for (Node child : node.children()) {
+      String kind = child.k();
+      if ("ERROR".equals(kind) || kind.endsWith("_statement") || "block".equals(kind) || kind.endsWith("_declaration")) {
+        return statement(child);
+      }
+    }
+    return new EmptyStatementTreeImpl(synthetic(";"));
+  }
+
+  private ExpressionTree primary(Node node) {
+    if ("this".equals(node.k()) || "this".equals(node.text())) {
+      KeywordThis keyword = new KeywordThis(token(node), Symbol.UNKNOWN_SYMBOL);
+      Symbol.TypeSymbol enclosing = types.peek();
+      if (enclosing != null) {
+        bind(keyword, sema.receiverSymbol(enclosing, "this", enclosing.type()));
+        ascribe(keyword, enclosing.type());
+      }
+      return keyword;
+    }
+    if ("super".equals(node.k()) || "super".equals(node.text())) {
+      KeywordSuper keyword = new KeywordSuper(token(node), Symbol.UNKNOWN_SYMBOL);
+      Symbol.TypeSymbol enclosing = types.peek();
+      if (enclosing != null) {
+        Type superType = enclosing.superClass() == null ? Type.UNKNOWN : enclosing.superClass();
+        bind(keyword, sema.receiverSymbol(enclosing, "super", superType));
+        ascribe(keyword, superType);
+      }
+      return keyword;
+    }
+    if ("true".equals(node.k()) || "false".equals(node.k()) || "true".equals(node.text()) || "false".equals(node.text())) {
+      return literal(Tree.Kind.BOOLEAN_LITERAL, token(node), sema.getClassType("boolean"));
+    }
+    if ("null_literal".equals(node.k()) || "null".equals(node.text())) {
+      return literal(Tree.Kind.NULL_LITERAL, token(node), JType.nullType(sema));
+    }
+    IdentifierTreeImpl identifier = identifier(node);
+    bindUse(identifier, node);
+    if (!naming && identifier.symbol().isUnknown() && node.unresolved()) {
+      String type = importedType(identifier.name());
+      if (type != null) {
+        bindType(identifier, type);
+      }
+    }
+    if (!naming && identifier.symbol().isUnknown() && node.unresolved() && !"type_identifier".equals(node.k())) {
+      importedField(identifier);
+    }
+    if (!naming && "type_identifier".equals(node.k())) {
+      preferSingleImport(identifier);
+      recoverType(identifier);
+    }
+    return identifier;
+  }
+
+  /** An unresolved qualified type name keeps its written name where the compiler's recovery does. */
+  private TypeTree recoverQualifiedType(TypeTree type) {
+    if (!naming && type instanceof MemberSelectExpressionTreeImpl select && select.symbolType().isUnknown()
+      && select.identifier() instanceof IdentifierTreeImpl identifier && identifier.symbol().isUnknown()) {
+      String name = dottedName(select);
+      if (!name.isEmpty()) {
+        JTypeSymbol recovered = sema.recoveredType(name);
+        bind(identifier, recovered);
+        ascribe(identifier, recovered.type());
+        ascribe(select, recovered.type());
+      }
+    }
+    return type;
+  }
+
+  /** The type of an annotation: an unresolved one keeps its written, possibly qualified, name. */
+  private Type annotationType(TypeTree type) {
+    String name = type instanceof ExpressionTree expression ? dottedName(expression) : "";
+    if (type.symbolType().isUnknown() && !naming && !name.isEmpty()) {
+      return sema.recoveredType(name).type();
+    }
+    return type.symbolType();
+  }
+
+  /** An unresolved type name keeps its written name, as a recovered binding does, so checks can match on the simple name. */
+  private void recoverType(IdentifierTreeImpl identifier) {
+    if (identifier.symbol().isUnknown()) {
+      JTypeSymbol recovered = sema.recoveredType(identifier.name());
+      bind(identifier, recovered);
+      ascribe(identifier, recovered.type());
+    }
+  }
+
+  /** A duplicate single-type import is an error; recovery keeps the first, which is the type this simple name denotes. */
+  private void preferSingleImport(IdentifierTreeImpl identifier) {
+    String imported = singleImports.get(identifier.name());
+    if (imported == null || !sema.declaresType(imported)) {
+      return;
+    }
+    Symbol symbol = identifier.symbol();
+    boolean constructor = symbol.isMethodSymbol() && "<init>".equals(symbol.name());
+    if (!symbol.isTypeSymbol() && !symbol.isUnknown() && !constructor) {
+      return;
+    }
+    String resolved = identifier.symbolType().erasure().fullyQualifiedName();
+    if (!imported.equals(resolved)) {
+      bindType(identifier, imported);
+    }
+  }
+
+  /** The type a simple name stands for when SemSitter left it unresolved: imported, in the package, or in java.lang. */
+  @Nullable
+  private String importedType(String name) {
+    List<String> candidates = new ArrayList<>();
+    if (singleImports.containsKey(name)) {
+      candidates.add(singleImports.get(name));
+    }
+    candidates.add(packageName.isEmpty() ? name : (packageName + "." + name));
+    onDemandImports.forEach(prefix -> candidates.add(prefix + "." + name));
+    candidates.add("java.lang." + name);
+    String found = candidates.stream().filter(sema::declaresType).findFirst().orElse(null);
+    return found != null ? found : staticMemberType(name);
+  }
+
+  /** A member type that a static import, single or on demand, brings in. */
+  @Nullable
+  private String staticMemberType(String name) {
+    List<String> owners = new ArrayList<>();
+    if (staticImports.containsKey(name)) {
+      owners.add(staticImports.get(name));
+    }
+    owners.addAll(staticOnDemandImports);
+    for (String owner : owners) {
+      String binary = binaryTypeName(owner);
+      if (binary != null && sema.declaresType(binary + "$" + name)) {
+        return binary + "$" + name;
+      }
+    }
+    return null;
+  }
+
+  /** The binary name of the type a dotted name denotes, trying each dot as a nesting boundary. */
+  @Nullable
+  private String binaryTypeName(String dotted) {
+    String candidate = dotted;
+    while (true) {
+      if (sema.declaresType(candidate)) {
+        return candidate;
+      }
+      int dot = candidate.lastIndexOf('.');
+      if (dot < 0) {
+        return null;
+      }
+      candidate = candidate.substring(0, dot) + "$" + candidate.substring(dot + 1);
+    }
+  }
+
+  private void resolveQualifiedType(ExpressionTree qualifier, IdentifierTreeImpl identifier) {
+    Symbol owner = qualifier instanceof MemberSelectExpressionTree select ? select.identifier().symbol() : (qualifier instanceof IdentifierTree name ? name.symbol() : Symbol.UNKNOWN_SYMBOL);
+    String candidate;
+    if (owner.isTypeSymbol() && !owner.isUnknown()) {
+      candidate = ((Symbol.TypeSymbol) owner).type().fullyQualifiedName() + "$" + identifier.name();
+    } else if (owner.isUnknown() || owner.isPackageSymbol()) {
+      String prefix = dottedName(qualifier);
+      candidate = prefix.isEmpty() ? null : (prefix + "." + identifier.name());
+    } else {
+      candidate = null;
+    }
+    if (candidate != null && sema.declaresType(candidate)) {
+      bindType(identifier, candidate);
+    }
+  }
+
+  @Nullable
+  private String fieldOwner(ExpressionTree qualifier) {
+    Type receiver = qualifier.symbolType().erasure();
+    if (receiver.isClass()) {
+      return receiver.fullyQualifiedName();
+    }
+    return qualifier instanceof IdentifierTree name ? importedType(name.name()) : null;
+  }
+
+  /** A name SemSitter left unresolved that a static import brings in as a field. */
+  private void importedField(IdentifierTreeImpl identifier) {
+    List<String> owners = new ArrayList<>();
+    if (staticImports.containsKey(identifier.name())) {
+      owners.add(staticImports.get(identifier.name()));
+    }
+    owners.addAll(staticOnDemandImports);
+    for (String owner : owners) {
+      Symbol.VariableSymbol field = sema.declaredField(owner, identifier.name());
+      if (field != null && field.isStatic()) {
+        bind(identifier, field);
+        ascribe(identifier, field.type());
+        return;
+      }
+    }
+  }
+
+  /** The method SemSitter left unresolved, looked up in the receiver type, or in the enclosing types and static imports of an unqualified call. */
+  @Nullable
+  private Symbol.MethodSymbol libraryMethod(@Nullable ExpressionTree qualifier, String name, List<Type> arguments, Set<Integer> functions) {
+    List<String> owners = new ArrayList<>();
+    if (qualifier != null) {
+      Type receiver = qualifier.symbolType().erasure();
+      if (receiver.isClass()) {
+        owners.add(receiver.fullyQualifiedName());
+      } else if (receiver.isArray()) {
+        owners.add("java.lang.Object");
+      } else if (qualifier instanceof IdentifierTree typeName) {
+        String imported = importedType(typeName.name());
+        if (imported != null) {
+          owners.add(imported);
+        }
+      }
+    } else {
+      types.stream().filter(type -> !type.isUnknown()).forEach(type -> owners.add(type.type().fullyQualifiedName()));
+      if (staticImports.containsKey(name)) {
+        owners.add(staticImports.get(name));
+      }
+      owners.addAll(staticOnDemandImports);
+    }
+    Symbol.MethodSymbol found = owners.stream().map(owner -> sema.declaredMethod(owner, name, arguments, functions)).filter(Objects::nonNull).findFirst().orElse(null);
+    if (found == null && qualifier != null && !qualifier.symbolType().isUnknown() && !owners.contains("java.lang.Object")) {
+      found = sema.declaredMethod("java.lang.Object", name, arguments, functions);
+    }
+    return found;
+  }
+
+  /** Types a lambda, a method reference or an array initializer from the type its context expects. */
+  private void ascribeTarget(ExpressionTree expression, Type target) {
+    boolean targetTyped = expression.is(Tree.Kind.LAMBDA_EXPRESSION, Tree.Kind.METHOD_REFERENCE) || (expression instanceof NewArrayTreeImpl array && array.type() == null);
+    // an erased type variable (Object) is not a functional interface: wait for the inferred parameter
+    if (targetTyped && expression.symbolType().isUnknown() && !target.isUnknown() && !target.is("java.lang.Object")) {
+      ascribe(expression, expression instanceof NewArrayTreeImpl ? target : sema.groundType(target));
+    }
+    if (expression instanceof NewClassTreeImpl newClass) {
+      inferDiamond(newClass, target);
+    }
+    // a switch expression is a poly expression: in an assignment context it has the target type
+    if (expression.is(Tree.Kind.SWITCH_EXPRESSION) && !target.isUnknown() && !target.isPrimitive() && !expression.symbolType().isPrimitive()) {
+      ascribe(expression, target);
+    }
+    // a reference conditional is a poly expression: in an assignment context it has the target type
+    if (expression instanceof ConditionalExpressionTree && keepsArguments(target) && sameErasure(target, expression.symbolType())) {
+      ascribe(expression, target);
+    }
+    if (expression instanceof MethodInvocationTreeImpl call && call.methodSymbol() instanceof JMethodSymbol generic && !generic.isUnknown() && !call.symbolType().isParameterized()) {
+      Type inferred = sema.targetedReturn(generic, target);
+      if (inferred != null) {
+        ascribe(call, inferred);
+        List<Type> parameters = sema.targetedParameters(generic, target);
+        if (parameters != null && parameters.size() == generic.parameterTypes().size()) {
+          ascribeArguments(generic, parameters, call.arguments());
+        }
+      }
+    }
+    if (expression instanceof MethodInvocationTreeImpl call && call.methodSymbol() instanceof JMethodSymbol generic && !generic.isUnknown() && call.symbolType().isParameterized()
+      && target.isParameterized() && call.arguments().stream().anyMatch(argument -> argument.is(Tree.Kind.METHOD_INVOCATION) && argument.symbolType().is("java.util.stream.Collector"))) {
+      Type retargeted = sema.retargetedElement(generic, generic.owner().type(), call.symbolType(), target);
+      if (retargeted != null) {
+        ascribe(call, retargeted);
+      }
+    }
+    if (expression instanceof LambdaExpressionTreeImpl lambda) {
+      bindLambdaParameterOwner(lambda, lambda.symbolType());
+    }
+  }
+
+  /** A diamond takes the type arguments its target gives the created class, and its constructor is seen from that type. */
+  private void inferDiamond(NewClassTreeImpl tree, Type target) {
+    if (!(tree.identifier() instanceof JavaTree.ParameterizedTypeTreeImpl generic) || !generic.typeArguments().isEmpty() || !target.isParameterized()) {
+      return;
+    }
+    boolean anonymous = tree.classBody() != null && tree.classBody().symbol() instanceof JTypeSymbol body && !body.isUnknown();
+    // an anonymous class keeps its own type; the diamond parameterizes the supertype it names
+    Type inferred = sema.inferDiamond(anonymous ? generic.symbolType() : tree.symbolType(), sema.groundType(target));
+    if (!inferred.isParameterized()) {
+      return;
+    }
+    ascribe(generic, inferred);
+    if (anonymous) {
+      ((JTypeSymbol) tree.classBody().symbol()).declaredSupertype(inferred);
+      return;
+    }
+    ascribe(tree, inferred);
+    if (tree.getConstructorIdentifier() instanceof IdentifierTreeImpl identifier) {
+      ascribe(identifier, inferred);
+      if (identifier.symbol() instanceof JMethodSymbol constructor && !constructor.isUnknown()) {
+        List<Type> parameters = sema.invocationParameters(constructor, inferred, argumentTypes(tree.arguments()));
+        bind(identifier, sema.invocationView(constructor, inferred, parameters, constructor.returnType().type()));
+      }
+    }
+  }
+
+  private void bindLambdaParameterOwner(LambdaExpressionTreeImpl lambda, Type target) {
+    JMethodSymbol functional = sema.functionalMethod(target);
+    if (functional == null || functional.parameterTypes().size() != lambda.parameters().size()) {
+      return;
+    }
+    List<Type> substituted = sema.invocationParameters(functional, target, List.of());
+    List<Type> types = new ArrayList<>();
+    for (int i = 0; i < lambda.parameters().size(); i++) {
+      VariableTree parameter = lambda.parameters().get(i);
+      Type type = parameter.symbol().type();
+      if ((type == null || type.isUnknown()) && parameter.symbol() instanceof JVariableSymbol symbol && !substituted.get(i).isUnknown()) {
+        type = substituted.get(i);
+        symbol.type(type);
+        ascribe((IdentifierTreeImpl) parameter.simpleName(), type);
+      }
+      if (parameter.type() instanceof InferedTypeTree inferred && inferred.symbolType().isUnknown() && type != null && !type.isUnknown()) {
+        ascribe(inferred, type);
+      }
+      types.add(type == null || type.isUnknown() ? functional.parameterTypes().get(i) : type);
+    }
+    JMethodSymbol shared = sema.invocationView(functional, target, types, sema.invocationReturn(functional, target, List.of()));
+    var arrow = lambda.arrowToken().range().start();
+    JMethodSymbol view = shared.lambdaView(functional.id + "$lambda$" + arrow.line() + ":" + arrow.column() + "()");
+    lambda.setSymbol(view);
+    for (VariableTree parameter : lambda.parameters()) {
+      if (parameter.symbol() instanceof JVariableSymbol symbol) {
+        symbol.owner(view);
+      }
+    }
+    ascribeLambdaResults(lambda, view.returnType().type());
+    lambda.body().accept(new BaseTreeVisitor() {
+      @Override
+      public void visitVariable(VariableTree tree) {
+        if (tree.symbol() instanceof JVariableSymbol symbol && symbol.owner() instanceof JSymbol owner && owner.id != null && owner.id.contains("$lambda$")) {
+          symbol.owner(view);
+        }
+        super.visitVariable(tree);
+      }
+
+      @Override
+      public void visitIdentifier(IdentifierTree tree) {
+        if (tree instanceof IdentifierTreeImpl use && use.symbolType().isUnknown() && use.symbol() instanceof JVariableSymbol variable
+          && lambda.parameters().stream().anyMatch(parameter -> parameter.symbol().equals(variable)) && variable.type() != null && !variable.type().isUnknown()) {
+          ascribe(use, variable.type());
+        }
+      }
+
+      @Override
+      public void visitLambdaExpression(LambdaExpressionTree tree) {
+        // nested lambdas own their variables
+      }
+
+      @Override
+      public void visitClass(ClassTree tree) {
+        // local and anonymous classes own their variables
+      }
+    });
+  }
+
+  /** The values a lambda returns take the return type of the functional method as their target. */
+  private void ascribeLambdaResults(LambdaExpressionTreeImpl lambda, Type returned) {
+    if (returned.isUnknown() || returned.isVoid()) {
+      return;
+    }
+    if (lambda.body() instanceof ExpressionTree value) {
+      ascribeTarget(value, returned);
+      return;
+    }
+    lambda.body().accept(new BaseTreeVisitor() {
+      @Override
+      public void visitReturnStatement(ReturnStatementTree tree) {
+        if (tree.expression() != null) {
+          ascribeTarget(tree.expression(), returned);
+        }
+      }
+
+      @Override
+      public void visitLambdaExpression(LambdaExpressionTree tree) {
+        // nested lambdas have their own results
+      }
+
+      @Override
+      public void visitClass(ClassTree tree) {
+        // local and anonymous classes have their own methods
+      }
+    });
+  }
+
+  private void ascribeArguments(Symbol.MethodSymbol method, List<ExpressionTree> arguments) {
+    ascribeArguments(method, method.parameterTypes(), arguments);
+  }
+
+  /** Types the arguments from the declared parameters, substituted for the receiver's type arguments when the call is generic. */
+  private void ascribeArguments(Symbol.MethodSymbol method, List<Type> parameters, List<ExpressionTree> arguments) {
+    for (int i = 0; i < arguments.size() && !parameters.isEmpty(); i++) {
+      Type parameter = parameters.get(Math.min(i, parameters.size() - 1));
+      if (method.isVarArgsMethod() && i >= parameters.size() - 1 && parameter.isArray()
+        && (arguments.size() != parameters.size() || arguments.get(i).is(Tree.Kind.LAMBDA_EXPRESSION, Tree.Kind.METHOD_REFERENCE))) {
+        parameter = ((Type.ArrayType) parameter).elementType();
+      }
+      if (i < parameters.size() || method.isVarArgsMethod()) {
+        ascribeTarget(arguments.get(i), parameter);
+      }
+    }
+  }
+
+  private static Set<Integer> functionArguments(List<ExpressionTree> arguments) {
+    Set<Integer> functions = new HashSet<>();
+    for (int i = 0; i < arguments.size(); i++) {
+      if (arguments.get(i).is(Tree.Kind.LAMBDA_EXPRESSION, Tree.Kind.METHOD_REFERENCE)) {
+        functions.add(i);
+      }
+    }
+    return functions;
+  }
+
+  private static List<Type> argumentTypes(List<ExpressionTree> arguments) {
+    return arguments.stream().map(ExpressionTree::symbolType).toList();
+  }
+
+  private void bindType(IdentifierTreeImpl identifier, String fqn) {
+    Symbol symbol = sema.resolve(fqn);
+    bind(identifier, symbol);
+    ascribe(identifier, symbol.type());
+    sema.use(fqn, identifier);
+  }
+
+  private void bindQualifierPackages(ExpressionTree qualifier, IdentifierTree identifier) {
+    if (identifier.symbol() instanceof Symbol.TypeSymbol type && !type.isUnknown()) {
+      Symbol owner = type.owner();
+      while (owner != null && !owner.isPackageSymbol()) {
+        owner = owner.owner();
+      }
+      if (owner != null && dottedName(qualifier).equals(owner.name())) {
+        bindPackage(qualifier, owner.name());
+      }
+    }
+  }
+
+  private void bindPackage(ExpressionTree tree, String name) {
+    ExpressionTree last = tree;
+    if (tree instanceof MemberSelectExpressionTree select) {
+      int dot = name.lastIndexOf('.');
+      if (dot < 0) {
+        return;
+      }
+      bindPackage(select.expression(), name.substring(0, dot));
+      last = select.identifier();
+    }
+    if (last instanceof IdentifierTreeImpl identifier && identifier.symbol().isUnknown()) {
+      bind(identifier, sema.packageSymbol(name));
+    }
+  }
+
+  private static String dottedName(ExpressionTree tree) {
+    if (tree instanceof MemberSelectExpressionTree select) {
+      String qualifier = dottedName(select.expression());
+      return qualifier.isEmpty() ? "" : (qualifier + "." + select.identifier().name());
+    }
+    return tree instanceof IdentifierTree identifier ? identifier.name() : "";
+  }
+
+  private IdentifierTreeImpl identifier(Node node) {
+    String text = node.text().isEmpty() ? node.k() : node.text();
+    return new IdentifierTreeImpl(tokens.getOrDefault(node.proto, new InternalSyntaxToken(node.line(), node.col(), text, List.of(), false)), unnamedVariables && "_".equals(text));
+  }
+
+  private LiteralTreeImpl integerLiteral(Node node) {
+    String text = node.text();
+    boolean isLong = text.endsWith("l") || text.endsWith("L");
+    return literal(isLong ? Tree.Kind.LONG_LITERAL : Tree.Kind.INT_LITERAL, token(node), sema.getClassType(isLong ? "long" : "int"));
+  }
+
+  private LiteralTreeImpl floatingLiteral(Node node) {
+    String text = node.text();
+    boolean isFloat = text.endsWith("f") || text.endsWith("F");
+    return literal(isFloat ? Tree.Kind.FLOAT_LITERAL : Tree.Kind.DOUBLE_LITERAL, token(node), sema.getClassType(isFloat ? "float" : "double"));
+  }
+
+  private LiteralTreeImpl literal(Tree.Kind kind, InternalSyntaxToken token, Type type) {
+    LiteralTreeImpl tree = new LiteralTreeImpl(kind, token);
+    ascribe(tree, type);
+    return tree;
+  }
+
+  private MemberSelectExpressionTreeImpl memberSelect(Node node) {
+    Node object = field(node, "object");
+    if (object == null) {
+      object = field(node, "scope");
+    }
+    Node name = field(node, "name");
+    if (name == null) {
+      name = field(node, "field");
+    }
+    Node scope = object == null ? firstNamed(node) : object;
+    ExpressionTree qualifier = object == null && compoundName(scope) ? typeExpression(scope) : (object == null ? primary(scope) : superQualifier(node, object));
+    Node nameNode = name == null ? lastNamed(node) : name;
+    IdentifierTreeImpl identifier = receiverKeyword(identifier(nameNode));
+    bindUse(identifier, name != null || nameNode.proto.getRefsCount() > 0 ? nameNode : node, true);
+    if (!naming) {
+      bindQualifiedReceiver(qualifier, identifier);
+      if (identifier.symbol().isUnknown()) {
+        resolveQualifiedType(qualifier, identifier);
+      }
+      if (identifier.symbol().isUnknown()) {
+        String owner = fieldOwner(qualifier);
+        Symbol.VariableSymbol field = owner == null ? null : sema.declaredField(owner, identifier.name());
+        if (field != null) {
+          bind(identifier, field);
+          ascribe(identifier, field.type());
+        }
+      }
+      bindQualifierPackages(qualifier, identifier);
+      if (identifier.symbol() instanceof JVariableSymbol field && !field.isUnknown() && field.type() != null) {
+        Type read = sema.fieldTypeOn(field, qualifier.symbolType());
+        if (read != field.type()) {
+          ascribe(identifier, read);
+        }
+      }
+    }
+    List<AnnotationTree> annotations = node.children().stream().filter(SemSitterTranslator::isAnnotation).<AnnotationTree>map(this::annotation).toList();
+    if (!annotations.isEmpty()) {
+      identifier.complete(annotations);
+    }
+    MemberSelectExpressionTreeImpl tree = new MemberSelectExpressionTreeImpl(qualifier, token(lastKeyword(node, ".")), identifier);
+    ascribe(tree, identifier.symbolType());
+    return tree;
+  }
+
+  /** The {@code this} or {@code super} written after a qualifier is a keyword, not a name. */
+  private static IdentifierTreeImpl receiverKeyword(IdentifierTreeImpl identifier) {
+    return switch (identifier.name()) {
+      case "this" -> new KeywordThis((InternalSyntaxToken) identifier.identifierToken(), Symbol.UNKNOWN_SYMBOL);
+      case "super" -> new KeywordSuper((InternalSyntaxToken) identifier.identifierToken(), Symbol.UNKNOWN_SYMBOL);
+      default -> identifier;
+    };
+  }
+
+  private ExpressionTree superQualifier(Node node, Node object) {
+    ExpressionTree qualifier = expression(object);
+    Node superNode = keyword(node, "super");
+    if (superNode == null || same(superNode, object)) {
+      return qualifier;
+    }
+    IdentifierTreeImpl identifier = new KeywordSuper(token(superNode), Symbol.UNKNOWN_SYMBOL);
+    bindQualifiedReceiver(qualifier, identifier);
+    MemberSelectExpressionTreeImpl select = new MemberSelectExpressionTreeImpl(qualifier, token(required(node, ".")), identifier);
+    ascribe(select, identifier.symbolType());
+    return select;
+  }
+
+  private void bindQualifiedReceiver(ExpressionTree qualifier, IdentifierTreeImpl identifier) {
+    boolean isThis = "this".equals(identifier.name());
+    if (!identifier.symbol().isUnknown() || (!isThis && !"super".equals(identifier.name()))
+      || !(qualifier.symbolType().symbol() instanceof Symbol.TypeSymbol owner) || owner.isUnknown()) {
+      return;
+    }
+    Type type = isThis || owner.isInterface() || owner.superClass() == null ? owner.type() : owner.superClass();
+    bind(identifier, sema.receiverSymbol(owner, identifier.name(), type));
+    ascribe(identifier, type);
+  }
+
+  private static boolean compoundName(Node node) {
+    return switch (node.k()) {
+      case "scoped_type_identifier", "scoped_identifier", "generic_type", "field_access" -> true;
+      default -> false;
+    };
+  }
+
+  private MethodInvocationTreeImpl invocation(Node node) {
+    Node name = field(node, "name");
+    Node object = field(node, "object");
+    IdentifierTreeImpl identifier = identifier(name == null ? firstOf(node, "identifier") : name);
+    bindUse(identifier, name == null ? node : name, object != null);
+    ExpressionTree select;
+    ExpressionTree qualifier = null;
+    if (object == null) {
+      select = identifier;
+    } else {
+      qualifier = superQualifier(node, object);
+      select = new MemberSelectExpressionTreeImpl(qualifier, token(lastKeyword(node, ".")), identifier);
+    }
+    Node typeArguments = field(node, "type_arguments");
+    MethodInvocationTreeImpl tree = new MethodInvocationTreeImpl(select, typeArguments == null ? null : typeArguments(typeArguments), arguments(requiredField(node, "arguments", childKind(node, "argument_list"))));
+    Type receiver = qualifier == null ? currentType() : qualifier.symbolType();
+    String target = (name == null ? node : name).valueTarget();
+    boolean arityOnly = target != null && ARITY_ONLY.matcher(target).matches();
+    List<Type> arguments = argumentTypes(tree.arguments());
+    if (qualifier == null && staticImports.containsKey(identifier.name())) {
+      boolean declaredHere = types.stream().filter(type -> !type.isUnknown())
+        .anyMatch(type -> sema.declaredMethod(type.type().fullyQualifiedName(), identifier.name(), arguments) != null);
+      if (!declaredHere) {
+        Symbol.MethodSymbol imported = sema.declaredMethod(staticImports.get(identifier.name()), identifier.name(), arguments);
+        if (imported != null) {
+          bind(identifier, imported);
+        }
+      }
+    }
+    if (identifier.symbol().isUnknown() || arityOnly) {
+      Symbol.MethodSymbol method = arityOnly
+        ? sema.declaredMethod(JSema.erase(target.substring(0, target.indexOf('#'))), identifier.name(), arguments)
+        : libraryMethod(qualifier, identifier.name(), arguments, functionArguments(tree.arguments()));
+      if (method != null) {
+        bind(identifier, method);
+      }
+    } else if (identifier.symbol() instanceof Symbol.MethodSymbol bound) {
+      Set<Integer> functions = functionArguments(tree.arguments());
+      bind(identifier, sema.preferOverload(bound, libraryMethod(qualifier, identifier.name(), arguments, functions), arguments, functions));
+    }
+    if (identifier.symbol() instanceof JMethodSymbol method && !method.isUnknown() && !JSema.arityMatches(method, arguments.size())) {
+      bind(identifier, Symbol.MethodSymbol.UNKNOWN_METHOD);
+    }
+    if (identifier.symbol() instanceof JMethodSymbol chosen && !naming) {
+      JMethodSymbol specific = sema.mostSpecificVarArgs(chosen, arguments);
+      if (specific != chosen) {
+        sema.moveUse(chosen.id, specific.id, identifier);
+        bind(identifier, specific);
+      }
+    }
+    if (qualifier != null && receiver.isUnknown() && !receiver.symbol().isUnknown() && !naming) {
+      // a member of a parameterization with an undeclared argument is not bound
+      bind(identifier, Symbol.MethodSymbol.UNKNOWN_METHOD);
+    }
+    if (identifier.symbol() instanceof JMethodSymbol method) {
+      List<Type> explicit = tree.typeArguments() == null ? List.of() : tree.typeArguments().stream().map(argument -> ((TypeTree) argument).symbolType()).toList();
+      List<Type> parameters = sema.withExplicitTypeArguments(explicit, () -> sema.invocationParameters(method, receiver, arguments));
+      ascribeArguments(method, parameters, tree.arguments());
+      List<Type> typed = new ArrayList<>(arguments);
+      for (int i = 0; i < typed.size(); i++) {
+        if (tree.arguments().get(i).is(Tree.Kind.METHOD_INVOCATION)) {
+          typed.set(i, tree.arguments().get(i).symbolType());
+        } else if (tree.arguments().get(i) instanceof MethodReferenceTreeImpl reference && i < parameters.size() && referenceResult(reference, parameters.get(i)) instanceof Type produced) {
+          Type function = sema.functionProducing(parameters.get(i), produced);
+          if (function != null) {
+            typed.set(i, function);
+          }
+        } else if (tree.arguments().get(i) instanceof LambdaExpressionTreeImpl lambda && lambda.body() instanceof ExpressionTree value && i < parameters.size()) {
+          Type function = sema.functionProducing(parameters.get(i), value.symbolType());
+          if (function != null) {
+            typed.set(i, function);
+          }
+        }
+      }
+      Type returned = sema.withExplicitTypeArguments(explicit, () -> sema.invocationReturn(method, receiver, typed));
+      Type erased = qualifier != null && receiver.isRawType() && isWrittenRaw(qualifier) ? sema.rawReturn(method) : null;
+      if (erased != null) {
+        // a member of a raw type has the erasure of its declared type
+        returned = erased;
+        rawResults.add(tree);
+      }
+      if ("getClass".equals(method.name()) && arguments.isEmpty() && method.owner().type().is("java.lang.Object") && !receiver.isUnknown() && receiver.erasure() instanceof JType erasedReceiver) {
+        // the static type of the call is Class<? extends |T|> where T is the static type of the receiver
+        returned = JType.named(sema, "java.lang.Class", List.of(JType.wildcard(sema, erasedReceiver)));
+      }
+      List<Type> thrownArguments = withCreatedTypes(tree.arguments(), typed);
+      List<Type> thrown = sema.withExplicitTypeArguments(explicit, () -> sema.invocationThrown(method, receiver, thrownArguments));
+      JMethodSymbol view = sema.invocationView(method, receiver, parameters, returned, thrown);
+      bindMethod(tree, view);
+      bind(identifier, view);
+      ascribe(identifier, returned);
+      ascribe(tree, returned);
+    } else if (tree.methodSymbol().isUnknown()) {
+      // An unresolved call keeps its written name, as a recovered binding does.
+      JMethodSymbol unresolved = new JMethodSymbol(sema, null, identifier.name());
+      unresolved.unknown(true);
+      bindMethod(tree, unresolved);
+    }
+    return tree;
+  }
+
+  /**
+   * The type a method reference yields, or null when it is a constructor reference or the method is generic or unknown.
+   * An unbound {@code Type::method} returning a class type variable takes it from the function's first parameter.
+   */
+  @Nullable
+  private Type referenceResult(MethodReferenceTreeImpl reference, Type function) {
+    if (!(reference.method().symbol() instanceof JMethodSymbol method) || method.isUnknown() || "new".equals(method.name()) || "<init>".equals(method.name())) {
+      return null;
+    }
+    Type returned = method.returnType().type();
+    if (sema.returnsClassVariable(method) && namesType(reference.expression())) {
+      return sema.unboundReferenceResult(method, function);
+    }
+    return returned == null || returned.isUnknown() || returned.isTypeVar() || returned.isVoid() ? null : returned;
+  }
+
+  private static boolean namesType(Tree expression) {
+    if (expression instanceof IdentifierTree identifier) {
+      return identifier.symbol().isTypeSymbol();
+    }
+    return expression instanceof MemberSelectExpressionTree select ? select.identifier().symbol().isTypeSymbol() : expression instanceof ParameterizedTypeTree;
+  }
+
+  /**
+   * The argument types with each supplier of a created object, {@code Type::new} or {@code () -> new Type(..)},
+   * typed as {@code Supplier<Type>}: the type a generic throws clause is inferred from.
+   */
+  private List<Type> withCreatedTypes(List<ExpressionTree> expressions, List<Type> types) {
+    List<Type> result = new ArrayList<>(types);
+    for (int i = 0; i < result.size(); i++) {
+      Type created = null;
+      ExpressionTree argument = expressions.get(i);
+      if (argument instanceof MethodReferenceTreeImpl reference && "new".equals(reference.method().name()) && reference.expression() instanceof TypeTree qualifier) {
+        created = qualifier.symbolType();
+      } else if (argument instanceof LambdaExpressionTreeImpl lambda && lambda.parameters().isEmpty() && lambda.body() instanceof NewClassTreeImpl creation) {
+        created = creation.symbolType();
+      }
+      if (created != null && !created.isUnknown() && created.isClass()) {
+        result.set(i, JType.named(sema, "java.util.function.Supplier", List.of(sema.asJType(created))));
+      }
+    }
+    return result;
+  }
+
+  private ExpressionTree typeExpression(Node node) {
+    TypeTree type = type(node);
+    return type instanceof ExpressionTree expression ? expression : literal(Tree.Kind.NULL_LITERAL, synthetic("null"), Type.UNKNOWN);
+  }
+
+  private NewClassTreeImpl creation(Node node) {
+    Node typeNode = field(node, "type");
+    TypeTree type = annotate(recoverQualifiedType(type(Objects.requireNonNull(typeNode == null ? firstType(node) : typeNode))), node);
+    Node arguments = field(node, "arguments");
+    ArgumentListTreeImpl args = arguments == null ? ArgumentListTreeImpl.emptyList().complete(synthetic("("), synthetic(")")) : arguments(arguments);
+    Node body = field(node, "body");
+    if (body == null) {
+      body = childKind(node, "class_body");
+    }
+    ClassTreeImpl classBody = null;
+    if (body != null) {
+      classBody = new ClassTreeImpl(Tree.Kind.CLASS, token(required(body, "{")), membersOf(body), token(required(body, "}")));
+      // An anonymous class is declared at its creation expression, whatever its members.
+      bindType(classBody, node.decl() != null ? node : body);
+    }
+    NewClassTreeImpl tree = new NewClassTreeImpl(type, args, classBody).completeWithNewKeyword(token(required(node, "new")));
+    Node enclosing = node.children().get(0);
+    if (!"new".equals(enclosing.text())) {
+      tree.completeWithEnclosingExpression(expression(enclosing));
+      tree.completeWithDotToken(token(required(node, ".")));
+    }
+    Node typeArguments = field(node, "type_arguments");
+    if (typeArguments != null) {
+      tree.completeWithTypeArguments(typeArguments(typeArguments));
+    }
+    bindConstructor(tree, typeNode);
+    ascribe(tree, classBody != null && !classBody.symbol().isUnknown() ? classBody.symbol().type() : type.symbolType());
+    return tree;
+  }
+
+  private void bindConstructor(NewClassTreeImpl tree, @Nullable Node typeNode) {
+    if (!(tree.getConstructorIdentifier() instanceof IdentifierTreeImpl identifier)) {
+      return;
+    }
+    TypeTree written = tree.identifier() instanceof ParameterizedTypeTree parameterized ? parameterized.type() : tree.identifier();
+    String imported = written instanceof MemberSelectExpressionTree ? null : singleImports.get(identifier.name());
+    String constructor = typeNode == null ? null : typeNode.valueTarget();
+    if (constructor != null) {
+      Symbol resolved = sema.resolve(constructor);
+      String owner = resolved.owner() == null || resolved.owner().type() == null ? "" : resolved.owner().type().erasure().fullyQualifiedName();
+      boolean importedElsewhere = imported != null && sema.declaresType(imported) && !imported.equals(owner);
+      if (resolved instanceof Symbol.MethodSymbol method && !importedElsewhere && JSema.arityMatches(method, tree.arguments().size())) {
+        bind(identifier, resolved);
+        recordUse(resolved, identifier);
+        ascribeArguments(method, tree.arguments());
+        viewWithInferredParameters(tree, identifier);
+        return;
+      }
+    }
+    Type type = tree.identifier().symbolType().erasure();
+    if (imported != null && sema.declaresType(imported) && !imported.equals(type.fullyQualifiedName())) {
+      type = sema.getClassType(imported);
+      bindType(identifier, imported);
+    }
+    String owner = tree.classBody() != null && type.symbol().isInterface() ? "java.lang.Object" : type.fullyQualifiedName();
+    Symbol.MethodSymbol declared = type.isClass() ? sema.declaredMethod(owner, "<init>", argumentTypes(tree.arguments()), functionArguments(tree.arguments())) : null;
+    if (declared != null && JSema.arityMatches(declared, tree.arguments().size())) {
+      bind(identifier, declared);
+      recordUse(declared, identifier);
+      ascribeArguments(declared, tree.arguments());
+      viewWithInferredParameters(tree, identifier);
+    } else if (!(identifier.symbol() instanceof Symbol.MethodSymbol)) {
+      bind(identifier, Symbol.MethodSymbol.UNKNOWN_METHOD);
+    }
+  }
+
+  /** A diamond without a target takes the class arguments its constructor arguments fix. */
+  private void inferDiamondFromArguments(NewClassTreeImpl tree, JMethodSymbol constructor) {
+    if (!(tree.identifier() instanceof JavaTree.ParameterizedTypeTreeImpl generic) || !generic.typeArguments().isEmpty()) {
+      return;
+    }
+    Type inferred = sema.inferDiamondFromArguments(constructor, generic.symbolType(), argumentTypes(tree.arguments()));
+    if (inferred.isParameterized()) {
+      ascribe(generic, inferred);
+    }
+  }
+
+  /** A generic constructor is seen with the type arguments its call infers for the parameters. */
+  private void viewWithInferredParameters(NewClassTreeImpl tree, IdentifierTreeImpl identifier) {
+    if (!(identifier.symbol() instanceof JMethodSymbol constructor) || constructor.isUnknown()) {
+      return;
+    }
+    inferDiamondFromArguments(tree, constructor);
+    List<Type> parameters = sema.invocationParameters(constructor, tree.identifier().symbolType(), argumentTypes(tree.arguments()));
+    if (!parameters.equals(constructor.parameterTypes())) {
+      JMethodSymbol view = sema.invocationView(constructor, tree.identifier().symbolType(), parameters, constructor.returnType().type());
+      if (view != constructor && !constructor.isParametrizedMethod()) {
+        // the class arguments written at the call do not make the constructor generic
+        view.parametrized(false);
+      }
+      bind(identifier, view);
+    }
+  }
+
+  /** Whether a receiver is raw because of what is written: a variable declared with a raw type, or the erased result of such a call. */
+  private boolean isWrittenRaw(ExpressionTree qualifier) {
+    if (rawResults.contains(qualifier)) {
+      return true;
+    }
+    Symbol symbol = qualifier instanceof IdentifierTree identifier ? identifier.symbol() : Symbol.UNKNOWN_SYMBOL;
+    return symbol.isVariableSymbol() && symbol.declaration() instanceof VariableTree variable
+      && variable.type() instanceof IdentifierTree && !"var".equals(((IdentifierTree) variable.type()).name());
+  }
+
+  private NewArrayTreeImpl arrayCreation(Node node) {
+    Node initializer = field(node, "value");
+    List<ArrayDimensionTree> dims = new ArrayList<>();
+    for (Node child : node.children()) {
+      // sized dimensions, then unsized ones: new byte[n][]
+      if ("dimensions_expr".equals(child.k()) || "dimensions".equals(child.k())) {
+        dims.addAll(dimensions(child));
+      }
+    }
+    InitializerListTreeImpl initializers = initializer == null ? InitializerListTreeImpl.emptyList() : initializers(initializer);
+    NewArrayTreeImpl tree = new NewArrayTreeImpl(dims, initializers)
+      .complete(annotate(type(requiredField(node, "type", firstType(node))), node))
+      .completeWithNewKeyword(token(required(node, "new")));
+    if (initializer != null) {
+      tree.completeWithCurlyBraces(token(required(initializer, "{")), token(required(initializer, "}")));
+    }
+    int rank = dims.size();
+    if (rank == 0 && initializer != null) {
+      rank = 1;
+    }
+    ascribe(tree, arrayTypeOf(tree.type(), rank));
+    return tree;
+  }
+
+  private NewArrayTreeImpl arrayInitializer(Node node) {
+    NewArrayTreeImpl tree = new NewArrayTreeImpl(List.of(), initializers(node)).completeWithCurlyBraces(token(required(node, "{")), token(required(node, "}")));
+    return tree;
+  }
+
+  private AssignmentExpressionTreeImpl elementValuePair(Node node) {
+    Node key = requiredField(node, "key", firstNamed(node));
+    IdentifierTreeImpl name = identifier(key);
+    // An element name is never a local variable or a parameter of the same name.
+    bindUse(name, key, true);
+    ExpressionTree value = expression(requiredField(node, "value", lastNamed(node)));
+    AssignmentExpressionTreeImpl tree = new AssignmentExpressionTreeImpl(Tree.Kind.ASSIGNMENT, name, token(required(node, "=")), value);
+    ascribe(tree, value.symbolType());
+    return tree;
+  }
+
+  private MemberSelectExpressionTreeImpl classLiteral(Node node) {
+    ExpressionTree type = (ExpressionTree) recoverQualifiedType(type(firstNamed(node)));
+    IdentifierTreeImpl className = new IdentifierTreeImpl(token(required(node, "class")));
+    MemberSelectExpressionTreeImpl tree = new MemberSelectExpressionTreeImpl(type, token(required(node, ".")), className);
+    Type literal = type.symbolType().isPrimitive() ? type.symbolType().primitiveWrapperType() : type.symbolType();
+    JType argument = literal instanceof JType jType ? jType : JType.unknown(sema);
+    ascribe(tree, JType.inferred(sema, "java.lang.Class", List.of(argument)));
+    return tree;
+  }
+
+  private InitializerListTreeImpl initializers(Node node) {
+    InitializerListTreeImpl list = InitializerListTreeImpl.emptyList();
+    for (Node child : node.children()) {
+      if ("{".equals(child.text()) || "}".equals(child.text())) {
+        continue;
+      }
+      if (",".equals(child.text())) {
+        list.separators().add(token(child));
+      } else {
+        list.add(expression(child));
+      }
+    }
+    return list;
+  }
+
+  private ArrayAccessExpressionTreeImpl arrayAccess(Node node) {
+    Node index = field(node, "index");
+    ExpressionTree array = expression(requiredField(node, "array", firstNamed(node)));
+    ArrayDimensionTreeImpl dimension = new ArrayDimensionTreeImpl(token(required(node, "[")), index == null ? null : expression(index), token(required(node, "]")));
+    ArrayAccessExpressionTreeImpl tree = new ArrayAccessExpressionTreeImpl(array, dimension);
+    Type arrayType = array.symbolType();
+    ascribe(tree, arrayType.isArray() ? ((Type.ArrayType) arrayType).elementType() : Type.UNKNOWN);
+    return tree;
+  }
+
+  private AssignmentExpressionTreeImpl assignment(Node node) {
+    Node operator = field(node, "operator");
+    String text = operator == null ? "=" : operator.text();
+    AssignmentExpressionTreeImpl tree = new AssignmentExpressionTreeImpl(
+      assignmentKind(text),
+      expression(requiredField(node, "left", firstNamed(node))),
+      operator == null ? token(required(node, text)) : token(operator),
+      expression(requiredField(node, "right", lastNamed(node))));
+    ascribe(tree, tree.variable().symbolType());
+    if (tree.is(Tree.Kind.ASSIGNMENT)) {
+      ascribeTarget(tree.expression(), tree.variable().symbolType());
+    }
+    return tree;
+  }
+
+  private BinaryExpressionTreeImpl binary(Node node) {
+    Node operator = field(node, "operator");
+    String text = operator == null ? "+" : operator.text();
+    ExpressionTree left = expression(requiredField(node, "left", firstNamed(node)));
+    ExpressionTree right = expression(requiredField(node, "right", lastNamed(node)));
+    BinaryExpressionTreeImpl tree = new BinaryExpressionTreeImpl(binaryKind(text), left, operator == null ? synthetic(text) : token(operator), right);
+    ascribe(tree, binaryType(text, left.symbolType(), right.symbolType()));
+    return tree;
+  }
+
+  private ExpressionTree unary(Node node, boolean prefix) {
+    Node operator = field(node, "operator");
+    Node operand = field(node, "operand");
+    if (operand == null) {
+      operand = firstNamed(node);
+    }
+    String text = operator == null ? "!" : operator.text();
+    ExpressionTree value = expression(operand);
+    InternalPrefixUnaryExpression tree = new InternalPrefixUnaryExpression(unaryKind(text, true), operator == null ? synthetic(text) : token(operator), value);
+    ascribe(tree, "!".equals(text) ? sema.getClassType("boolean") : unaryPromoted(text, value.symbolType()));
+    return tree;
+  }
+
+  /** {@code +}, {@code -} and {@code ~} promote a byte, short or char operand to int. */
+  private Type unaryPromoted(String operator, Type operand) {
+    Type primitive = unboxed(operand);
+    boolean promoting = "+".equals(operator) || "-".equals(operator) || "~".equals(operator);
+    boolean narrow = primitive.is("byte") || primitive.is("short") || primitive.is("char");
+    if (!promoting || !primitive.isPrimitive()) {
+      return operand;
+    }
+    return narrow ? sema.getClassType("int") : primitive;
+  }
+
+  private ExpressionTree update(Node node) {
+    Node operator = field(node, "operator");
+    List<Node> children = node.children();
+    if (operator == null) {
+      operator = children.stream().filter(child -> "++".equals(child.text()) || "--".equals(child.text())).findFirst().orElse(null);
+    }
+    boolean prefix = !children.isEmpty() && ("++".equals(children.get(0).text()) || "--".equals(children.get(0).text()));
+    ExpressionTree operand = expression(firstNamed(node));
+    String text = operator == null ? "++" : operator.text();
+    InternalSyntaxToken token = operator == null ? synthetic(text) : token(operator);
+    ExpressionTree tree = prefix
+      ? new InternalPrefixUnaryExpression(unaryKind(text, true), token, operand)
+      : new InternalPostfixUnaryExpression(unaryKind(text, false), operand, token);
+    ascribe((AbstractTypedTree) tree, operand.symbolType());
+    return tree;
+  }
+
+  private ParenthesizedTreeImpl parenthesized(Node node) {
+    Parens parens = parens(node);
+    ParenthesizedTreeImpl tree = new ParenthesizedTreeImpl(parens.open, parens.expr, parens.close);
+    ascribe(tree, parens.expr.symbolType());
+    return tree;
+  }
+
+  private ConditionalExpressionTreeImpl ternary(Node node) {
+    ExpressionTree condition = expression(requiredField(node, "condition", firstNamed(node)));
+    ExpressionTree then = expression(requiredField(node, "consequence", firstNamed(node)));
+    ExpressionTree otherwise = expression(requiredField(node, "alternative", lastNamed(node)));
+    ConditionalExpressionTreeImpl tree = new ConditionalExpressionTreeImpl(condition, token(required(node, "?")), then, token(required(node, ":")), otherwise);
+    ascribe(tree, conditionalType(then, otherwise));
+    return tree;
+  }
+
+  /** The type of a conditional: operands of numeric or boolean types are unboxed and promoted, others keep the more general operand type. */
+  private Type conditionalType(ExpressionTree then, ExpressionTree otherwise) {
+    Type first = then.symbolType();
+    Type second = otherwise.symbolType();
+    if (first.isUnknown() || second.isUnknown()) {
+      return first.isUnknown() ? second : first;
+    }
+    if (first.equals(second)) {
+      return first;
+    }
+    Type left = first.isPrimitive() ? first : first.primitiveType();
+    Type right = second.isPrimitive() ? second : second.primitiveType();
+    boolean oneIsPrimitive = first.isPrimitive() || second.isPrimitive();
+    if (left != null && right != null && (oneIsPrimitive || (first.isPrimitiveWrapper() && second.isPrimitiveWrapper() && !left.equals(right)))) {
+      if (left.equals(right)) {
+        return left;
+      }
+      if (left.is("boolean") || right.is("boolean")) {
+        return first;
+      }
+      return numericPromotion(left, right, then, otherwise);
+    }
+    if (first.isNullType() && second.isPrimitive()) {
+      return second.primitiveWrapperType();
+    }
+    if (second.isNullType() && first.isPrimitive()) {
+      return first.primitiveWrapperType();
+    }
+    if (first.isNullType()) {
+      return second;
+    }
+    if (second.isNullType()) {
+      return first;
+    }
+    // a type variable is compared by its bound: erasing it would make the variable look like its own bound
+    if ((first.isTypeVar() || second.isTypeVar()) && !first.isPrimitive() && !second.isPrimitive()) {
+      if (second.isSubtypeOf(first)) {
+        return first;
+      }
+      if (first.isSubtypeOf(second)) {
+        return second;
+      }
+      Type firstBound = first instanceof JType variable && variable.isTypeVar() ? sema.typeVariableBound(variable.typeVarId) : first;
+      Type secondBound = second instanceof JType variable && variable.isTypeVar() ? sema.typeVariableBound(variable.typeVarId) : second;
+      return !secondBound.isSubtypeOf(firstBound.erasure()) && firstBound.isSubtypeOf(secondBound.erasure()) ? secondBound : firstBound;
+    }
+    if (!first.isPrimitive() && !second.isPrimitive() && second.isSubtypeOf(first.erasure())) {
+      return first;
+    }
+    if (!first.isPrimitive() && !second.isPrimitive() && first.isSubtypeOf(second.erasure())) {
+      return second;
+    }
+    return first;
+  }
+
+  private Type numericPromotion(Type left, Type right, ExpressionTree then, ExpressionTree otherwise) {
+    List<String> order = List.of("byte", "short", "char", "int", "long", "float", "double");
+    int a = order.indexOf(left.fullyQualifiedName());
+    int b = order.indexOf(right.fullyQualifiedName());
+    if (a < 0 || b < 0) {
+      return left;
+    }
+    boolean byteAndShort = (a == 0 && b == 1) || (a == 1 && b == 0);
+    if (byteAndShort) {
+      return sema.getClassType("short");
+    }
+    // a constant int that fits the narrower operand keeps that type
+    if (a < 3 && right.is("int") && otherwise.is(Tree.Kind.INT_LITERAL)) {
+      return left;
+    }
+    if (b < 3 && left.is("int") && then.is(Tree.Kind.INT_LITERAL)) {
+      return right;
+    }
+    return sema.getClassType(order.get(Math.max(3, Math.max(a, b))));
+  }
+
+  private TypeCastExpressionTreeImpl cast(Node node) {
+    List<Node> typeNodes = node.children().stream().filter(child -> "type".equals(child.f())).toList();
+    TypeTree type = type(typeNodes.isEmpty() ? firstType(node) : typeNodes.get(0));
+    List<Node> ands = node.children().stream().filter(child -> "&".equals(child.k())).toList();
+    QualifiedIdentifierListTreeImpl bounds = QualifiedIdentifierListTreeImpl.emptyList();
+    for (int i = 1; i < typeNodes.size(); i++) {
+      bounds.add(type(typeNodes.get(i)));
+      if (i < typeNodes.size() - 1 && i < ands.size()) {
+        bounds.separators().add(token(ands.get(i)));
+      }
+    }
+    ExpressionTree value = expression(requiredField(node, "value", lastNamed(node)));
+    InternalSyntaxToken andToken = bounds.isEmpty() || ands.isEmpty() ? null : token(ands.get(0));
+    TypeCastExpressionTreeImpl tree = new TypeCastExpressionTreeImpl(token(required(node, "(")), type, andToken, bounds, token(required(node, ")")), value);
+    if (bounds.isEmpty()) {
+      ascribe(tree, type.symbolType());
+      // The cast type is the target of a lambda operand (JLS 15.16). Only its parameters are rebound: typing the lambda itself would make the cast look redundant.
+      // The rebinding mirrors the ECJ-based analysis, which suppresses S1117 for a lambda parameter whose target is a nested, implicitly static interface.
+      if (value instanceof LambdaExpressionTreeImpl lambda && !type.symbolType().isUnknown()) {
+        bindLambdaParameterOwner(lambda, sema.groundType(type.symbolType()));
+      }
+    } else {
+      List<JType> parts = new ArrayList<>();
+      parts.add(sema.asJType(type.symbolType()));
+      bounds.forEach(bound -> parts.add(sema.asJType(bound.symbolType())));
+      ascribe(tree, JType.intersection(sema, parts));
+    }
+    return tree;
+  }
+
+  private InstanceOfTreeImpl instanceOf(Node node) {
+    ExpressionTree left = expression(requiredField(node, "left", firstNamed(node)));
+    Node name = field(node, "name");
+    Node right = field(node, "right");
+    Node patternNode = field(node, "pattern");
+    InstanceOfTreeImpl tree;
+    if (patternNode != null) {
+      tree = new InstanceOfTreeImpl(left, token(required(node, "instanceof")), pattern(patternNode));
+    } else if (name != null && right != null) {
+      VariableTreeImpl variable = new VariableTreeImpl(modifiers(node), type(right), identifier(name));
+      bindDeclaration(variable, name, (IdentifierTreeImpl) variable.simpleName());
+      TypePatternTreeImpl pattern = new TypePatternTreeImpl(variable, variableType(variable));
+      tree = new InstanceOfTreeImpl(left, token(required(node, "instanceof")), pattern);
+    } else {
+      tree = new InstanceOfTreeImpl(left, token(required(node, "instanceof")), type(right == null ? firstType(node) : right));
+    }
+    ascribe(tree, sema.getClassType("boolean"));
+    return tree;
+  }
+
+  private PatternTree pattern(Node node) {
+    if ("record_pattern".equals(node.k())) {
+      return recordPattern(node);
+    }
+    Node nested = firstOf(node, "record_pattern", "type_pattern", "pattern", "underscore_pattern");
+    if (nested != null && !"type_pattern".equals(node.k())) {
+      return pattern(nested);
+    }
+    if ("underscore_pattern".equals(node.k())) {
+      return new TypePatternTreeImpl(new VariableTreeImpl(new IdentifierTreeImpl(token(node), true)), Type.UNKNOWN);
+    }
+    Node name = lastOf(node, "identifier");
+    VariableTreeImpl variable = new VariableTreeImpl(modifiers(node), type(firstType(node)), identifier(name == null ? node : name));
+    bindDeclaration(variable, name, (IdentifierTreeImpl) variable.simpleName());
+    if (variable.symbol().type() != null && !variable.symbol().type().isUnknown()) {
+      ascribe(variable.type(), variable.symbol().type());
+    }
+    return new TypePatternTreeImpl(variable, variableType(variable));
+  }
+
+  private RecordPatternTreeImpl recordPattern(Node node) {
+    Node body = required(node, "record_pattern_body");
+    List<PatternTree> patterns = new ArrayList<>();
+    for (Node child : body.children()) {
+      if ("record_pattern_component".equals(child.k()) || "record_pattern".equals(child.k())) {
+        patterns.add(pattern(child));
+      }
+    }
+    TypeTree recordType = type(firstType(node));
+    deferred.add(() -> {
+      if (recordType.symbolType().symbol().declaration() instanceof ClassTree record && record.recordComponents().size() == patterns.size()) {
+        for (int i = 0; i < patterns.size(); i++) {
+          if (patterns.get(i) instanceof TypePatternTreeImpl unnamed && unnamed.patternVariable().symbol().isUnknown() && unnamed.patternVariable() instanceof VariableTreeImpl variable) {
+            patterns.set(i, typeUnnamedPattern(variable, record.recordComponents().get(i).type().symbolType()));
+          }
+        }
+      }
+    });
+    return new RecordPatternTreeImpl(recordType, token(required(body, "(")), patterns, token(required(body, ")")));
+  }
+
+  /** An unnamed pattern variable has the type of the record component it stands for. */
+  private TypePatternTreeImpl typeUnnamedPattern(VariableTreeImpl variable, Type type) {
+    var start = ((IdentifierTreeImpl) variable.simpleName()).identifierToken().range().start();
+    JVariableSymbol symbol = new JVariableSymbol(sema, "_@" + start.line() + ":" + start.column(), "_", "local");
+    symbol.type(type);
+    sema.declare(symbol.id, variable);
+    variable.setSymbol(symbol);
+    ascribe(variable.type(), type);
+    return new TypePatternTreeImpl(variable, type);
+  }
+
+  private LambdaExpressionTreeImpl lambda(Node node) {
+    scopes.addFirst(new HashMap<>());
+    returnTargets.push(Type.UNKNOWN);
+    try {
+      return lambdaInScope(node);
+    } finally {
+      scopes.removeFirst();
+      returnTargets.pop();
+    }
+  }
+
+  private LambdaExpressionTreeImpl lambdaInScope(Node node) {
+    List<VariableTree> parameters = new ArrayList<>();
+    Node formals = field(node, "parameters");
+    InternalSyntaxToken open = null;
+    InternalSyntaxToken close = null;
+    if (formals != null && ("formal_parameters".equals(formals.k()) || "inferred_parameters".equals(formals.k()))) {
+      open = optionalToken(formals, "(");
+      close = optionalToken(formals, ")");
+      if ("formal_parameters".equals(formals.k())) {
+        parameters.addAll(parameters(formals));
+      } else {
+        VariableTreeImpl previous = null;
+        for (Node child : formals.children()) {
+          if ("identifier".equals(child.k())) {
+            IdentifierTreeImpl name = identifier(child);
+            previous = new VariableTreeImpl(name);
+            bindDeclaration(previous, child, name);
+            parameters.add(previous);
+          } else if (",".equals(child.text()) && previous != null) {
+            previous.setEndToken(token(child));
+          }
+        }
+      }
+    } else if (formals != null) {
+      IdentifierTreeImpl name = identifier(formals);
+      VariableTreeImpl parameter = new VariableTreeImpl(name);
+      bindDeclaration(parameter, formals, name);
+      parameters.add(parameter);
+    }
+    Node body = field(node, "body");
+    Tree lambdaBody = body == null ? block(node) : ("block".equals(body.k()) ? block(body) : expression(body));
+    LambdaExpressionTreeImpl tree = new LambdaExpressionTreeImpl(open, parameters, close, token(required(node, "->")), lambdaBody);
+    deferred.add(() -> parameters.forEach(parameter -> {
+      if (parameter.type() instanceof InferedTypeTree inferred && inferred.symbolType().isUnknown() && !parameter.symbol().type().isUnknown()) {
+        ascribe(inferred, parameter.symbol().type());
+      }
+    }));
+    deferred.add(() -> unbindUntypedParameters(tree));
+    for (VariableTree parameter : parameters) {
+      if (parameter.symbol().owner() instanceof JMethodSymbol method) {
+        method.lambda(true);
+        tree.setSymbol(method);
+        break;
+      }
+    }
+    return tree;
+  }
+
+  /** The compiler leaves the receivers of a lambda without a target unresolved: its inferred parameters are not bound where they qualify a member. */
+  private void unbindUntypedParameters(LambdaExpressionTreeImpl lambda) {
+    if (naming || !lambda.symbolType().isUnknown()) {
+      return;
+    }
+    Set<Symbol> untyped = new HashSet<>();
+    for (VariableTree parameter : lambda.parameters()) {
+      if (parameter.type() instanceof InferedTypeTree && parameter.symbol().type().isUnknown()) {
+        untyped.add(parameter.symbol());
+      }
+    }
+    if (untyped.isEmpty()) {
+      return;
+    }
+    lambda.body().accept(new BaseTreeVisitor() {
+      @Override
+      public void visitMemberSelectExpression(MemberSelectExpressionTree select) {
+        if (select.expression() instanceof IdentifierTreeImpl use && untyped.contains(use.symbol())) {
+          use.symbol().usages().remove(use);
+          bind(use, Symbol.UNKNOWN_SYMBOL);
+        }
+        super.visitMemberSelectExpression(select);
+      }
+    });
+  }
+
+  private MethodReferenceTreeImpl methodReference(Node node) {
+    ExpressionTree qualifier = expression(requiredField(node, "type", node.children().get(0)));
+    Node nameNode = field(node, "name");
+    if (nameNode == null) {
+      List<Node> children = node.children();
+      Node last = children.isEmpty() ? null : children.get(children.size() - 1);
+      nameNode = last != null && "new".equals(last.text()) ? last : lastOf(node, "identifier");
+    }
+    IdentifierTreeImpl name = identifier(nameNode == null ? node : nameNode);
+    bindUse(name, nameNode == null ? node : nameNode, true);
+    MethodReferenceTreeImpl tree = new MethodReferenceTreeImpl(qualifier, token(required(node, "::")));
+    Node typeArguments = firstOf(node, "type_arguments");
+    tree.complete(typeArguments == null ? null : typeArguments(typeArguments), name);
+    ascribe(tree, Type.UNKNOWN);
+    return tree;
+  }
+
+  private TypeTree type(Node node) {
+    return switch (node.k()) {
+      case "integral_type", "floating_point_type", "boolean_type", "void_type" -> primitive(node);
+      case "generic_type" -> generic(node);
+      case "array_type" -> arrayType(type(requiredField(node, "element", firstType(node))), field(node, "dimensions"));
+      case "scoped_identifier", "scoped_type_identifier", "field_access" -> memberSelect(node);
+      case "wildcard" -> wildcard(node);
+      case "annotated_type" -> annotatedType(node);
+      case "type_identifier" -> "var".equals(node.text()) ? new VarTypeTreeImpl(token(node)) : (TypeTree) primary(node);
+      default -> {
+        ExpressionTree expression = "identifier".equals(node.k()) || "type_identifier".equals(node.k()) ? primary(node) : expression(node);
+        yield expression instanceof TypeTree typeTree ? typeTree : new VarTypeTreeImpl(synthetic("var"));
+      }
+    };
+  }
+
+  private TypeTree annotatedType(Node node) {
+    return annotate(type(firstType(node)), node);
+  }
+
+  private TypeTree annotate(TypeTree type, Node node) {
+    List<AnnotationTree> annotations = node.children().stream().filter(SemSitterTranslator::isAnnotation).<AnnotationTree>map(this::annotation).toList();
+    TypeTree target = type;
+    while (true) {
+      if (target instanceof ParameterizedTypeTree parameterized) {
+        target = parameterized.type();
+      } else if (target instanceof MemberSelectExpressionTree select && select.expression() instanceof TypeTree outer && !(target instanceof ArrayTypeTree)) {
+        target = outer;
+      } else {
+        break;
+      }
+    }
+    if (!annotations.isEmpty() && target instanceof JavaTree.AnnotatedTypeTree annotated) {
+      annotated.complete(annotations);
+    }
+    return type;
+  }
+
+  private JavaTree.PrimitiveTypeTreeImpl primitive(Node node) {
+    Node keyword = firstTokenChild(node);
+    String text = keyword == null ? node.text() : keyword.text();
+    if (text.isEmpty()) {
+      text = node.k().replace("_type", "");
+    }
+    JavaTree.PrimitiveTypeTreeImpl tree = new JavaTree.PrimitiveTypeTreeImpl(keyword == null ? token(node) : token(keyword));
+    tree.complete(List.of());
+    ascribe(tree, sema.getClassType(text));
+    return tree;
+  }
+
+  private JavaTree.ParameterizedTypeTreeImpl generic(Node node) {
+    TypeTree raw = type(firstType(node));
+    Node arguments = field(node, "type_arguments");
+    if (arguments == null) {
+      arguments = childKind(node, "type_arguments");
+    }
+    JavaTree.ParameterizedTypeTreeImpl tree = new JavaTree.ParameterizedTypeTreeImpl(raw, arguments == null ? new TypeArgumentListTreeImpl(synthetic("<"), synthetic(">")) : typeArguments(arguments));
+    List<Type> args = new ArrayList<>();
+    for (TypeTree argument : tree.typeArguments()) {
+      if (argument instanceof WildcardTree wildcard) {
+        Type wildcardType = wildcardType(wildcard);
+        ascribe(argument, wildcardType);
+        args.add(wildcardType);
+      } else {
+        args.add(argument.symbolType());
+      }
+    }
+    if (raw.symbolType() instanceof JType) {
+      List<JType> typeArguments = new ArrayList<>();
+      for (Type argument : args) {
+        typeArguments.add(argument instanceof JType jType ? jType : JType.unknown(sema));
+      }
+      JType parameterized = JType.named(sema, raw.symbolType().erasure().fullyQualifiedName(), typeArguments);
+      ascribe(tree, parameterized);
+      if (raw instanceof AbstractTypedTree typed) {
+        ascribe(typed, parameterized);
+      }
+      if (raw instanceof IdentifierTreeImpl identifier) {
+        bind(identifier, parameterized.symbol());
+      }
+    }
+    return tree;
+  }
+
+  private TypeTree arrayType(TypeTree element, @Nullable Node dimensions) {
+    if (dimensions == null) {
+      return element;
+    }
+    TypeTree current = element;
+    List<AnnotationTreeImpl> annotations = new ArrayList<>();
+    List<Node> children = dimensions.children();
+    for (int i = 0; i < children.size(); i++) {
+      if ("[".equals(children.get(i).text())) {
+        InternalSyntaxToken close = i + 1 < children.size() ? token(children.get(i + 1)) : synthetic("]");
+        JType component = current.symbolType() instanceof JType jType ? jType : JType.unknown(sema);
+        current = new JavaTree.ArrayTypeTreeImpl(current, annotations, token(children.get(i)), close);
+        annotations = new ArrayList<>();
+        ascribe((AbstractTypedTree) current, JType.array(sema, component));
+      } else if (isAnnotation(children.get(i))) {
+        annotations.add(annotation(children.get(i)));
+      }
+    }
+    return current;
+  }
+
+  private Type wildcardType(WildcardTree wildcard) {
+    if (wildcard.is(Tree.Kind.SUPER_WILDCARD) && wildcard.bound() != null && wildcard.bound().symbolType() instanceof JType lower) {
+      return JType.superWildcard(sema, lower);
+    }
+    Type upper = wildcard.is(Tree.Kind.EXTENDS_WILDCARD) && wildcard.bound() != null ? wildcard.bound().symbolType() : sema.getClassType("java.lang.Object");
+    return upper instanceof JType bound ? JType.wildcard(sema, bound) : Type.UNKNOWN;
+  }
+
+  private JavaTree.WildcardTreeImpl wildcard(Node node) {
+    Node bound = firstType(node);
+    List<AnnotationTree> annotations = node.children().stream().filter(SemSitterTranslator::isAnnotation).<AnnotationTree>map(this::annotation).toList();
+    if (bound == null || same(bound, keyword(node, "?"))) {
+      JavaTree.WildcardTreeImpl tree = new JavaTree.WildcardTreeImpl(token(required(node, "?")));
+      tree.complete(annotations);
+      return tree;
+    }
+    boolean upper = keyword(node, "extends") != null;
+    JavaTree.WildcardTreeImpl tree = new JavaTree.WildcardTreeImpl(
+      upper ? Tree.Kind.EXTENDS_WILDCARD : Tree.Kind.SUPER_WILDCARD,
+      token(required(node, upper ? "extends" : "super")),
+      type(bound)).complete(token(required(node, "?")));
+    tree.complete(annotations);
+    return tree;
+  }
+
+  private TypeArgumentListTreeImpl typeArguments(Node node) {
+    TypeArgumentListTreeImpl list = new TypeArgumentListTreeImpl(token(required(node, "<")), closingAngle(node));
+    for (Node child : node.children()) {
+      if ("<".equals(child.text()) || ">".equals(child.text()) || ">>".equals(child.text()) || ">>>".equals(child.text())) {
+        continue;
+      }
+      if (",".equals(child.text())) {
+        list.separators().add(token(child));
+      } else {
+        list.add(type(child));
+      }
+    }
+    return list;
+  }
+
+  private TypeParameterListTreeImpl typeParameters(Node node) {
+    TypeParameterListTreeImpl list = new TypeParameterListTreeImpl(token(required(node, "<")), closingAngle(node));
+    for (Node child : node.children()) {
+      if ("<".equals(child.text()) || child.text().startsWith(">")) {
+        continue;
+      }
+      if (",".equals(child.text())) {
+        list.separators().add(token(child));
+      } else if ("type_parameter".equals(child.k())) {
+        list.add(typeParameter(child));
+      }
+    }
+    return list;
+  }
+
+  private TypeParameterTree typeParameter(Node node) {
+    Node nameNode = firstOf(node, "type_identifier", "identifier");
+    IdentifierTreeImpl name = identifier(nameNode);
+    bindUse(name, nameNode);
+    Node bound = childKind(node, "type_bound");
+    TypeParameterTreeImpl tree;
+    if (bound == null) {
+      tree = new TypeParameterTreeImpl(name);
+    } else {
+      tree = new TypeParameterTreeImpl(name, token(required(bound, "extends")), separatedTypes(bound));
+    }
+    if (name.symbol().isUnknown()) {
+      bindDeclaration(tree, nameNode, name);
+    }
+    if (name.symbol() instanceof Symbol.TypeSymbol typeSymbol) {
+      tree.setSymbol(typeSymbol);
+    }
+    if (bound != null && name.symbol() instanceof JTypeSymbol parameter && parameter.isTypeParameter()) {
+      parameter.boundTrees(tree.bounds());
+    }
+    return tree;
+  }
+
+  private TypeTree catchType(Node node) {
+    int alternatives = 0;
+    for (Node child : node.children()) {
+      if (isTypeKind(child.k())) {
+        alternatives++;
+      }
+    }
+    if (alternatives <= 1) {
+      return type(firstType(node));
+    }
+    QualifiedIdentifierListTreeImpl list = QualifiedIdentifierListTreeImpl.emptyList();
+    for (Node child : node.children()) {
+      if (isTypeKind(child.k())) {
+        list.add(type(child));
+      } else if ("|".equals(child.text())) {
+        list.separators().add(token(child));
+      }
+    }
+    JavaTree.UnionTypeTreeImpl union = new JavaTree.UnionTypeTreeImpl(list);
+    ascribe(union, leastUpperBound(list.stream().map(TypeTree::symbolType).toList()));
+    return union;
+  }
+
+  /** The closest class every alternative of a multi-catch descends from. */
+  private Type leastUpperBound(List<Type> alternatives) {
+    if (alternatives.stream().anyMatch(Type::isUnknown)) {
+      return Type.UNKNOWN;
+    }
+    Type candidate = alternatives.get(0);
+    while (candidate != null && !candidate.isUnknown()) {
+      Type current = candidate;
+      if (alternatives.stream().allMatch(alternative -> alternative.isSubtypeOf(current))) {
+        return current;
+      }
+      candidate = current.symbol().superClass();
+    }
+    return sema.getClassType("java.lang.Object");
+  }
+
+  private QualifiedIdentifierListTreeImpl separatedTypes(Node node) {
+    QualifiedIdentifierListTreeImpl list = QualifiedIdentifierListTreeImpl.emptyList();
+    addSeparatedTypes(list, node);
+    return list;
+  }
+
+  private void addSeparatedTypes(QualifiedIdentifierListTreeImpl list, Node node) {
+    for (Node child : node.children()) {
+      if ("type_list".equals(child.k())) {
+        addSeparatedTypes(list, child);
+      } else if (isTypeKind(child.k())) {
+        list.add(type(child));
+      } else if (",".equals(child.text()) || "&".equals(child.text())) {
+        list.separators().add(token(child));
+      }
+    }
+  }
+
+  private ArgumentListTreeImpl arguments(Node node) {
+    if (node == null) {
+      return ArgumentListTreeImpl.emptyList();
+    }
+    ArgumentListTreeImpl list = ArgumentListTreeImpl.emptyList();
+    InternalSyntaxToken open = null;
+    InternalSyntaxToken close = null;
+    for (Node child : node.children()) {
+      if ("(".equals(child.text())) {
+        open = token(child);
+      } else if (")".equals(child.text())) {
+        close = token(child);
+      } else if (",".equals(child.text())) {
+        list.separators().add(token(child));
+      } else {
+        list.add(expression(child));
+      }
+    }
+    return list.complete(open, close);
+  }
+
+  private List<ArrayDimensionTree> dimensions(Node node) {
+    List<ArrayDimensionTree> dims = new ArrayList<>();
+    List<AnnotationTree> annotations = new ArrayList<>();
+    ExpressionTree index = null;
+    InternalSyntaxToken open = null;
+    for (Node child : node.children()) {
+      if ("[".equals(child.text())) {
+        open = token(child);
+        index = null;
+      } else if ("]".equals(child.text()) && open != null) {
+        dims.add(new ArrayDimensionTreeImpl(open, index, token(child)).completeAnnotations(annotations));
+        annotations = new ArrayList<>();
+        open = null;
+      } else if (open != null) {
+        index = expression(child);
+      } else if (isAnnotation(child)) {
+        annotations.add(annotation(child));
+      }
+    }
+    return dims;
+  }
+
+  private ModifiersTreeImpl modifiers(Node node) {
+    Node modifiers = childKind(node, "modifiers");
+    List<ModifierTree> trees = new ArrayList<>();
+    if (modifiers != null) {
+      for (Node child : modifiers.children()) {
+        ModifierTree modifier = modifier(child);
+        if (modifier != null) {
+          trees.add(modifier);
+        }
+      }
+    }
+    return new ModifiersTreeImpl(trees);
+  }
+
+  @Nullable
+  private ModifierTree modifier(Node node) {
+    if (isAnnotation(node)) {
+      return annotation(node);
+    }
+    Modifier modifier = modifierKeyword(node.text());
+    return modifier == null ? null : new ModifierKeywordTreeImpl(modifier, token(node));
+  }
+
+  private AnnotationTreeImpl annotation(Node node) {
+    Node name = field(node, "name");
+    TypeTree type = name == null ? (TypeTree) primary(firstOf(node, "identifier", "scoped_identifier", "type_identifier")) : (TypeTree) expression(name);
+    if (type instanceof IdentifierTreeImpl identifier && !naming) {
+      recoverType(identifier);
+    }
+    ArgumentListTreeImpl arguments = ArgumentListTreeImpl.emptyList();
+    Node args = field(node, "arguments");
+    if (args != null) {
+      arguments = arguments(args);
+    }
+    AnnotationTreeImpl tree = new AnnotationTreeImpl(token(required(node, "@")), type, arguments);
+    ascribe(tree, annotationType(type));
+    if (!naming && type instanceof MemberSelectExpressionTreeImpl select && select.symbolType().isUnknown()) {
+      // the written qualified name is the annotation's type; the name tree itself stays unresolved
+      ascribe(select, JType.unknown(sema));
+    }
+    for (ExpressionTree argument : arguments) {
+      if (argument instanceof AssignmentExpressionTree assignment && assignment.variable() instanceof IdentifierTreeImpl element && element.symbol().isUnknown()
+        && type.symbolType().isClass()) {
+        Symbol.MethodSymbol method = sema.declaredMethod(type.symbolType().fullyQualifiedName(), element.name(), List.of());
+        if (method != null) {
+          bind(element, method);
+          ascribe(element, method.returnType().type());
+        }
+      }
+    }
+    return tree;
+  }
+
+  private List<AnnotationTree> annotations(Node node) {
+    Node modifiers = childKind(node, "modifiers");
+    List<AnnotationTree> annotations = new ArrayList<>();
+    for (Node child : (modifiers == null ? node : modifiers).children()) {
+      if (isAnnotation(child)) {
+        annotations.add(annotation(child));
+      }
+    }
+    return annotations;
+  }
+
+  private void bindDeclaration(Tree tree, @Nullable Node name, IdentifierTreeImpl identifier) {
+    if (name == null) {
+      return;
+    }
+    String id = name.decl();
+    if (id == null) {
+      if (tree instanceof VariableTreeImpl variable && "_".equals(identifier.name())) {
+        bindUnnamedVariable(variable, identifier);
+      }
+      return;
+    }
+    if (id.contains("#<init>(")) {
+      id = name.decls().stream().filter(extra -> !extra.contains("(")).findFirst().orElse(id);
+    }
+    Symbol symbol = sema.resolve(id);
+    sema.declare(id, tree);
+    for (String extra : name.decls()) {
+      if (!extra.equals(id)) {
+        sema.declare(extra, tree);
+      }
+    }
+    // The scan records no modifiers for locals and parameters.
+    if (tree instanceof VariableTreeImpl declared && symbol instanceof JSymbol declaredSymbol && symbol.isVariableSymbol()
+      && ModifiersUtils.hasModifier(declared.modifiers(), Modifier.FINAL)) {
+      declaredSymbol.addModifiers(FINAL_MODIFIER);
+    }
+    if (tree instanceof VariableTreeImpl variable && symbol instanceof JSymbol variableSymbol && symbol.isVariableSymbol() && variable.type() != null) {
+      Type declared = variable.type().symbolType();
+      if (symbol.type().isUnknown() ? isKnownOrRecovered(declared) : keepsArguments(declared) && sameErasure(declared, symbol.type())) {
+        variableSymbol.type(declared);
+      }
+    }
+    if (tree instanceof MethodTreeImpl method && symbol instanceof JMethodSymbol methodSymbol && method.returnType() != null
+      && methodSymbol.returnType().type().isUnknown() && isKnownOrRecovered(method.returnType().symbolType())) {
+      methodSymbol.returnTypeSymbol(method.returnType().symbolType().symbol());
+    } else if (tree instanceof MethodTreeImpl method && symbol instanceof JMethodSymbol methodSymbol && method.returnType() != null
+      && method.returnType().symbolType().isParameterized() && !methodSymbol.returnType().type().isParameterized()
+      && sameErasure(method.returnType().symbolType(), methodSymbol.returnType().type())) {
+      methodSymbol.returnTypeSymbol(method.returnType().symbolType().symbol());
+    }
+    bind(identifier, symbol);
+    ascribe(identifier, identifierType(symbol));
+    if (!scopes.isEmpty() && symbol.isVariableSymbol() && symbol.owner() != null && symbol.owner().isMethodSymbol()) {
+      scopes.peekFirst().put(symbol.name(), symbol);
+    }
+    if (tree instanceof ClassTreeImpl classTree && symbol instanceof Symbol.TypeSymbol typeSymbol) {
+      classTree.setSymbol(typeSymbol);
+      if (symbol instanceof JSymbol nested && ModifiersUtils.hasModifier(classTree.modifiers(), Modifier.STATIC) && !nested.isStatic()) {
+        nested.addModifiers(List.of("static"));
+      }
+    } else if (tree instanceof MethodTreeImpl method && symbol instanceof Symbol.MethodSymbol methodSymbol) {
+      method.setSymbol(methodSymbol);
+      if (methodSymbol instanceof JMethodSymbol declared) {
+        declaredParameterTypes(declared, method.parameters());
+      }
+    } else if (tree instanceof VariableTreeImpl variable && symbol instanceof Symbol.VariableSymbol variableSymbol) {
+      variable.setSymbol(variableSymbol);
+    }
+  }
+
+  /** An unnamed variable declares nothing the scan records, so it gets a local symbol of its own. */
+  private void bindUnnamedVariable(VariableTreeImpl variable, IdentifierTreeImpl identifier) {
+    var start = identifier.identifierToken().range().start();
+    JVariableSymbol symbol = new JVariableSymbol(sema, "_@" + start.line() + ":" + start.column(), "_", "local");
+    Type declared = variable.type() == null ? Type.UNKNOWN : variable.type().symbolType();
+    if (isKnownOrRecovered(declared)) {
+      symbol.type(declared);
+    }
+    sema.declare(symbol.id, variable);
+    variable.setSymbol(symbol);
+  }
+
+  /**
+   * The scan records erased return types, so the type arguments of each declared return type are read from the
+   * syntax before any body is translated: invocations may precede the declaration they call.
+   */
+  private void declareGenericReturns(Node node) {
+    if ("method_declaration".equals(node.k()) && field(node, "dimensions") == null) {
+      Node typeNode = field(node, "type");
+      Node name = nameNode(node);
+      String id = name == null ? null : name.decl();
+      if (typeNode != null && id != null && sema.resolve(id) instanceof JMethodSymbol method) {
+        Type declared = syntacticType(typeNode);
+        if (declared.isParameterized() && sameErasure(declared, method.returnType().type())) {
+          method.returnTypeSymbol(declared.symbol());
+        }
+      }
+    }
+    for (Node child : node.children()) {
+      declareGenericReturns(child);
+    }
+  }
+
+  /** The type a type node denotes, from the references the scan bound, without translating it. */
+  private Type syntacticType(Node node) {
+    switch (node.k()) {
+      case "type_identifier", "scoped_type_identifier" -> {
+        String target = node.typeTarget();
+        return target != null && sema.resolve(target) instanceof Symbol.TypeSymbol type && !type.isUnknown() ? type.type() : Type.UNKNOWN;
+      }
+      case "generic_type" -> {
+        Node rawNode = firstType(node);
+        Type raw = rawNode == null ? Type.UNKNOWN : syntacticType(rawNode);
+        Node arguments = childKind(node, "type_arguments");
+        if (raw.isUnknown() || arguments == null) {
+          return raw;
+        }
+        List<JType> types = new ArrayList<>();
+        for (Node argument : arguments.children()) {
+          if (isTypeKind(argument.k())) {
+            types.add(syntacticType(argument) instanceof JType type ? type : JType.unknown(sema));
+          }
+        }
+        return JType.named(sema, raw.erasure().fullyQualifiedName(), types);
+      }
+      case "wildcard" -> {
+        Node bound = firstType(node);
+        if (bound == null) {
+          return JType.wildcard(sema, (JType) sema.getClassType("java.lang.Object"));
+        }
+        JType type = syntacticType(bound) instanceof JType known ? known : JType.unknown(sema);
+        return keyword(node, "super") != null ? JType.superWildcard(sema, type) : JType.wildcard(sema, type);
+      }
+      default -> {
+        return Type.UNKNOWN;
+      }
+    }
+  }
+
+  private static boolean mentionsUnknown(Type type) {
+    return type.isUnknown() || (type.isParameterized() && type.typeArguments().stream().anyMatch(SemSitterTranslator::mentionsUnknown));
+  }
+
+  private static boolean isTypeVariable(Type type) {
+    Type base = type;
+    while (base.isArray()) {
+      base = ((Type.ArrayType) base).elementType();
+    }
+    return base.isTypeVar();
+  }
+
+  /** Whether a declared type, or the element type of a declared array, spells type arguments. */
+  private static boolean keepsArguments(Type type) {
+    return type.isParameterized() || (type.isArray() && keepsArguments(((Type.ArrayType) type).elementType()));
+  }
+
+  private static boolean sameErasure(Type left, Type right) {
+    return left.erasure().fullyQualifiedName().equals(right.erasure().fullyQualifiedName());
+  }
+
+  /** The scan records erased parameter types, while the declared parameters keep their type arguments. */
+  private static void declaredParameterTypes(JMethodSymbol method, List<VariableTree> parameters) {
+    List<Type> erased = method.parameterTypes();
+    if (erased.size() != parameters.size()) {
+      return;
+    }
+    List<Type> declared = new ArrayList<>();
+    for (int i = 0; i < parameters.size(); i++) {
+      Type type = parameters.get(i).type().symbolType();
+      if (type.isUnknown() || !(isTypeVariable(type) || sameErasure(type, erased.get(i)))) {
+        return;
+      }
+      declared.add(type);
+    }
+    method.parameterTypes(declared);
+  }
+
+  private void bindImplicitClass(ClassTreeImpl tree, List<Tree> members) {
+    JTypeSymbol implicitClass = null;
+    for (Tree member : members) {
+      if (member instanceof MethodTree method && method.symbol().owner() instanceof JTypeSymbol owner && !owner.isUnknown()) {
+        implicitClass = owner;
+        break;
+      }
+    }
+    if (implicitClass == null && !implicitClassName.isEmpty() && sema.resolve(implicitClassName) instanceof JTypeSymbol named) {
+      implicitClass = named;
+    }
+    if (implicitClass == null) {
+      return;
+    }
+    tree.setSymbol(implicitClass);
+    sema.declare(implicitClass.id, tree);
+    for (Tree member : members) {
+      if (member instanceof MethodTree method && method.symbol() instanceof JMethodSymbol symbol && (symbol.owner() == null || symbol.owner().isUnknown())) {
+        symbol.owner(implicitClass);
+      }
+    }
+  }
+
+  private void bindType(ClassTreeImpl tree, Node node) {
+    String id = node.decl();
+    if (id != null && sema.resolve(id) instanceof Symbol.TypeSymbol typeSymbol) {
+      tree.setSymbol(typeSymbol);
+      sema.declare(id, tree);
+      return;
+    }
+    for (Tree member : tree.members()) {
+      Symbol symbol = member instanceof MethodTree method ? method.symbol() : (member instanceof VariableTree variable ? variable.symbol() : null);
+      if (symbol != null && !symbol.isUnknown() && symbol.owner() instanceof Symbol.TypeSymbol owner) {
+        tree.setSymbol(owner);
+        return;
+      }
+    }
+  }
+
+  private void bindUse(IdentifierTreeImpl identifier, Node node) {
+    bindUse(identifier, node, false);
+  }
+
+  private void bindUse(IdentifierTreeImpl identifier, Node node, boolean qualified) {
+    String target = node.valueTarget();
+    if (target == null) {
+      target = node.typeTarget();
+    }
+    if (target == null) {
+      if (!qualified) {
+        Symbol local = scopedVariable(identifier.name());
+        if (local != null) {
+          bind(identifier, local);
+          ascribe(identifier, identifierType(local));
+          sema.use(usageId(local, local.name()), identifier);
+        }
+      }
+      return;
+    }
+    Symbol symbol = sema.resolve(target);
+    String typeTarget = node.typeTarget();
+    if (symbol.isMethodSymbol() && "<init>".equals(symbol.name()) && typeTarget != null && !typeTarget.equals(target)) {
+      target = typeTarget;
+      symbol = sema.resolve(target);
+    }
+    if (symbol.isMethodSymbol() && symbol.isUnknown()) {
+      symbol = Symbol.MethodSymbol.UNKNOWN_METHOD;
+    }
+    symbol = typedField(symbol);
+    if (!qualified && (symbol.isUnknown() || (symbol.isVariableSymbol() && !isField(symbol)))) {
+      Symbol local = scopedVariable(identifier.name());
+      if (local != null) {
+        symbol = local;
+      }
+    }
+    bind(identifier, symbol);
+    ascribe(identifier, identifierType(symbol));
+    sema.use(usageId(symbol, target), identifier);
+  }
+
+  /** A field is not hidden by a local variable of an enclosing method: a local class declares its own members. */
+  private static boolean isField(Symbol variable) {
+    return variable.owner() != null && variable.owner().isTypeSymbol();
+  }
+
+  @Nullable
+  private Symbol scopedVariable(String name) {
+    for (Map<String, Symbol> scope : scopes) {
+      Symbol found = scope.get(name);
+      if (found != null) {
+        return found;
+      }
+    }
+    return null;
+  }
+
+  /** A field the graph typed as void keeps the type its class file declares. */
+  private Symbol typedField(Symbol symbol) {
+    if (!(symbol instanceof JSymbol field) || !field.isVariableSymbol() || field.type() == null || !field.type().isVoid()) {
+      return symbol;
+    }
+    String owner = field.owner().type() != null && !field.owner().type().isUnknown()
+      ? field.owner().type().erasure().fullyQualifiedName()
+      : (field.id != null && field.id.indexOf('#') > 0 ? field.id.substring(0, field.id.indexOf('#')) : null);
+    if (owner == null) {
+      return symbol;
+    }
+    Symbol.VariableSymbol declared = sema.declaredField(JSema.erase(owner), field.name());
+    if (declared != null && declared.type() != null && !declared.type().isVoid() && !declared.type().isUnknown()) {
+      return declared;
+    }
+    return symbol;
+  }
+
+  /** Usages are stored under the symbol's own id, which can differ from the fact key that resolved it. */
+  private static String usageId(Symbol symbol, String target) {
+    if (symbol instanceof JSymbol jSymbol && !jSymbol.isUnknown()) {
+      String id = jSymbol.toString();
+      if (id != null && !id.equals(jSymbol.name())) {
+        return id;
+      }
+    }
+    return target;
+  }
+
+  private void recordUse(Symbol symbol, IdentifierTree identifier) {
+    String id = usageId(symbol, "");
+    if (!id.isEmpty()) {
+      sema.use(id, identifier);
+    }
+  }
+
+  @Nullable
+  private IdentifierTreeImpl labelUse(Node node) {
+    Node name = firstOf(node, "identifier");
+    if (name == null || "break".equals(name.text()) || "continue".equals(name.text())) {
+      return null;
+    }
+    IdentifierTreeImpl identifier = identifier(name);
+    for (JLabelSymbol label : labels) {
+      if (label.name().equals(identifier.name())) {
+        label.addUsage(identifier);
+        identifier.labelSymbol = label;
+        break;
+      }
+    }
+    return identifier;
+  }
+
+  private Parens parens(@Nullable Node node) {
+    if (node == null) {
+      return new Parens(synthetic("("), literal(Tree.Kind.BOOLEAN_LITERAL, synthetic("true"), sema.getClassType("boolean")), synthetic(")"));
+    }
+    if (!"parenthesized_expression".equals(node.k())) {
+      return new Parens(synthetic("("), expression(node), synthetic(")"));
+    }
+    InternalSyntaxToken open = token(required(node, "("));
+    InternalSyntaxToken close = token(required(node, ")"));
+    ExpressionTree expression = null;
+    for (Node child : node.children()) {
+      if (!"(".equals(child.text()) && !")".equals(child.text())) {
+        expression = expression(child);
+      }
+    }
+    return new Parens(open, expression == null ? literal(Tree.Kind.BOOLEAN_LITERAL, synthetic("true"), sema.getClassType("boolean")) : expression, close);
+  }
+
+  @Nullable
+  private Type currentType() {
+    Symbol.TypeSymbol enclosing = types.isEmpty() ? null : types.peek();
+    return enclosing == null ? Type.UNKNOWN : enclosing.type();
+  }
+
+  private Type arrayTypeOf(TypeTree element, int dimensions) {
+    Type type = element.symbolType();
+    if (!(type instanceof JType jType)) {
+      return Type.UNKNOWN;
+    }
+    for (int i = 0; i < Math.max(dimensions, 1); i++) {
+      jType = JType.array(sema, jType);
+    }
+    return jType;
+  }
+
+  private static Type binaryType(String operator, Type left, Type right) {
+    if (operator.equals("&&") || operator.equals("||") || operator.equals("==") || operator.equals("!=")
+      || operator.equals("<") || operator.equals(">") || operator.equals("<=") || operator.equals(">=") || operator.equals("instanceof")) {
+      return left instanceof JType j ? j.sema.getClassType("boolean") : Type.UNKNOWN;
+    }
+    if ("+".equals(operator) && (left.is("java.lang.String") || right.is("java.lang.String"))) {
+      return left instanceof JType j ? j.sema.getClassType("java.lang.String") : Type.UNKNOWN;
+    }
+    Type promoted = promotedBinaryType(operator, unboxed(left), unboxed(right));
+    if (promoted != null) {
+      return promoted;
+    }
+    if (left.isUnknown()) {
+      return right;
+    }
+    return left;
+  }
+
+  private static Type unboxed(Type type) {
+    return type.isPrimitiveWrapper() ? type.primitiveType() : type;
+  }
+
+  /** The type JLS 5.6 gives an arithmetic, bitwise or shift operation, or null when an operand is not a primitive. */
+  @Nullable
+  private static Type promotedBinaryType(String operator, Type left, Type right) {
+    if (!(left instanceof JType j) || !left.isPrimitive() || !right.isPrimitive()) {
+      return null;
+    }
+    boolean bitwise = "&".equals(operator) || "|".equals(operator) || "^".equals(operator);
+    if (left.is("boolean") || right.is("boolean")) {
+      return bitwise && left.is("boolean") && right.is("boolean") ? left : null;
+    }
+    if ("<<".equals(operator) || ">>".equals(operator) || ">>>".equals(operator)) {
+      return j.sema.getClassType(left.is("long") ? "long" : "int");
+    }
+    for (String name : List.of("double", "float", "long")) {
+      if (left.is(name) || right.is(name)) {
+        return j.sema.getClassType(name);
+      }
+    }
+    return j.sema.getClassType("int");
+  }
+
+  private static Tree.Kind binaryKind(String operator) {
+    return switch (operator) {
+      case "+" -> Tree.Kind.PLUS;
+      case "-" -> Tree.Kind.MINUS;
+      case "*" -> Tree.Kind.MULTIPLY;
+      case "/" -> Tree.Kind.DIVIDE;
+      case "%" -> Tree.Kind.REMAINDER;
+      case "<<" -> Tree.Kind.LEFT_SHIFT;
+      case ">>" -> Tree.Kind.RIGHT_SHIFT;
+      case ">>>" -> Tree.Kind.UNSIGNED_RIGHT_SHIFT;
+      case "<" -> Tree.Kind.LESS_THAN;
+      case ">" -> Tree.Kind.GREATER_THAN;
+      case "<=" -> Tree.Kind.LESS_THAN_OR_EQUAL_TO;
+      case ">=" -> Tree.Kind.GREATER_THAN_OR_EQUAL_TO;
+      case "==" -> Tree.Kind.EQUAL_TO;
+      case "!=" -> Tree.Kind.NOT_EQUAL_TO;
+      case "&" -> Tree.Kind.AND;
+      case "|" -> Tree.Kind.OR;
+      case "^" -> Tree.Kind.XOR;
+      case "&&" -> Tree.Kind.CONDITIONAL_AND;
+      case "||" -> Tree.Kind.CONDITIONAL_OR;
+      default -> Tree.Kind.PLUS;
+    };
+  }
+
+  private static Tree.Kind assignmentKind(String operator) {
+    return switch (operator) {
+      case "+=" -> Tree.Kind.PLUS_ASSIGNMENT;
+      case "-=" -> Tree.Kind.MINUS_ASSIGNMENT;
+      case "*=" -> Tree.Kind.MULTIPLY_ASSIGNMENT;
+      case "/=" -> Tree.Kind.DIVIDE_ASSIGNMENT;
+      case "%=" -> Tree.Kind.REMAINDER_ASSIGNMENT;
+      case "&=" -> Tree.Kind.AND_ASSIGNMENT;
+      case "|=" -> Tree.Kind.OR_ASSIGNMENT;
+      case "^=" -> Tree.Kind.XOR_ASSIGNMENT;
+      case "<<=" -> Tree.Kind.LEFT_SHIFT_ASSIGNMENT;
+      case ">>=" -> Tree.Kind.RIGHT_SHIFT_ASSIGNMENT;
+      case ">>>=" -> Tree.Kind.UNSIGNED_RIGHT_SHIFT_ASSIGNMENT;
+      default -> Tree.Kind.ASSIGNMENT;
+    };
+  }
+
+  private static Tree.Kind unaryKind(String operator, boolean prefix) {
+    return switch (operator) {
+      case "++" -> prefix ? Tree.Kind.PREFIX_INCREMENT : Tree.Kind.POSTFIX_INCREMENT;
+      case "--" -> prefix ? Tree.Kind.PREFIX_DECREMENT : Tree.Kind.POSTFIX_DECREMENT;
+      case "-" -> Tree.Kind.UNARY_MINUS;
+      case "+" -> Tree.Kind.UNARY_PLUS;
+      case "~" -> Tree.Kind.BITWISE_COMPLEMENT;
+      default -> Tree.Kind.LOGICAL_COMPLEMENT;
+    };
+  }
+
+  @Nullable
+  private static Modifier modifierKeyword(String text) {
+    return switch (text) {
+      case "public" -> Modifier.PUBLIC;
+      case "protected" -> Modifier.PROTECTED;
+      case "private" -> Modifier.PRIVATE;
+      case "static" -> Modifier.STATIC;
+      case "abstract" -> Modifier.ABSTRACT;
+      case "final" -> Modifier.FINAL;
+      case "native" -> Modifier.NATIVE;
+      case "synchronized" -> Modifier.SYNCHRONIZED;
+      case "transient" -> Modifier.TRANSIENT;
+      case "volatile" -> Modifier.VOLATILE;
+      case "strictfp" -> Modifier.STRICTFP;
+      case "default" -> Modifier.DEFAULT;
+      case "sealed" -> Modifier.SEALED;
+      case "non-sealed" -> Modifier.NON_SEALED;
+      case "transitive" -> Modifier.TRANSITIVE;
+      default -> null;
+    };
+  }
+
+  private static boolean isTypeKind(String kind) {
+    return switch (kind) {
+      case "type_identifier", "identifier", "scoped_identifier", "scoped_type_identifier", "generic_type", "array_type", "integral_type", "floating_point_type", "boolean_type", "void_type", "wildcard", "annotated_type" -> true;
+      default -> false;
+    };
+  }
+
+  private static boolean isStatementKind(String kind) {
+    return kind.endsWith("_statement") || "block".equals(kind) || "local_variable_declaration".equals(kind) || "switch_expression".equals(kind);
+  }
+
+  private static boolean isLiteral(String kind) {
+    return switch (kind) {
+      case "string_literal", "character_literal", "text_block", "decimal_integer_literal", "hex_integer_literal", "octal_integer_literal", "binary_integer_literal", "decimal_floating_point_literal", "hex_floating_point_literal" -> true;
+      default -> false;
+    };
+  }
+
+  private static boolean isComment(Node node) {
+    return "line_comment".equals(node.k()) || "block_comment".equals(node.k());
+  }
+
+  private SyntaxTrivia trivia(Node node) {
+    String text = node.text();
+    if (text.startsWith("//") && text.endsWith("\r")) {
+      text = text.substring(0, text.length() - 1);
+    }
+    SyntaxTrivia.CommentKind kind;
+    if (markdownComments && text.startsWith("///")) {
+      kind = SyntaxTrivia.CommentKind.MARKDOWN;
+    } else if (text.startsWith("/**") && !"/**/".equals(text)) {
+      kind = SyntaxTrivia.CommentKind.JAVADOC;
+    } else if (text.startsWith("//")) {
+      kind = SyntaxTrivia.CommentKind.LINE;
+    } else {
+      kind = SyntaxTrivia.CommentKind.BLOCK;
+    }
+    return new InternalSyntaxTrivia(kind, text, node.line(), node.col());
+  }
+
+  private InternalSyntaxToken token(Node node) {
+    InternalSyntaxToken found = tokens.get(node.proto);
+    if (found != null) {
+      return found;
+    }
+    if ("@interface".equals(node.text())) {
+      return new InternalSyntaxToken(node.line(), node.col(), "@", List.of(), false);
+    }
+    if (!node.children().isEmpty()) {
+      for (Node child : node.children()) {
+        if (child.children().isEmpty() && !child.text().isEmpty() && !isComment(child)) {
+          return token(child);
+        }
+      }
+    }
+    String text = node.text().isEmpty() ? node.k() : node.text();
+    if (text.indexOf('_') >= 0) {
+      text = "";
+    }
+    return new InternalSyntaxToken(node.line(), node.col(), text, List.of(), false);
+  }
+
+  private InternalSyntaxToken closingAngle(Node node) {
+    for (int i = node.children().size() - 1; i >= 0; i--) {
+      Node child = node.children().get(i);
+      if (">".equals(child.text()) || ">>".equals(child.text()) || ">>>".equals(child.text())) {
+        return new InternalSyntaxToken(child.line(), child.col() + child.text().length() - 1, ">", List.of(), false);
+      }
+    }
+    return synthetic(">");
+  }
+
+  private InternalSyntaxToken synthetic(String text) {
+    return new InternalSyntaxToken(1, 0, text, List.of(), false);
+  }
+
+  @Nullable
+  private InternalSyntaxToken optionalToken(Node node, String text) {
+    Node found = keyword(node, text);
+    return found == null ? null : token(found);
+  }
+
+  private static Type identifierType(Symbol symbol) {
+    return symbol instanceof Symbol.MethodSymbol method && !method.isUnknown() ? method.returnType().type() : symbol.type();
+  }
+
+  /** A resolved type, or an unresolved one that still carries its written name. */
+  private static boolean isKnownOrRecovered(Type type) {
+    return !type.isUnknown() || !"!Unknown!".equals(type.fullyQualifiedName());
+  }
+
+  private static Type variableType(VariableTreeImpl variable) {
+    return variable.symbol().type().isUnknown() ? variable.type().symbolType() : variable.symbol().type();
+  }
+
+  private static void ascribe(Tree tree, @Nullable Type type) {
+    if (tree instanceof AbstractTypedTree typed && type != null) {
+      typed.setSymbolType(type);
+    }
+  }
+
+  private static void bind(IdentifierTreeImpl identifier, @Nullable Symbol symbol) {
+    identifier.setSymbol(symbol == null ? Symbol.UNKNOWN_SYMBOL : symbol);
+  }
+
+  private static void bindMethod(MethodInvocationTreeImpl invocation, @Nullable Symbol.MethodSymbol method) {
+    invocation.setMethodSymbol(method == null ? Symbol.MethodSymbol.UNKNOWN_METHOD : method);
+  }
+
+  @Nullable
+  private static Node keyword(Node node, String text) {
+    for (Node child : node.children()) {
+      if (text.equals(child.text()) || text.equals(child.k())) {
+        return child;
+      }
+    }
+    return null;
+  }
+
+  private static Node lastKeyword(Node node, String text) {
+    List<Node> children = node.children();
+    for (int i = children.size() - 1; i >= 0; i--) {
+      if (text.equals(children.get(i).text())) {
+        return children.get(i);
+      }
+    }
+    return node;
+  }
+
+  private static boolean same(@Nullable Node left, @Nullable Node right) {
+    return left != null && right != null && left.proto == right.proto;
+  }
+
+  private static Node required(Node node, String text) {
+    Node found = keyword(node, text);
+    return found == null ? node : found;
+  }
+
+  @Nullable
+  private static Node field(Node node, String name) {
+    for (Node child : node.children()) {
+      if (name.equals(child.f())) {
+        return child;
+      }
+    }
+    return null;
+  }
+
+  private static Node requiredField(Node node, String name, @Nullable Node fallback) {
+    Node found = field(node, name);
+    return found != null ? found : (fallback == null ? node : fallback);
+  }
+
+  @Nullable
+  private static Node childKind(Node node, String kind) {
+    for (Node child : node.children()) {
+      if (kind.equals(child.k())) {
+        return child;
+      }
+    }
+    return null;
+  }
+
+  @Nullable
+  private static Node firstOf(Node node, String... kinds) {
+    for (Node child : node.children()) {
+      for (String kind : kinds) {
+        if (kind.equals(child.k())) {
+          return child;
+        }
+      }
+    }
+    return null;
+  }
+
+  @Nullable
+  private static Node lastOf(Node node, String kind) {
+    Node found = null;
+    for (Node child : node.children()) {
+      if (kind.equals(child.k())) {
+        found = child;
+      }
+    }
+    return found;
+  }
+
+  @Nullable
+  private static Node nameNode(Node node) {
+    Node named = field(node, "name");
+    return named != null ? named : firstOf(node, "identifier", "type_identifier");
+  }
+
+  @Nullable
+  private static Node firstNamed(Node node) {
+    for (Node child : node.children()) {
+      if (!child.text().equals(child.k()) || child.k().contains("_")) {
+        if (!child.children().isEmpty() || child.k().contains("_") || "identifier".equals(child.k()) || "type_identifier".equals(child.k())) {
+          return child;
+        }
+      }
+    }
+    return node.children().isEmpty() ? node : node.children().get(0);
+  }
+
+  @Nullable
+  private static boolean isAnnotation(Node node) {
+    return "annotation".equals(node.k()) || "marker_annotation".equals(node.k());
+  }
+
+  private static Node lastNamed(Node node) {
+    List<Node> children = node.children();
+    for (int i = children.size() - 1; i >= 0; i--) {
+      Node child = children.get(i);
+      if (child.k().contains("_") || "identifier".equals(child.k())) {
+        return child;
+      }
+    }
+    return node;
+  }
+
+  @Nullable
+  private static Node firstType(Node node) {
+    for (Node child : node.children()) {
+      if (isTypeKind(child.k())) {
+        return child;
+      }
+    }
+    return null;
+  }
+
+  @Nullable
+  private static Node firstTokenChild(Node node) {
+    for (Node child : node.children()) {
+      if (child.children().isEmpty() && !child.text().isEmpty()) {
+        return child;
+      }
+    }
+    return null;
+  }
+
+  private static InternalSyntaxToken firstKeyword(Node node) {
+    for (Node child : node.children()) {
+      if (child.children().isEmpty() && !child.text().isEmpty() && !",".equals(child.text())) {
+        return new InternalSyntaxToken(child.line(), child.col(), child.text(), List.of(), false);
+      }
+    }
+    return new InternalSyntaxToken(node.line(), node.col(), "implements", List.of(), false);
+  }
+
+  private static void setParents(Tree node) {
+    if (node instanceof JavaTree javaTree && node.kind() != Tree.Kind.INFERED_TYPE && node.kind() != Tree.Kind.TOKEN) {
+      for (Tree child : javaTree.getChildren()) {
+        if (child instanceof JavaTree javaChild) {
+          javaChild.setParent(node);
+          setParents(child);
+        }
+      }
+    }
+  }
+
+  private record Parens(InternalSyntaxToken open, ExpressionTree expr, InternalSyntaxToken close) {
+  }
+
+  private static final class Node {
+    private final org.sonarsource.semsitter.wire.Node proto;
+
+    private Node(org.sonarsource.semsitter.wire.Node proto) {
+      this.proto = proto;
+    }
+
+    private String k() {
+      return proto.getKind();
+    }
+
+    private String f() {
+      return proto.getField();
+    }
+
+    private String text() {
+      return proto.getText();
+    }
+
+    private boolean missing() {
+      return proto.getMissing();
+    }
+
+    private int line() {
+      return proto.getStartLine();
+    }
+
+    private int col() {
+      return proto.getStartCol();
+    }
+
+    private int endCol() {
+      return proto.getEndCol();
+    }
+
+    private List<Node> children() {
+      List<Node> children = new ArrayList<>();
+      for (Node child : allChildren()) {
+        if (!isComment(child)) {
+          children.add(child);
+        }
+      }
+      return children;
+    }
+
+    private List<Node> allChildren() {
+      List<Node> children = new ArrayList<>();
+      for (org.sonarsource.semsitter.wire.Node element : proto.getChildrenList()) {
+        if (!element.getMissing()) {
+          children.add(new Node(element));
+        }
+      }
+      return children;
+    }
+
+    @Nullable
+    private String decl() {
+      return proto.getDeclsCount() == 0 ? null : proto.getDecls(0);
+    }
+
+    private List<String> decls() {
+      return proto.getDeclsList();
+    }
+
+    private boolean unresolved() {
+      if (proto.getRefsCount() == 0) {
+        return "type_identifier".equals(k());
+      }
+      for (Ref ref : proto.getRefsList()) {
+        if (BOUND.equals(ref.getOutcome())) {
+          return false;
+        }
+      }
+      return true;
+    }
+
+    @Nullable
+    private String valueTarget() {
+      return target(true);
+    }
+
+    @Nullable
+    private String typeTarget() {
+      return target(false);
+    }
+
+    @Nullable
+    private String target(boolean value) {
+      String fallback = null;
+      for (Ref ref : proto.getRefsList()) {
+        if (ref.getTarget().isEmpty() || !BOUND.equals(ref.getOutcome())) {
+          continue;
+        }
+        String access = ref.getAccess();
+        boolean isValue = "r".equals(access) || "w".equals(access) || "rw".equals(access);
+        if (isValue == value) {
+          return ref.getTarget();
+        }
+        fallback = ref.getTarget();
+      }
+      return value ? null : fallback;
+    }
+  }
+}

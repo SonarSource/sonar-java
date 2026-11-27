@@ -58,7 +58,7 @@ public final class SemSitterParserProvider implements JParserProvider {
   private volatile Path executable;
 
   public SemSitterParserProvider() {
-    this(LaunchDarklyFeatureFlags::connect, System::getenv, null);
+    this(LaunchDarklyFeatureFlags::connect, System::getenv, SemSitterTranslator::translate);
   }
 
   SemSitterParserProvider(FeatureFlags.Connector flags, UnaryOperator<String> environment, @Nullable DocumentTranslator translator) {
