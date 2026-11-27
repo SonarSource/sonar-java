@@ -258,6 +258,9 @@ class SpringUtilsTest {
       class WithBlankName {}
       
       class NoStereotypeAnnotation {}
+
+      @org.springframework.stereotype.Component(Unresolved.NAME)
+      class WithUnresolvedName {}
       """, TestClasspathUtils.DEFAULT_MODULE.getClassPath());
 
     @Test
@@ -287,6 +290,13 @@ class SpringUtilsTest {
       assertThat(SpringUtils.extractBeanNameFromAnnotation(clazz.symbol().metadata(), clazz.simpleName().name()))
         .isEqualTo("noStereotypeAnnotation");
     }
+
+    @Test
+    void falls_back_to_decapitalized_simple_name_when_the_explicit_name_is_unresolved() {
+      var clazz = (ClassTreeImpl) compilationUnit.types().get(4);
+      assertThat(SpringUtils.extractBeanNameFromAnnotation(clazz.symbol().metadata(), clazz.simpleName().name()))
+        .isEqualTo("withUnresolvedName");
+    }
   }
 
   // ---- extractQualifierValue ------------------------------------------------------
@@ -298,7 +308,8 @@ class SpringUtilsTest {
         void m(
           @org.springframework.beans.factory.annotation.Qualifier("qualifierValue") Object withQualifier,
           @org.springframework.beans.factory.annotation.Qualifier("") Object withBlankQualifier,
-          Object withoutQualifier) {
+          Object withoutQualifier,
+          @org.springframework.beans.factory.annotation.Qualifier(Unresolved.NAME) Object withUnresolvedQualifier) {
         }
       }
       """, TestClasspathUtils.DEFAULT_MODULE.getClassPath());
@@ -320,6 +331,12 @@ class SpringUtilsTest {
     void returns_null_when_no_qualifier_annotation() {
       var withoutQualifier = method.parameters().get(2);
       assertThat(SpringUtils.extractQualifierValue(withoutQualifier.symbol().metadata())).isNull();
+    }
+
+    @Test
+    void returns_null_when_the_qualifier_value_is_unresolved() {
+      var withUnresolvedQualifier = method.parameters().get(3);
+      assertThat(SpringUtils.extractQualifierValue(withUnresolvedQualifier.symbol().metadata())).isNull();
     }
   }
 

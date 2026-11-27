@@ -1,0 +1,337 @@
+/*
+ * SonarQube Java
+ * Copyright (C) SonarSource Sàrl
+ * mailto:info AT sonarsource DOT com
+ *
+ * You can redistribute and/or modify this program under the terms of
+ * the Sonar Source-Available License Version 1, as published by SonarSource Sàrl.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the Sonar Source-Available License for more details.
+ *
+ * You should have received a copy of the Sonar Source-Available License
+ * along with this program; if not, see https://sonarsource.com/license/ssal/
+ */
+package org.sonar.java.semsitter;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import javax.annotation.Nullable;
+import org.sonar.java.model.Symbols;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata;
+import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
+
+/**
+ * A symbol keyed by its SemSitter id. Two symbols with the same id are equal across files,
+ * which is what a rule needs when the declaration and the use were translated separately.
+ */
+abstract class JSymbol implements Symbol {
+
+  enum Kind {
+    TYPE, METHOD, VARIABLE, PACKAGE
+  }
+
+  final JSema sema;
+  final Kind kind;
+  @Nullable
+  final String id;
+  private final String name;
+  private Symbol owner = Symbol.UNKNOWN_SYMBOL;
+  private Type type = Type.UNKNOWN;
+  private boolean unknown;
+  private boolean enumSymbol;
+  private boolean interfaceSymbol;
+  private boolean annotationSymbol;
+  private boolean receiver;
+  private boolean deprecated;
+  private static final String PRIVATE = "private";
+  private final Set<String> modifiers = new HashSet<>();
+  private int hash;
+
+  JSymbol(JSema sema, Kind kind, @Nullable String id, String name) {
+    this.sema = Objects.requireNonNull(sema);
+    this.kind = kind;
+    this.id = id;
+    this.name = name;
+  }
+
+  void owner(Symbol owner) {
+    this.owner = owner;
+  }
+
+  void type(Type type) {
+    this.type = type == null ? Type.UNKNOWN : type;
+  }
+
+  void unknown(boolean unknown) {
+    this.unknown = unknown;
+  }
+
+  void enumSymbol(boolean enumSymbol) {
+    this.enumSymbol = enumSymbol;
+  }
+
+  void interfaceSymbol(boolean interfaceSymbol) {
+    this.interfaceSymbol = interfaceSymbol;
+  }
+
+  void annotationSymbol(boolean annotationSymbol) {
+    this.annotationSymbol = annotationSymbol;
+  }
+
+  boolean isAnnotationSymbol() {
+    return annotationSymbol;
+  }
+
+  /** {@code this} and {@code super}, which have no visibility. */
+  void receiver(boolean receiver) {
+    this.receiver = receiver;
+  }
+
+  void deprecated(boolean deprecated) {
+    this.deprecated = deprecated;
+  }
+
+  void copyStateFrom(JSymbol other) {
+    owner = other.owner;
+    unknown = other.unknown;
+    enumSymbol = other.enumSymbol;
+    interfaceSymbol = other.interfaceSymbol;
+    annotationSymbol = other.annotationSymbol;
+    deprecated = other.deprecated;
+    modifiers.addAll(other.modifiers);
+  }
+
+  void removeModifier(String modifier) {
+    modifiers.remove(modifier);
+  }
+
+  void addModifiers(Collection<String> values) {
+    for (String value : values) {
+      for (String part : value.split(",")) {
+        if (!part.isBlank()) {
+          modifiers.add(part.trim());
+        }
+      }
+    }
+  }
+
+  boolean hasModifier(String modifier) {
+    return modifiers.contains(modifier);
+  }
+
+  @Override
+  public final boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (!(obj instanceof JSymbol other) || kind != other.kind) {
+      return false;
+    }
+    if (id != null && other.id != null) {
+      return id.equals(other.id);
+    }
+    return name.equals(other.name) && Objects.equals(owner, other.owner);
+  }
+
+  @Override
+  public final int hashCode() {
+    if (hash == 0) {
+      hash = Objects.hash(kind, id != null ? id : name);
+    }
+    return hash;
+  }
+
+  @Override
+  public final String name() {
+    return name;
+  }
+
+  @Override
+  public final Symbol owner() {
+    return owner;
+  }
+
+  @Override
+  public Type type() {
+    return type;
+  }
+
+  @Override
+  public final boolean isVariableSymbol() {
+    return kind == Kind.VARIABLE;
+  }
+
+  @Override
+  public final boolean isTypeSymbol() {
+    return !isUnknown() && kind == Kind.TYPE;
+  }
+
+  @Override
+  public final boolean isMethodSymbol() {
+    return kind == Kind.METHOD;
+  }
+
+  @Override
+  public final boolean isPackageSymbol() {
+    return kind == Kind.PACKAGE;
+  }
+
+  @Override
+  public final boolean isStatic() {
+    return hasModifier("static") || (inInterface() && (isVariableSymbol() || isTypeSymbol())) || enumConstant() || implicitlyStaticType();
+  }
+
+  /** A nested or local record, enum or interface is implicitly static. */
+  private boolean implicitlyStaticType() {
+    return isTypeSymbol() && !owner.isPackageSymbol()
+      && (enumSymbol || interfaceSymbol
+        || (declaration() instanceof ClassTree declared && declared.is(Tree.Kind.RECORD, Tree.Kind.ENUM, Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE)));
+  }
+
+  @Override
+  public final boolean isFinal() {
+    return hasModifier("final") || (inInterface() && isVariableSymbol()) || enumConstant() || multiCatchParameter();
+  }
+
+  private boolean multiCatchParameter() {
+    return isVariableSymbol() && declaration() instanceof VariableTree variable && variable.type().is(Tree.Kind.UNION_TYPE);
+  }
+
+  /** The accessor a record declares implicitly for each of its components is public. */
+  private boolean implicitRecordAccessor() {
+    return isMethodSymbol() && declaration() == null && owner instanceof JSymbol ownerType && ownerType.declaration() instanceof ClassTree recordTree
+      && recordTree.is(Tree.Kind.RECORD) && recordTree.recordComponents().stream().anyMatch(component -> component.simpleName().name().equals(name));
+  }
+
+  /** Whether this is a member of an interface or annotation type, which gives it implicit modifiers. */
+  private boolean inInterface() {
+    return owner instanceof JSymbol ownerType && ownerType.isTypeSymbol() && ownerType.interfaceSymbol
+      && !(this instanceof JTypeSymbol typeSymbol && typeSymbol.isTypeParameter());
+  }
+
+  private boolean enumConstant() {
+    return isVariableSymbol() && enumSymbol;
+  }
+
+  /** Enum constructors are private whatever they declare. */
+  private boolean enumConstructor() {
+    return isMethodSymbol() && "<init>".equals(name) && owner instanceof JSymbol ownerType && ownerType.isTypeSymbol() && ownerType.enumSymbol;
+  }
+
+  @Override
+  public final boolean isEnum() {
+    return enumSymbol;
+  }
+
+  @Override
+  public final boolean isInterface() {
+    return interfaceSymbol;
+  }
+
+  @Override
+  public final boolean isAbstract() {
+    if (interfaceSymbol) {
+      return false;
+    }
+    return hasModifier("abstract")
+      || (inInterface() && isMethodSymbol() && !hasModifier("default") && !hasModifier("static") && !hasModifier(PRIVATE));
+  }
+
+  @Override
+  public final boolean isPublic() {
+    return hasModifier("public") || (inInterface() && !hasModifier(PRIVATE)) || enumConstant() || implicitRecordAccessor();
+  }
+
+  @Override
+  public final boolean isPrivate() {
+    return hasModifier(PRIVATE) || enumConstructor();
+  }
+
+  @Override
+  public final boolean isProtected() {
+    return hasModifier("protected");
+  }
+
+  @Override
+  public final boolean isPackageVisibility() {
+    return !receiver && !isPublic() && !isPrivate() && !isProtected();
+  }
+
+  @Override
+  public final boolean isDeprecated() {
+    return deprecated;
+  }
+
+  @Override
+  public final boolean isVolatile() {
+    return hasModifier("volatile");
+  }
+
+  @Override
+  public boolean isUnknown() {
+    return unknown;
+  }
+
+  @Override
+  public final SymbolMetadata metadata() {
+    return Symbols.EMPTY_METADATA;
+  }
+
+  @Nullable
+  @Override
+  public TypeSymbol enclosingClass() {
+    if (this instanceof JTypeSymbol typeSymbol && typeSymbol.isTypeParameter()) {
+      return owner() instanceof TypeSymbol ownerType ? ownerType : null;
+    }
+    // A nested or local type is enclosed by the class declaring it; a top-level one by itself.
+    boolean declaresType = kind == Kind.TYPE;
+    Symbol current = declaresType ? owner() : this;
+    if (declaresType && !(current instanceof Symbol.MethodSymbol) && !isTypeKind(current)) {
+      return (TypeSymbol) this;
+    }
+    while (!isTypeKind(current)) {
+      if (current.isPackageSymbol() || current.isUnknown()) {
+        return null;
+      }
+      current = current.owner();
+    }
+    return (TypeSymbol) current;
+  }
+
+  /** Whether {@code symbol} is declared as a type, resolved or not. */
+  private static boolean isTypeKind(Symbol symbol) {
+    return symbol instanceof JSymbol declared ? (declared.kind == Kind.TYPE) : symbol.isTypeSymbol();
+  }
+
+  @Override
+  public final List<IdentifierTree> usages() {
+    if (id == null) {
+      return Collections.emptyList();
+    }
+    List<IdentifierTree> found = sema.usages.get(id);
+    return found == null ? Collections.emptyList() : found;
+  }
+
+  @Nullable
+  @Override
+  public Tree declaration() {
+    return id == null ? null : sema.declarations.get(id);
+  }
+
+  @Override
+  public String toString() {
+    return id == null ? name : id;
+  }
+}
