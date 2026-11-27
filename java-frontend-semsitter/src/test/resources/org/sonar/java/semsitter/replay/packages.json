@@ -1,4 +1,5 @@
 {
 "com.example.missing": false,
-"java.util": true
+"java.util": true,
+"java.util.concurrent": true
 }

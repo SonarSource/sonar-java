@@ -1,0 +1,63 @@
+COMPILATION_UNIT @2:1
+PACKAGE @2:1
+TOKEN @2:1
+IDENTIFIER @2:9 id javadoc .javadoc [p package] : ? : ?
+TOKEN @2:9
+TOKEN @2:16
+IMPORT @4:1
+TOKEN @4:1
+MEMBER_SELECT @4:8 : ?
+MEMBER_SELECT @4:8 : ?
+IDENTIFIER @4:8 id java unknown : ?
+TOKEN @4:8
+TOKEN @4:12
+IDENTIFIER @4:13 id io unknown : ?
+TOKEN @4:13
+TOKEN @4:15
+IDENTIFIER @4:16 id File unknown : ?
+TOKEN @4:16
+TOKEN @4:20
+IMPORT @5:1
+TOKEN @5:1
+MEMBER_SELECT @5:8 : ?
+MEMBER_SELECT @5:8 : ?
+IDENTIFIER @5:8 id java unknown : ?
+TOKEN @5:8
+TOKEN @5:12
+IDENTIFIER @5:13 id util unknown : ?
+TOKEN @5:13
+TOKEN @5:17
+IDENTIFIER @5:18 id * unknown : ?
+TOKEN @5:18
+TOKEN @5:19
+IMPORT @6:1
+TOKEN @6:1
+MEMBER_SELECT @6:8 : ?
+MEMBER_SELECT @6:8 : ?
+MEMBER_SELECT @6:8 : ?
+IDENTIFIER @6:8 id java unknown : ?
+TOKEN @6:8
+TOKEN @6:12
+IDENTIFIER @6:13 id util unknown : ?
+TOKEN @6:13
+TOKEN @6:17
+IDENTIFIER @6:18 id concurrent unknown : ?
+TOKEN @6:18
+TOKEN @6:28
+IDENTIFIER @6:29 id * unknown : ?
+TOKEN @6:29
+TOKEN @6:30
+CLASS @9:1 class javadoc.JavadocImports [t package] : javadoc.JavadocImports super java.lang.Object interfaces []
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing JavadocImports flags [package] members [<init>] lookupToString 0 outermost JavadocImports annotation false subtypeOf [java.lang.Object] superTypes [java.lang.Object] numerical false wrapper false raw false declaring JavadocImports
+MODIFIERS
+TOKEN @9:1
+IDENTIFIER @9:7 id JavadocImports javadoc.JavadocImports [t package] : javadoc.JavadocImports : javadoc.JavadocImports
+TOKEN @9:7
+TYPE_PARAMETERS
+LIST
+LIST
+TOKEN @9:22
+TOKEN @10:1
+TOKEN @11:1
+WARNING UNUSED_IMPORT IMPORT @4:1 The import java.io.File is never used
+WARNING UNUSED_IMPORT IMPORT @6:1 The import java.util.concurrent is never used
