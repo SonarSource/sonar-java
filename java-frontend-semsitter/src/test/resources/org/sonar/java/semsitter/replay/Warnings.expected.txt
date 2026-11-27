@@ -1070,6 +1070,14 @@ TOKEN @83:1
 WARNING UNUSED_IMPORT IMPORT @8:1 The import java.util.Set is never used
 WARNING UNUSED_IMPORT IMPORT @11:1 The import java.lang.Math.min is never used
 WARNING UNUSED_IMPORT IMPORT @12:1 The import java.util.Collections is never used
+WARNING REDUNDANT_CAST TYPE_CAST @19:19 Unnecessary cast from String to String
+WARNING REDUNDANT_CAST TYPE_CAST @20:22 Unnecessary cast from String to Object
+WARNING REDUNDANT_CAST TYPE_CAST @21:21 Unnecessary cast from int to long
+WARNING REDUNDANT_CAST TYPE_CAST @25:23 Unnecessary cast from String to Object
+WARNING REDUNDANT_CAST TYPE_CAST @26:21 Unnecessary cast from int to Integer
+WARNING REDUNDANT_CAST TYPE_CAST @27:19 Unnecessary cast from Integer to int
+WARNING REDUNDANT_CAST TYPE_CAST @30:28 Unnecessary cast from List<String> to List<String>
+WARNING REDUNDANT_CAST TYPE_CAST @31:20 Unnecessary cast from String[] to Object[]
 WARNING ASSIGNMENT_HAS_NO_EFFECT ASSIGNMENT @37:5 The assignment to variable local has no effect
 WARNING ASSIGNMENT_HAS_NO_EFFECT ASSIGNMENT @38:5 The assignment to variable field has no effect
 WARNING ASSIGNMENT_HAS_NO_EFFECT ASSIGNMENT @39:5 The assignment to variable field has no effect

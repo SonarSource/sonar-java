@@ -1386,3 +1386,21 @@ TOKEN @126:5
 TOKEN @127:3
 TOKEN @128:1
 TOKEN @129:1
+WARNING REDUNDANT_CAST TYPE_CAST @26:12 Unnecessary cast from String to Object
+WARNING REDUNDANT_CAST TYPE_CAST @30:13 Unnecessary cast from String to Object
+WARNING REDUNDANT_CAST TYPE_CAST @34:14 Unnecessary cast from String to Object
+WARNING REDUNDANT_CAST TYPE_CAST @35:15 Unnecessary cast from String to Object
+WARNING REDUNDANT_CAST TYPE_CAST @36:20 Unnecessary cast from char to int
+WARNING REDUNDANT_CAST TYPE_CAST @39:22 Unnecessary cast from byte to int
+WARNING REDUNDANT_CAST TYPE_CAST @40:16 Unnecessary cast from int to long
+WARNING REDUNDANT_CAST TYPE_CAST @41:17 Unnecessary cast from byte to int
+WARNING REDUNDANT_CAST TYPE_CAST @41:27 Unnecessary cast from short to int
+WARNING REDUNDANT_CAST TYPE_CAST @45:22 Unnecessary cast from Object[] to Object[]
+WARNING REDUNDANT_CAST TYPE_CAST @50:14 Unnecessary cast from String to Object
+WARNING REDUNDANT_CAST TYPE_CAST @51:10 Unnecessary cast from String to Object
+WARNING REDUNDANT_CAST TYPE_CAST @54:16 Unnecessary cast from String to Object
+WARNING REDUNDANT_CAST TYPE_CAST @55:39 Unnecessary cast from String to Object
+WARNING REDUNDANT_CAST TYPE_CAST @59:15 Unnecessary cast from String to Object
+WARNING MASKED_CATCH IDENTIFIER @87:14 Unreachable catch block for IOException. Only more specific exceptions are thrown and they are handled by previous catch block(s).
+WARNING MASKED_CATCH IDENTIFIER @111:14 Unreachable catch block for IOException. Only more specific exceptions are thrown and they are handled by previous catch block(s).
+WARNING MASKED_CATCH IDENTIFIER @124:14 Unreachable catch block for IOException. Only more specific exceptions are thrown and they are handled by previous catch block(s).

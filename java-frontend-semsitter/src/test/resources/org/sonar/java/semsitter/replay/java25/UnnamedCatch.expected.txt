@@ -1,0 +1,110 @@
+COMPILATION_UNIT @1:1
+IMPORT @1:1
+TOKEN @1:1
+MEMBER_SELECT @1:8 : ?
+MEMBER_SELECT @1:8 : ?
+IDENTIFIER @1:8 id java unknown : ?
+TOKEN @1:8
+TOKEN @1:12
+IDENTIFIER @1:13 id io unknown : ?
+TOKEN @1:13
+TOKEN @1:15
+IDENTIFIER @1:16 id FileNotFoundException unknown : ?
+TOKEN @1:16
+TOKEN @1:37
+IMPORT @2:1
+TOKEN @2:1
+MEMBER_SELECT @2:8 : ?
+MEMBER_SELECT @2:8 : ?
+IDENTIFIER @2:8 id java unknown : ?
+TOKEN @2:8
+TOKEN @2:12
+IDENTIFIER @2:13 id io unknown : ?
+TOKEN @2:13
+TOKEN @2:15
+IDENTIFIER @2:16 id IOException unknown : ?
+TOKEN @2:16
+TOKEN @2:27
+CLASS @4:1 class .UnnamedCatch [t package] : UnnamedCatch super java.lang.Object interfaces []
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing UnnamedCatch flags [package] members [<init>, read] lookupToString 0 outermost UnnamedCatch annotation false subtypeOf [java.lang.Object] superTypes [java.lang.Object] numerical false wrapper false raw false declaring UnnamedCatch
+MODIFIERS
+TOKEN @4:1
+IDENTIFIER @4:7 id UnnamedCatch .UnnamedCatch [t package] : UnnamedCatch : UnnamedCatch
+TOKEN @4:7
+TYPE_PARAMETERS
+LIST
+LIST
+TOKEN @4:20
+METHOD @5:3 method UnnamedCatch.read [m package] : ? () returns void throws [] sig UnnamedCatch#read()V overrides false
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing UnnamedCatch flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MODIFIERS
+TYPE_PARAMETERS
+PRIMITIVE_TYPE @5:3 : void
+TOKEN @5:3
+IDENTIFIER @5:8 id read UnnamedCatch.read [m package] : ? () returns void throws [] sig UnnamedCatch#read()V : void
+TOKEN @5:8
+TOKEN @5:12
+TOKEN @5:13
+BLOCK @5:15
+TOKEN @5:15
+TRY_STATEMENT @6:5
+TOKEN @6:5
+BLOCK @6:9
+TOKEN @6:9
+THROW_STATEMENT @7:7
+TOKEN @7:7
+NEW_CLASS @7:13 new FileNotFoundException.<init> [m public] : ? () returns void throws [] sig java.io.FileNotFoundException#<init>()V : java.io.FileNotFoundException
+  details declared false usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing FileNotFoundException flags [public] overridden [IOException.<init>[], Exception.<init>[], Throwable.<init>[], Object.<init>[jdk.internal.vm.annotation.IntrinsicCandidate tree false values 0 annotated true]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+TOKEN @7:13
+IDENTIFIER @7:17 id FileNotFoundException FileNotFoundException.<init> [m public] : ? () returns void throws [] sig java.io.FileNotFoundException#<init>()V : java.io.FileNotFoundException
+TOKEN @7:17
+ARGUMENTS @7:38
+TOKEN @7:38
+TOKEN @7:39
+TOKEN @7:40
+TOKEN @8:5
+CATCH @8:7
+TOKEN @8:7
+TOKEN @8:13
+VARIABLE @8:14 var read.e [v package] : java.io.FileNotFoundException
+  details declared true usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing UnnamedCatch flags [package] local true parameter false effectivelyFinal true constant null owner read UnnamedCatch#read()V [package] returns void parameters 0 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing UnnamedCatch type true kinds truefalsefalse other falsefalsefalsefalsetruefalse0falsefalse
+MODIFIERS
+IDENTIFIER @8:14 id FileNotFoundException java.io.FileNotFoundException [t public] : java.io.FileNotFoundException : java.io.FileNotFoundException
+TOKEN @8:14
+IDENTIFIER @8:36 id e read.e [v package] : java.io.FileNotFoundException : java.io.FileNotFoundException
+TOKEN @8:36
+TOKEN @8:37
+BLOCK @8:39
+TOKEN @8:39
+EXPRESSION_STATEMENT @9:7
+METHOD_INVOCATION @9:7 call Throwable.printStackTrace [m public] : ? () returns void throws [] sig java.lang.Throwable#printStackTrace()V : void
+  details declared false usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Throwable flags [public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @9:7 : ?
+IDENTIFIER @9:7 id e read.e [v package] : java.io.FileNotFoundException : java.io.FileNotFoundException
+TOKEN @9:7
+TOKEN @9:8
+IDENTIFIER @9:9 id printStackTrace Throwable.printStackTrace [m public] : ? () returns void throws [] sig java.lang.Throwable#printStackTrace()V : void
+TOKEN @9:9
+ARGUMENTS @9:24
+TOKEN @9:24
+TOKEN @9:25
+TOKEN @9:26
+TOKEN @10:5
+CATCH @10:7
+TOKEN @10:7
+TOKEN @10:13
+VARIABLE @10:14 var read._ [v package] : java.io.IOException
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing UnnamedCatch flags [package] local true parameter false effectivelyFinal true constant null owner read UnnamedCatch#read()V [package] returns void parameters 0 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing UnnamedCatch type true kinds truefalsefalse other falsefalsefalsefalsetruefalse0falsefalse
+MODIFIERS
+IDENTIFIER @10:14 id IOException java.io.IOException [t public] : java.io.IOException : java.io.IOException
+TOKEN @10:14
+IDENTIFIER @10:26 id _ unknown : java.io.IOException
+TOKEN @10:26
+TOKEN @10:27
+BLOCK @10:29
+TOKEN @10:29
+TOKEN @11:5
+TOKEN @12:3
+TOKEN @13:1
+TOKEN @14:1
+WARNING MASKED_CATCH IDENTIFIER @10:14 Unreachable catch block for IOException. Only more specific exceptions are thrown and they are handled by previous catch block(s).
