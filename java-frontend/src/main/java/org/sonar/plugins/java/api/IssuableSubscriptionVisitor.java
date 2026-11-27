@@ -23,6 +23,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 /**
  * Subscription visitor providing an API to report issues.
+ * <p>See <a href="https://github.com/SonarSource/sonar-java/blob/master/docs/systems/rule-api.md">Writing SonarJava rules</a>.
  */
 public abstract class IssuableSubscriptionVisitor extends SubscriptionVisitor {
 

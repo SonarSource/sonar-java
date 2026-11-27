@@ -24,6 +24,7 @@ import org.sonarsource.api.sonarlint.SonarLintSide;
 
 /**
  * This class can be extended to provide additional rule keys in builtin quality profiles.
+ * <p>See <a href="https://github.com/SonarSource/sonar-java/blob/master/docs/systems/public-api.md#extension-hooks">SonarJava extension hooks</a>.
  *
  * <pre>
  *   {@code

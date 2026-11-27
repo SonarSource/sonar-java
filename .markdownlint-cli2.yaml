@@ -1,0 +1,8 @@
+globs:
+  - 'AGENTS.md'
+  - '**/AGENTS.md'
+  - 'docs/**/*.md'
+  - '.agents/skills/**/*.md'
+  - '.claude/{skills,rules}/**/*.md'
+  - '.cursor/**/*.{md,mdc}'
+  - '.gitar/rules/**/*.md'

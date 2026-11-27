@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.sonar.check.Rule;
 
+/** See <a href="https://github.com/SonarSource/sonar-java/blob/master/docs/systems/rule-metadata.md">Rule metadata and registration</a>. */
 public class CheckListGenerator {
   private static final String CLASS_NAME = "GeneratedCheckList";
   public static final String RULES_PATH = "sonar-java-plugin/src/main/resources/org/sonar/l10n/java/rules/java/";

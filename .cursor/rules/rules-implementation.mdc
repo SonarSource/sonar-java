@@ -1,5 +1,5 @@
 ---
-description: Guide for implementing Java analyzer rules (checks). Delegates to the rule-implementation Claude skill — the single source of truth.
+description: Use the canonical SonarJava skill when implementing Java analyzer rules.
 globs: **/*checks*/**/*.java
 alwaysApply: false
 ---
