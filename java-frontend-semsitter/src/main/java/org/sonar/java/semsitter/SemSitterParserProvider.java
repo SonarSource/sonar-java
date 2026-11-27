@@ -33,8 +33,10 @@ import org.sonar.plugins.java.api.JavaVersion;
 
 /**
  * Offers the SemSitter frontend when the analysis is allowed to use it. It is allowed when a SemSitter executable is
- * known and either {@value #ENABLED_PROPERTY} says so or, when that property is not set, the LaunchDarkly flag
- * {@value #FLAG_KEY} is on for the project. Anything that goes wrong while asking leaves the default frontend in use.
+ * known, from {@value #EXECUTABLE_PROPERTY}, {@value #EXECUTABLE_ENVIRONMENT} or the server bundled for the Linux
+ * performance-validation runners, and either {@value #ENABLED_PROPERTY} says so or, when that property is not set, the
+ * LaunchDarkly flag {@value #FLAG_KEY} is on for the project. Anything that goes wrong while asking leaves the flag
+ * default in use.
  */
 public final class SemSitterParserProvider implements JParserProvider {
 
@@ -44,7 +46,7 @@ public final class SemSitterParserProvider implements JParserProvider {
   public static final String CLIENT_ID_PROPERTY = "sonar.java.semsitter.launchDarkly.clientSideId";
   public static final String EXECUTABLE_ENVIRONMENT = "SEMSITTER_ANALYZER";
   public static final String CLIENT_ID_ENVIRONMENT = "SONAR_JAVA_LAUNCHDARKLY_CLIENT_ID";
-  static final boolean FLAG_DEFAULT = false;
+  static final boolean FLAG_DEFAULT = true;
 
   private static final Logger LOG = LoggerFactory.getLogger(SemSitterParserProvider.class);
   private static final String PROJECT_KEY_PROPERTY = "sonar.projectKey";
@@ -54,17 +56,24 @@ public final class SemSitterParserProvider implements JParserProvider {
   private final UnaryOperator<String> environment;
   @Nullable
   private final DocumentTranslator translator;
+  private final Supplier<Optional<Path>> bundledServer;
   private volatile boolean enabled;
   private volatile Path executable;
 
   public SemSitterParserProvider() {
-    this(LaunchDarklyFeatureFlags::connect, System::getenv, SemSitterTranslator::translate);
+    this(LaunchDarklyFeatureFlags::connect, System::getenv, SemSitterTranslator::translate, BundledServer::extract);
   }
 
   SemSitterParserProvider(FeatureFlags.Connector flags, UnaryOperator<String> environment, @Nullable DocumentTranslator translator) {
+    this(flags, environment, translator, Optional::empty);
+  }
+
+  SemSitterParserProvider(FeatureFlags.Connector flags, UnaryOperator<String> environment, @Nullable DocumentTranslator translator,
+    Supplier<Optional<Path>> bundledServer) {
     this.flags = flags;
     this.environment = environment;
     this.translator = translator;
+    this.bundledServer = bundledServer;
   }
 
   @Override
@@ -73,9 +82,13 @@ public final class SemSitterParserProvider implements JParserProvider {
     executable = null;
     Optional<String> path = firstNonBlank(configuration.get(EXECUTABLE_PROPERTY), Optional.ofNullable(environment.apply(EXECUTABLE_ENVIRONMENT)));
     if (path.isEmpty()) {
+      executable = bundledServer.get().orElse(null);
+    } else {
+      executable = Path.of(path.get());
+    }
+    if (executable == null) {
       return;
     }
-    executable = Path.of(path.get());
     enabled = configuration.getBoolean(ENABLED_PROPERTY).orElseGet(() -> isFlagOn(configuration));
     if (enabled) {
       LOG.info("The Java analyzer will use the SemSitter frontend.");
