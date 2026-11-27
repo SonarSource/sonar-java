@@ -43,7 +43,7 @@ Useful links
 ------------
 
 * [Project homepage](https://redirect.sonarsource.com/plugins/java.html)
-* [Issue tracking](https://jira.sonarsource.com/browse/SONARJAVA/)
+* [Issue tracking](https://jira.sonarsource.com/browse/JAVA)
 * [Available rules](https://rules.sonarsource.com/java)
 * [Sonar Community Forum](https://community.sonarsource.com/)
 * [Demo project analysis](https://next.sonarqube.com/sonarqube/dashboard?id=org.sonarsource.java%3Ajava)

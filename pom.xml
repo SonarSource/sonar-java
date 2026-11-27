@@ -72,7 +72,7 @@
   </scm>
   <issueManagement>
     <system>JIRA</system>
-    <url>https://jira.sonarsource.com/browse/SONARJAVA</url>
+    <url>https://jira.sonarsource.com/browse/JAVA</url>
   </issueManagement>
   <ciManagement>
     <system>GitHub Actions</system>

@@ -56,7 +56,7 @@ jobs:
       # Artifacts are matched exactly, so this will prevent updating javascript.
       plugin-artifacts-sqs: "java"
       plugin-artifacts-sqc: "java"
-      jira-project-key: "SONARJAVA"
+      jira-project-key: "JAVA"
       runner-environment: "warp-custom-ubuntu-24-04"
       rule-props-changed: false
       short-description: ${{ github.event.inputs.short-description }}
