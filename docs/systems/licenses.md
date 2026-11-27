@@ -13,7 +13,7 @@ Run from the repository root after [toolchain setup](build.md):
 
 ```bash
 mise run lint:licenses
-mise exec -- mvn clean package -PupdateLicenses
+mise exec java@26 -- mvn clean package -PupdateLicenses
 ```
 
 Review and commit the generated license changes. If a new dependency does not change the bundled licenses, explain why in the PR rather than editing generated files just to satisfy the check. The license goal runs in **Custom Rules and License Check** in `.github/workflows/build.yml`.

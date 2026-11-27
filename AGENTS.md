@@ -12,18 +12,18 @@ All agent instructions start here; there are no component-level `AGENTS.md` file
 
 ## Commands
 
-Read [Setup, build and test commands](docs/systems/build.md) before selecting a JDK or running Maven.
+Read [Setup, build and test commands](docs/systems/build.md) before selecting a JDK or running Maven. From the root, run `mise install` and `mise run doctor` to check which tasks can run. Use mise to run Maven, not the system installation.
 
 ## Constraints
 
 - This repository is public. All agent files and docs are public. Do not publish internal URLs, customer data, credentials or private repository content.
 - Preserve public API compatibility and SonarQube for IDE support; read `docs/systems/public-api.md` before changing the API or plugin registration.
 - Use the supported build and runtime JDKs in `docs/systems/build.md`; CI exercises them for different purposes.
-- The project uses SSALv1 (`LICENSE.txt`); read `docs/systems/licenses.md` before changing dependencies.
+- The project uses SSALv1 (`LICENSE.txt`); read `docs/systems/licenses.md` before changing dependencies. Regenerate the bundled dependency licenses in `sonar-java-plugin/src/main/resources/licenses` instead of editing them by hand.
 - Do not edit generated rule metadata or the generated check list by hand. Read `docs/systems/rule-metadata.md` before registering rules or changing profiles.
 - New rules are stateless and must not introduce shared abstract check bases; read the decisions in `docs/adrs/index.md` before adding rule logic or unit tests.
-- Use JUnit Jupiter for unit tests and cover rule behavior both with and without semantic resolution; read `docs/systems/rule-tests.md` before changing a rule or fixture.
-- Let CI run ruling and generate baseline updates; read `docs/systems/ruling-tests.md` before reviewing SARIF changes.
+- Use the [new-rule skill](.agents/skills/new-rule/SKILL.md#rule-test-assertions) for verifier assertions and issue markers. Read [rule tests and sample placement](docs/systems/rule-tests.md) before adding or moving a fixture. For an existing legacy example, see `java-checks/src/test/files/checks/AbsOnNegative.java`.
+- Do not hand-edit ruling sources or change the pinned `its/sources` submodule revision as part of a rule change. Let CI run ruling and generate baseline updates; read `docs/systems/ruling-tests.md` before reviewing SARIF changes.
 
 ## Escalation
 

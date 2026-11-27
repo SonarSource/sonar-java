@@ -29,6 +29,8 @@ Run the relevant checks in [build and test commands](build.md). Run the focused 
 
 ## Review and merge
 
+Follow the [PR and commit conventions](../../CONTRIBUTING.md#clean-commit-history).
+
 Use the actual required checks and review rules shown on the PR; `.github/CODEOWNERS` identifies the owning team. Public contributions and high-risk changes need human review. Treat public API, generated metadata, baselines, licensing, and changes in parser, cache or analysis behavior as requiring explicit review of their impact, not routine low-risk cleanup. Code review automation does not replace branch protections or maintainer approval.
 
 ## Performance validation

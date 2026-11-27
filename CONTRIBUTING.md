@@ -27,5 +27,6 @@ To run ITs locally, please follow the [README](https://github.com/SonarSource/so
 
 ### Clean commit history
 
-To ease the review, please have a clean, minimal history of commits in your pull request. Your commits should have a single purpose.
-This will help to make your contribution accepted as we like to keep a clean linear history and prefer rebase over merging commits.
+Start the pull request title with the associated `SONARJAVA-XXXX` issue key and use the [pull request template](.github/PULL_REQUEST_TEMPLATE.md). If there is no Jira issue yet, follow the standalone PR instructions in the template rather than inventing a key.
+
+Keep commits focused and history linear. Rebase the branch onto the target branch instead of merging the target into it; integrate the PR by rebase only, without a merge or squash commit.
