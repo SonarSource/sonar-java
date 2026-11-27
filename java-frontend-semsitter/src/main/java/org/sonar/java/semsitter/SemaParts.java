@@ -36,7 +36,7 @@ final class SemaParts {
     libraryMembers = new LibraryMembers(sema);
     memberFactory = new MemberFactory(sema);
     lookup = new MemberLookup(sema);
-    overloads = new OverloadRanking();
+    overloads = new OverloadRanking(sema);
     factTypes = new FactTypes(sema);
   }
 }

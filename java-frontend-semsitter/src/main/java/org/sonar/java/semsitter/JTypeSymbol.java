@@ -376,7 +376,7 @@ final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
       return generic.membersNamed(name);
     }
     List<Symbol> found = new ArrayList<>();
-    if (members != null || id == null || sema.inDocument(id) || declaration() != null) {
+    if (members != null || id == null || isDeclaredInDocument()) {
       // The implicit members of a type this file declares depend on all of its members.
       for (Symbol member : memberSymbols()) {
         if (name.equals(member.name())) {
@@ -394,6 +394,11 @@ final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
       }
     }
     return found;
+  }
+
+  /** True for a type the analyzed file declares, even before its declaration tree is attached. */
+  boolean isDeclaredInDocument() {
+    return (id != null && sema.inDocument(id)) || declaration() != null;
   }
 
   /** False only when the fact surely names another member: by its written name, or by the name its id gives. */
