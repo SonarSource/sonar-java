@@ -51,6 +51,7 @@
   <modules>
     <module>java-checks-test-sources</module>
     <module>java-frontend</module>
+    <module>java-frontend-semsitter</module>
     <module>java-checks-testkit</module>
     <module>java-checks</module>
     <module>java-checks-aws</module>
@@ -338,6 +339,11 @@
         <artifactId>gson</artifactId>
         <version>2.15.0</version>
         <scope>compile</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.sonarsource.semsitter</groupId>
+        <artifactId>analyzer-wire</artifactId>
+        <version>2.0.0</version>
       </dependency>
       <!-- staxmate is used by java-surefire -->
       <dependency>
