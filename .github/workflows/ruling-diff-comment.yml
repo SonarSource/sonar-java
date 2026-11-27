@@ -51,7 +51,7 @@ jobs:
             development/artifactory/token/{REPO_OWNER_NAME_DASH}-private-reader role | ARTIFACTORY_ROLE;
 
       - name: Post ruling diff comment
-        uses: SonarSource/core-languages-tooling-public/ruling-diff-comment@master
+        uses: SonarSource/core-languages-tooling-public/ruling-diff-comment@v1
         with:
           pr-number: ${{ inputs.pr-number || github.event.pull_request.number }}
           repository: ${{ github.repository }}
