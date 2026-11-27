@@ -373,14 +373,14 @@ TOKEN @39:5
 LAMBDA_EXPRESSION @39:12 : java.util.function.BiFunction<java.lang.String,java.lang.Integer,java.lang.String>
 TOKEN @39:12
 VARIABLE @39:13 var apply.s [v package] : java.lang.String
-  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing BiFunction flags [package] local true parameter true effectivelyFinal true constant null owner apply java.util.function.BiFunction#apply(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object; [abstract, public] returns java.lang.Object parameters 2 thrown 0 overridden 0 declared false usages 0 metadata 0 enclosing BiFunction type true kinds truefalsefalse other falsefalsefalsefalsetruefalse2falsefalse
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing BiFunction flags [package] local true parameter true effectivelyFinal true constant null owner apply java.util.function.BiFunction#apply(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object; [abstract, public] returns java.lang.String parameters 2 thrown 0 overridden 0 declared false usages 0 metadata 0 enclosing BiFunction type true kinds truefalsefalse other falsefalsefalsefalsetruefalse2falsefalse
 MODIFIERS
 INFERED_TYPE
 IDENTIFIER @39:13 id s apply.s [v package] : java.lang.String : java.lang.String
 TOKEN @39:13
 TOKEN @39:14
 VARIABLE @39:16 var apply._ [v package] : java.lang.Integer
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing BiFunction flags [package] local true parameter true effectivelyFinal true constant null owner apply java.util.function.BiFunction#apply(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object; [abstract, public] returns java.lang.Object parameters 2 thrown 0 overridden 0 declared false usages 0 metadata 0 enclosing BiFunction type true kinds truefalsefalse other falsefalsefalsefalsetruefalse2falsefalse
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing BiFunction flags [package] local true parameter true effectivelyFinal true constant null owner apply java.util.function.BiFunction#apply(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object; [abstract, public] returns java.lang.String parameters 2 thrown 0 overridden 0 declared false usages 0 metadata 0 enclosing BiFunction type true kinds truefalsefalse other falsefalsefalsefalsetruefalse2falsefalse
 MODIFIERS
 INFERED_TYPE
 IDENTIFIER @39:16 id _ unknown : java.lang.Integer

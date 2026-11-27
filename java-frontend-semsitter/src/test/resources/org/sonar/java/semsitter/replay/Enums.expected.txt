@@ -663,11 +663,11 @@ TOKEN @65:23
 IDENTIFIER @65:25 id table table.table [v package] : java.util.Map<Enums,java.lang.Integer> : java.util.Map<Enums,java.lang.Integer>
 TOKEN @65:25
 TOKEN @65:31
-NEW_CLASS @65:33 new EnumMap.<init> [m public] : ? (java.lang.Class) returns void throws [] sig java.util.EnumMap#<init>(Ljava/lang/Class;)V : java.util.EnumMap
-  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing EnumMap flags [public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+NEW_CLASS @65:33 new EnumMap.<init> [m public] : ? (java.lang.Class<Enums>) returns void throws [] sig java.util.EnumMap#<init>(Ljava/lang/Class;)V : java.util.EnumMap<Enums,java.lang.Integer>
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing EnumMap flags [public] overridden [] overridable true generic true default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
 TOKEN @65:33
-PARAMETERIZED_TYPE @65:37 : java.util.EnumMap
-IDENTIFIER @65:37 id EnumMap EnumMap.<init> [m public] : ? (java.lang.Class) returns void throws [] sig java.util.EnumMap#<init>(Ljava/lang/Class;)V : java.util.EnumMap
+PARAMETERIZED_TYPE @65:37 : java.util.EnumMap<Enums,java.lang.Integer>
+IDENTIFIER @65:37 id EnumMap EnumMap.<init> [m public] : ? (java.lang.Class<Enums>) returns void throws [] sig java.util.EnumMap#<init>(Ljava/lang/Class;)V : java.util.EnumMap<Enums,java.lang.Integer>
 TOKEN @65:37
 TYPE_ARGUMENTS @65:44
 TOKEN @65:44
@@ -686,13 +686,13 @@ EXPRESSION_STATEMENT @66:5
 METHOD_INVOCATION @66:5 call Iterable.forEach [m public] : ? (java.util.function.Consumer<java.lang.Object>) returns void throws [] sig java.lang.Iterable#forEach(Ljava/util/function/Consumer;)V : void
   details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Iterable flags [public] overridden [] overridable true generic false default true synchronized false varargs false native false parameters [arg0] parameterMetadata []
 MEMBER_SELECT @66:5 : ?
-METHOD_INVOCATION @66:5 call EnumSet.allOf [m static public] : ? (java.lang.Class) returns java.util.EnumSet throws [] sig java.util.EnumSet#allOf(Ljava/lang/Class;)Ljava/util/EnumSet; : java.util.EnumSet
-  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing EnumSet flags [static, public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+METHOD_INVOCATION @66:5 call EnumSet.allOf [m static public] : ? (java.lang.Class) returns java.util.EnumSet<Enums> throws [] sig java.util.EnumSet#allOf(Ljava/lang/Class;)Ljava/util/EnumSet; : java.util.EnumSet<Enums>
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing EnumSet flags [static, public] overridden [] overridable false generic true default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
 MEMBER_SELECT @66:5 : ?
 IDENTIFIER @66:5 id EnumSet java.util.EnumSet [t abstract public] : java.util.EnumSet : java.util.EnumSet
 TOKEN @66:5
 TOKEN @66:12
-IDENTIFIER @66:13 id allOf EnumSet.allOf [m static public] : ? (java.lang.Class) returns java.util.EnumSet throws [] sig java.util.EnumSet#allOf(Ljava/lang/Class;)Ljava/util/EnumSet; : java.util.EnumSet
+IDENTIFIER @66:13 id allOf EnumSet.allOf [m static public] : ? (java.lang.Class) returns java.util.EnumSet<Enums> throws [] sig java.util.EnumSet#allOf(Ljava/lang/Class;)Ljava/util/EnumSet; : java.util.EnumSet<Enums>
 TOKEN @66:13
 ARGUMENTS @66:18
 TOKEN @66:18
@@ -708,7 +708,7 @@ IDENTIFIER @66:32 id forEach Iterable.forEach [m public] : ? (java.util.function
 TOKEN @66:32
 ARGUMENTS @66:39
 TOKEN @66:39
-LAMBDA_EXPRESSION @66:40 : java.util.function.Consumer<java.lang.Object>
+LAMBDA_EXPRESSION @66:40 : java.util.function.Consumer<Enums>
 VARIABLE @66:40 var accept.value [v package] : Enums
   details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Consumer flags [package] local true parameter true effectivelyFinal true constant null owner accept java.util.function.Consumer#accept(Ljava/lang/Object;)V [abstract, public] returns void parameters 1 thrown 0 overridden 0 declared false usages 0 metadata 0 enclosing Consumer type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
 MODIFIERS
@@ -716,13 +716,13 @@ INFERED_TYPE
 IDENTIFIER @66:40 id value accept.value [v package] : Enums : Enums
 TOKEN @66:40
 TOKEN @66:46
-METHOD_INVOCATION @66:49 call Map.put [m abstract public] : ? (Enums,java.lang.Integer) returns java.lang.Object throws [] sig java.util.Map#put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object; : java.lang.Object
+METHOD_INVOCATION @66:49 call Map.put [m abstract public] : ? (Enums,java.lang.Integer) returns java.lang.Integer throws [] sig java.util.Map#put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object; : java.lang.Integer
   details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Map flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [arg0, arg1] parameterMetadata []
 MEMBER_SELECT @66:49 : ?
 IDENTIFIER @66:49 id table table.table [v package] : java.util.Map<Enums,java.lang.Integer> : java.util.Map<Enums,java.lang.Integer>
 TOKEN @66:49
 TOKEN @66:54
-IDENTIFIER @66:55 id put Map.put [m abstract public] : ? (Enums,java.lang.Integer) returns java.lang.Object throws [] sig java.util.Map#put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object; : java.lang.Object
+IDENTIFIER @66:55 id put Map.put [m abstract public] : ? (Enums,java.lang.Integer) returns java.lang.Integer throws [] sig java.util.Map#put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object; : java.lang.Integer
 TOKEN @66:55
 ARGUMENTS @66:58
 TOKEN @66:58

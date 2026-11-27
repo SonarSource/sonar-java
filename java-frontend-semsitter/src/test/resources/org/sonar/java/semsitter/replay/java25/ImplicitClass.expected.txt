@@ -52,13 +52,13 @@ TOKEN @8:8
 IDENTIFIER @8:15 id name main.name [v package] : java.lang.String : java.lang.String
 TOKEN @8:15
 TOKEN @8:20
-METHOD_INVOCATION @8:22 call List.of [m static public] : ? (java.lang.String,java.lang.String) returns java.util.List throws [] sig java.util.List#of(Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/List; : java.util.List
-  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing List flags [static, public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [arg0, arg1] parameterMetadata []
+METHOD_INVOCATION @8:22 call List.of [m static public] : ? (java.lang.String,java.lang.String) returns java.util.List<java.lang.String> throws [] sig java.util.List#of(Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/List; : java.util.List<java.lang.String>
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing List flags [static, public] overridden [] overridable false generic true default false synchronized false varargs false native false parameters [arg0, arg1] parameterMetadata []
 MEMBER_SELECT @8:22 : ?
 IDENTIFIER @8:22 id List java.util.List [t public interface] : java.util.List : java.util.List
 TOKEN @8:22
 TOKEN @8:26
-IDENTIFIER @8:27 id of List.of [m static public] : ? (java.lang.String,java.lang.String) returns java.util.List throws [] sig java.util.List#of(Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/List; : java.util.List
+IDENTIFIER @8:27 id of List.of [m static public] : ? (java.lang.String,java.lang.String) returns java.util.List<java.lang.String> throws [] sig java.util.List#of(Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/List; : java.util.List<java.lang.String>
 TOKEN @8:27
 ARGUMENTS @8:29
 TOKEN @8:29

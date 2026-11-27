@@ -529,11 +529,11 @@ TOKEN @51:11
 IDENTIFIER @51:13 id result mapAll.result [v package] : java.util.List<R erasure java.lang.Object> : java.util.List<R erasure java.lang.Object>
 TOKEN @51:13
 TOKEN @51:20
-NEW_CLASS @51:22 new ArrayList.<init> [m public] : ? () returns void throws [] sig java.util.ArrayList#<init>()V : java.util.ArrayList
+NEW_CLASS @51:22 new ArrayList.<init> [m public] : ? () returns void throws [] sig java.util.ArrayList#<init>()V : java.util.ArrayList<R erasure java.lang.Object>
   details declared false usages 3 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing ArrayList flags [public] overridden [AbstractList.<init>[], AbstractCollection.<init>[], Object.<init>[]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
 TOKEN @51:22
-PARAMETERIZED_TYPE @51:26 : java.util.ArrayList
-IDENTIFIER @51:26 id ArrayList ArrayList.<init> [m public] : ? () returns void throws [] sig java.util.ArrayList#<init>()V : java.util.ArrayList
+PARAMETERIZED_TYPE @51:26 : java.util.ArrayList<R erasure java.lang.Object>
+IDENTIFIER @51:26 id ArrayList ArrayList.<init> [m public] : ? () returns void throws [] sig java.util.ArrayList#<init>()V : java.util.ArrayList<R erasure java.lang.Object>
 TOKEN @51:26
 TYPE_ARGUMENTS @51:35
 TOKEN @51:35
@@ -569,13 +569,13 @@ IDENTIFIER @53:14 id add List.add [m abstract public] : ? (R erasure java.lang.O
 TOKEN @53:14
 ARGUMENTS @53:17
 TOKEN @53:17
-METHOD_INVOCATION @53:18 call Function.apply [m abstract public] : ? (java.lang.Object) returns java.lang.Object throws [] sig java.util.function.Function#apply(Ljava/lang/Object;)Ljava/lang/Object; : java.lang.Object
+METHOD_INVOCATION @53:18 call Function.apply [m abstract public] : ? (java.lang.Object) returns R erasure java.lang.Object throws [] sig java.util.function.Function#apply(Ljava/lang/Object;)Ljava/lang/Object; : java.lang.Object
   details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Function flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
 MEMBER_SELECT @53:18 : ?
 IDENTIFIER @53:18 id mapper mapAll.mapper [v package] : java.util.function.Function<java.lang.Object,java.lang.Object> : java.util.function.Function<java.lang.Object,java.lang.Object>
 TOKEN @53:18
 TOKEN @53:24
-IDENTIFIER @53:25 id apply Function.apply [m abstract public] : ? (java.lang.Object) returns java.lang.Object throws [] sig java.util.function.Function#apply(Ljava/lang/Object;)Ljava/lang/Object; : java.lang.Object
+IDENTIFIER @53:25 id apply Function.apply [m abstract public] : ? (java.lang.Object) returns R erasure java.lang.Object throws [] sig java.util.function.Function#apply(Ljava/lang/Object;)Ljava/lang/Object; : java.lang.Object
 TOKEN @53:25
 ARGUMENTS @53:30
 TOKEN @53:30
@@ -608,11 +608,11 @@ TOKEN @58:14
 IDENTIFIER @58:16 id nodes GenericEdges.nodes [v package] : java.util.Map<K erasure java.lang.Object,GenericEdges$Node> : java.util.Map<K erasure java.lang.Object,GenericEdges$Node>
 TOKEN @58:16
 TOKEN @58:22
-NEW_CLASS @58:24 new HashMap.<init> [m public] : ? () returns void throws [] sig java.util.HashMap#<init>()V : java.util.HashMap
+NEW_CLASS @58:24 new HashMap.<init> [m public] : ? () returns void throws [] sig java.util.HashMap#<init>()V : java.util.HashMap<K erasure java.lang.Object,GenericEdges$Node>
   details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing HashMap flags [public] overridden [AbstractMap.<init>[], Object.<init>[]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
 TOKEN @58:24
-PARAMETERIZED_TYPE @58:28 : java.util.HashMap
-IDENTIFIER @58:28 id HashMap HashMap.<init> [m public] : ? () returns void throws [] sig java.util.HashMap#<init>()V : java.util.HashMap
+PARAMETERIZED_TYPE @58:28 : java.util.HashMap<K erasure java.lang.Object,GenericEdges$Node>
+IDENTIFIER @58:28 id HashMap HashMap.<init> [m public] : ? () returns void throws [] sig java.util.HashMap#<init>()V : java.util.HashMap<K erasure java.lang.Object,GenericEdges$Node>
 TOKEN @58:28
 TYPE_ARGUMENTS @58:35
 TOKEN @58:35
@@ -718,13 +718,13 @@ TOKEN @62:5
 IDENTIFIER @62:12 id first edges.first [v package] : java.lang.Number : java.lang.Number
 TOKEN @62:12
 TOKEN @62:18
-METHOD_INVOCATION @62:20 call List.get [m abstract public] : ? (int) returns java.lang.Object throws [] sig java.util.List#get(I)Ljava/lang/Object; : java.lang.Object
+METHOD_INVOCATION @62:20 call List.get [m abstract public] : ? (int) returns java.lang.Number throws [] sig java.util.List#get(I)Ljava/lang/Object; : java.lang.Number
   details declared false usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing List flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
 MEMBER_SELECT @62:20 : ?
 IDENTIFIER @62:20 id numbers edges.numbers [v package] : java.util.List<java.lang.Number> : java.util.List<java.lang.Number>
 TOKEN @62:20
 TOKEN @62:27
-IDENTIFIER @62:28 id get List.get [m abstract public] : ? (int) returns java.lang.Object throws [] sig java.util.List#get(I)Ljava/lang/Object; : java.lang.Object
+IDENTIFIER @62:28 id get List.get [m abstract public] : ? (int) returns java.lang.Number throws [] sig java.util.List#get(I)Ljava/lang/Object; : java.lang.Number
 TOKEN @62:28
 ARGUMENTS @62:31
 TOKEN @62:31
@@ -780,13 +780,13 @@ TOKEN @65:14
 METHOD_INVOCATION @65:16 call List.size [m abstract public] : ? () returns int throws [] sig java.util.List#size()I : int
   details declared false usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing List flags [abstract, public] overridden [Collection.size[]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
 MEMBER_SELECT @65:16 : ?
-METHOD_INVOCATION @65:16 call Map.get [m abstract public] : ? (java.lang.Object) returns java.lang.Object throws [] sig java.util.Map#get(Ljava/lang/Object;)Ljava/lang/Object; : java.lang.Object
+METHOD_INVOCATION @65:16 call Map.get [m abstract public] : ? (java.lang.Object) returns java.util.List<java.lang.String> throws [] sig java.util.Map#get(Ljava/lang/Object;)Ljava/lang/Object; : java.util.List
   details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Map flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
 MEMBER_SELECT @65:16 : ?
 IDENTIFIER @65:16 id nested edges.nested [v package] : java.util.Map<java.lang.String,java.util.List> : java.util.Map<java.lang.String,java.util.List>
 TOKEN @65:16
 TOKEN @65:22
-IDENTIFIER @65:23 id get Map.get [m abstract public] : ? (java.lang.Object) returns java.lang.Object throws [] sig java.util.Map#get(Ljava/lang/Object;)Ljava/lang/Object; : java.lang.Object
+IDENTIFIER @65:23 id get Map.get [m abstract public] : ? (java.lang.Object) returns java.util.List<java.lang.String> throws [] sig java.util.Map#get(Ljava/lang/Object;)Ljava/lang/Object; : java.util.List
 TOKEN @65:23
 ARGUMENTS @65:26
 TOKEN @65:26
@@ -863,17 +863,17 @@ TOKEN @68:5
 IDENTIFIER @68:12 id value edges.value [v package] : java.lang.String : java.lang.String
 TOKEN @68:12
 TOKEN @68:18
-METHOD_INVOCATION @68:20 call Optional.orElseThrow [m public] : ? (java.util.function.Supplier<java.lang.Object>) returns java.lang.Object throws [java.lang.Throwable] sig java.util.Optional#orElseThrow(Ljava/util/function/Supplier;)Ljava/lang/Object; : java.lang.Object
-  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Optional flags [public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+METHOD_INVOCATION @68:20 call Optional.orElseThrow [m public] : ? (java.util.function.Supplier<java.lang.Object>) returns java.lang.String throws [java.lang.IllegalStateException] sig java.util.Optional#orElseThrow(Ljava/util/function/Supplier;)Ljava/lang/Object; : java.lang.String
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Optional flags [public] overridden [] overridable false generic true default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
 MEMBER_SELECT @68:20 : ?
 IDENTIFIER @68:20 id maybe edges.maybe [v package] : java.util.Optional<java.lang.String> : java.util.Optional<java.lang.String>
 TOKEN @68:20
 TOKEN @68:25
-IDENTIFIER @68:26 id orElseThrow Optional.orElseThrow [m public] : ? (java.util.function.Supplier<java.lang.Object>) returns java.lang.Object throws [java.lang.Throwable] sig java.util.Optional#orElseThrow(Ljava/util/function/Supplier;)Ljava/lang/Object; : java.lang.Object
+IDENTIFIER @68:26 id orElseThrow Optional.orElseThrow [m public] : ? (java.util.function.Supplier<java.lang.Object>) returns java.lang.String throws [java.lang.IllegalStateException] sig java.util.Optional#orElseThrow(Ljava/util/function/Supplier;)Ljava/lang/Object; : java.lang.String
 TOKEN @68:26
 ARGUMENTS @68:37
 TOKEN @68:37
-METHOD_REFERENCE @68:38 : java.util.function.Supplier<java.lang.Object>
+METHOD_REFERENCE @68:38 : java.util.function.Supplier<X erasure java.lang.Object>
 IDENTIFIER @68:38 id IllegalStateException java.lang.IllegalStateException [t public] : java.lang.IllegalStateException : java.lang.IllegalStateException
 TOKEN @68:38
 TOKEN @68:59
@@ -889,13 +889,13 @@ TOKEN @69:5
 IDENTIFIER @69:12 id other edges.other [v package] : java.lang.String : java.lang.String
 TOKEN @69:12
 TOKEN @69:18
-METHOD_INVOCATION @69:20 call Optional.orElseGet [m public] : ? (java.util.function.Supplier<java.lang.String>) returns java.lang.Object throws [] sig java.util.Optional#orElseGet(Ljava/util/function/Supplier;)Ljava/lang/Object; : java.lang.Object
+METHOD_INVOCATION @69:20 call Optional.orElseGet [m public] : ? (java.util.function.Supplier<java.lang.String>) returns java.lang.String throws [] sig java.util.Optional#orElseGet(Ljava/util/function/Supplier;)Ljava/lang/Object; : java.lang.String
   details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Optional flags [public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
 MEMBER_SELECT @69:20 : ?
 IDENTIFIER @69:20 id maybe edges.maybe [v package] : java.util.Optional<java.lang.String> : java.util.Optional<java.lang.String>
 TOKEN @69:20
 TOKEN @69:25
-IDENTIFIER @69:26 id orElseGet Optional.orElseGet [m public] : ? (java.util.function.Supplier<java.lang.String>) returns java.lang.Object throws [] sig java.util.Optional#orElseGet(Ljava/util/function/Supplier;)Ljava/lang/Object; : java.lang.Object
+IDENTIFIER @69:26 id orElseGet Optional.orElseGet [m public] : ? (java.util.function.Supplier<java.lang.String>) returns java.lang.String throws [] sig java.util.Optional#orElseGet(Ljava/util/function/Supplier;)Ljava/lang/Object; : java.lang.String
 TOKEN @69:26
 ARGUMENTS @69:35
 TOKEN @69:35
@@ -950,11 +950,11 @@ TOKEN @73:17
 IDENTIFIER @73:19 id outer edges.outer [v package] : GenericEdges$Outer<java.lang.String> : GenericEdges$Outer<java.lang.String>
 TOKEN @73:19
 TOKEN @73:25
-NEW_CLASS @73:27 new Outer.<init> [m package] : ? () returns void throws [] sig GenericEdges$Outer#<init>()V : GenericEdges$Outer
+NEW_CLASS @73:27 new Outer.<init> [m package] : ? () returns void throws [] sig GenericEdges$Outer#<init>()V : GenericEdges$Outer<java.lang.String>
   details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Outer flags [package] overridden [Object.<init>[]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
 TOKEN @73:27
-PARAMETERIZED_TYPE @73:31 : GenericEdges$Outer
-IDENTIFIER @73:31 id Outer Outer.<init> [m package] : ? () returns void throws [] sig GenericEdges$Outer#<init>()V : GenericEdges$Outer
+PARAMETERIZED_TYPE @73:31 : GenericEdges$Outer<java.lang.String>
+IDENTIFIER @73:31 id Outer Outer.<init> [m package] : ? () returns void throws [] sig GenericEdges$Outer#<init>()V : GenericEdges$Outer<java.lang.String>
 TOKEN @73:31
 TYPE_ARGUMENTS @73:36
 TOKEN @73:36
@@ -1065,31 +1065,31 @@ TOKEN @78:5
 IDENTIFIER @78:10 id node edges.node [v package] : GenericEdges$Node : GenericEdges$Node
 TOKEN @78:10
 TOKEN @78:15
-METHOD_INVOCATION @78:17 call Iterator.next [m abstract public] : ? () returns java.lang.Object throws [] sig java.util.Iterator#next()Ljava/lang/Object; : java.lang.Object
+METHOD_INVOCATION @78:17 call Iterator.next [m abstract public] : ? () returns GenericEdges$Node throws [] sig java.util.Iterator#next()Ljava/lang/Object; : GenericEdges$Node
   details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Iterator flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
 MEMBER_SELECT @78:17 : ?
-METHOD_INVOCATION @78:17 call Collection.iterator [m abstract public] : ? () returns java.util.Iterator<E erasure java.lang.Object> throws [] sig java.util.Collection#iterator()Ljava/util/Iterator; : java.util.Iterator<E erasure java.lang.Object>
+METHOD_INVOCATION @78:17 call Collection.iterator [m abstract public] : ? () returns java.util.Iterator<GenericEdges$Node> throws [] sig java.util.Collection#iterator()Ljava/util/Iterator; : java.util.Iterator<GenericEdges$Node>
   details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Collection flags [abstract, public] overridden [Iterable.iterator[]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
 MEMBER_SELECT @78:17 : ?
-METHOD_INVOCATION @78:17 call Map.values [m abstract public] : ? () returns java.util.Collection<V erasure java.lang.Object> throws [] sig java.util.Map#values()Ljava/util/Collection; : java.util.Collection<V erasure java.lang.Object>
+METHOD_INVOCATION @78:17 call Map.values [m abstract public] : ? () returns java.util.Collection<GenericEdges$Node> throws [] sig java.util.Map#values()Ljava/util/Collection; : java.util.Collection<GenericEdges$Node>
   details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Map flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
 MEMBER_SELECT @78:17 : ?
 IDENTIFIER @78:17 id nodes GenericEdges.nodes [v package] : java.util.Map<K erasure java.lang.Object,GenericEdges$Node> : java.util.Map<K erasure java.lang.Object,GenericEdges$Node>
 TOKEN @78:17
 TOKEN @78:22
-IDENTIFIER @78:23 id values Map.values [m abstract public] : ? () returns java.util.Collection<V erasure java.lang.Object> throws [] sig java.util.Map#values()Ljava/util/Collection; : java.util.Collection<V erasure java.lang.Object>
+IDENTIFIER @78:23 id values Map.values [m abstract public] : ? () returns java.util.Collection<GenericEdges$Node> throws [] sig java.util.Map#values()Ljava/util/Collection; : java.util.Collection<GenericEdges$Node>
 TOKEN @78:23
 ARGUMENTS @78:29
 TOKEN @78:29
 TOKEN @78:30
 TOKEN @78:31
-IDENTIFIER @78:32 id iterator Collection.iterator [m abstract public] : ? () returns java.util.Iterator<E erasure java.lang.Object> throws [] sig java.util.Collection#iterator()Ljava/util/Iterator; : java.util.Iterator<E erasure java.lang.Object>
+IDENTIFIER @78:32 id iterator Collection.iterator [m abstract public] : ? () returns java.util.Iterator<GenericEdges$Node> throws [] sig java.util.Collection#iterator()Ljava/util/Iterator; : java.util.Iterator<GenericEdges$Node>
 TOKEN @78:32
 ARGUMENTS @78:40
 TOKEN @78:40
 TOKEN @78:41
 TOKEN @78:42
-IDENTIFIER @78:43 id next Iterator.next [m abstract public] : ? () returns java.lang.Object throws [] sig java.util.Iterator#next()Ljava/lang/Object; : java.lang.Object
+IDENTIFIER @78:43 id next Iterator.next [m abstract public] : ? () returns GenericEdges$Node throws [] sig java.util.Iterator#next()Ljava/lang/Object; : GenericEdges$Node
 TOKEN @78:43
 ARGUMENTS @78:47
 TOKEN @78:47
@@ -1150,13 +1150,13 @@ IDENTIFIER @81:29 id mapAll GenericEdges.mapAll [m static package] : ? (java.uti
 TOKEN @81:29
 ARGUMENTS @81:35
 TOKEN @81:35
-METHOD_INVOCATION @81:36 call List.of [m static public] : ? (java.lang.String,java.lang.String) returns java.util.List throws [] sig java.util.List#of(Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/List; : java.util.List
-  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing List flags [static, public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [arg0, arg1] parameterMetadata []
+METHOD_INVOCATION @81:36 call List.of [m static public] : ? (java.lang.String,java.lang.String) returns java.util.List<java.lang.String> throws [] sig java.util.List#of(Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/List; : java.util.List<java.lang.String>
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing List flags [static, public] overridden [] overridable false generic true default false synchronized false varargs false native false parameters [arg0, arg1] parameterMetadata []
 MEMBER_SELECT @81:36 : ?
 IDENTIFIER @81:36 id List java.util.List [t public interface] : java.util.List : java.util.List
 TOKEN @81:36
 TOKEN @81:40
-IDENTIFIER @81:41 id of List.of [m static public] : ? (java.lang.String,java.lang.String) returns java.util.List throws [] sig java.util.List#of(Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/List; : java.util.List
+IDENTIFIER @81:41 id of List.of [m static public] : ? (java.lang.String,java.lang.String) returns java.util.List<java.lang.String> throws [] sig java.util.List#of(Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/List; : java.util.List<java.lang.String>
 TOKEN @81:41
 ARGUMENTS @81:43
 TOKEN @81:43
@@ -1167,7 +1167,7 @@ STRING_LITERAL @81:49 : java.lang.String = bb
 TOKEN @81:49
 TOKEN @81:53
 TOKEN @81:54
-METHOD_REFERENCE @81:56 : java.util.function.Function<java.lang.Object,java.lang.Object>
+METHOD_REFERENCE @81:56 : java.util.function.Function<T erasure java.lang.Object,R erasure java.lang.Object>
 IDENTIFIER @81:56 id String java.lang.String [t final public] : java.lang.String : java.lang.String
 TOKEN @81:56
 TOKEN @81:62
@@ -1189,7 +1189,7 @@ TOKEN @82:16
 IDENTIFIER @82:18 id strings edges.strings [v package] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
 TOKEN @82:18
 TOKEN @82:26
-METHOD_INVOCATION @82:28 call GenericEdges.mapAll [m static package] : ? (java.util.Collection<java.lang.Object>,java.util.function.Function<java.lang.Object,java.lang.Object>) returns java.util.List<R erasure java.lang.Object> throws [] sig GenericEdges#mapAll(Ljava/util/Collection;Ljava/util/function/Function;)Ljava/util/List; : java.util.List<R erasure java.lang.Object>
+METHOD_INVOCATION @82:28 call GenericEdges.mapAll [m static package] : ? (java.util.Collection<java.lang.Object>,java.util.function.Function<java.lang.Object,java.lang.Object>) returns java.util.List<java.lang.String> throws [] sig GenericEdges#mapAll(Ljava/util/Collection;Ljava/util/function/Function;)Ljava/util/List; : java.util.List<java.lang.String>
   details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing GenericEdges flags [static, package] overridden [] overridable false generic true default false synchronized false varargs false native false parameters [input, mapper] parameterMetadata []
 TYPE_ARGUMENTS @82:41
 TOKEN @82:41
@@ -1203,14 +1203,14 @@ MEMBER_SELECT @82:28 : ?
 IDENTIFIER @82:28 id GenericEdges .GenericEdges [t package] : GenericEdges : GenericEdges
 TOKEN @82:28
 TOKEN @82:40
-IDENTIFIER @82:58 id mapAll GenericEdges.mapAll [m static package] : ? (java.util.Collection<java.lang.Object>,java.util.function.Function<java.lang.Object,java.lang.Object>) returns java.util.List<R erasure java.lang.Object> throws [] sig GenericEdges#mapAll(Ljava/util/Collection;Ljava/util/function/Function;)Ljava/util/List; : java.util.List<R erasure java.lang.Object>
+IDENTIFIER @82:58 id mapAll GenericEdges.mapAll [m static package] : ? (java.util.Collection<java.lang.Object>,java.util.function.Function<java.lang.Object,java.lang.Object>) returns java.util.List<java.lang.String> throws [] sig GenericEdges#mapAll(Ljava/util/Collection;Ljava/util/function/Function;)Ljava/util/List; : java.util.List<java.lang.String>
 TOKEN @82:58
 ARGUMENTS @82:64
 TOKEN @82:64
 IDENTIFIER @82:65 id lengths edges.lengths [v package] : java.util.List<java.lang.Integer> : java.util.List<java.lang.Integer>
 TOKEN @82:65
 TOKEN @82:72
-METHOD_REFERENCE @82:74 : java.util.function.Function<java.lang.Object,java.lang.Object>
+METHOD_REFERENCE @82:74 : java.util.function.Function<T erasure java.lang.Object,R erasure java.lang.Object>
 IDENTIFIER @82:74 id String java.lang.String [t final public] : java.lang.String : java.lang.String
 TOKEN @82:74
 TOKEN @82:80
@@ -1241,27 +1241,27 @@ TOKEN @83:30
 IDENTIFIER @83:32 id parts edges.parts [v package] : java.util.Map<java.lang.Boolean,java.util.List<java.lang.String>> : java.util.Map<java.lang.Boolean,java.util.List<java.lang.String>>
 TOKEN @83:32
 TOKEN @83:38
-METHOD_INVOCATION @83:40 call Stream.collect [m abstract public] : ? (java.util.stream.Collector<java.lang.Object,A erasure java.lang.Object,R erasure java.lang.Object>) returns java.lang.Object throws [] sig java.util.stream.Stream#collect(Ljava/util/stream/Collector;)Ljava/lang/Object; : java.lang.Object
-  details declared false usages 3 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Stream flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+METHOD_INVOCATION @83:40 call Stream.collect [m abstract public] : ? (java.util.stream.Collector<java.lang.Object,A erasure java.lang.Object,R erasure java.lang.Object>) returns java.util.Map<java.lang.Boolean,java.util.List<java.lang.String>> throws [] sig java.util.stream.Stream#collect(Ljava/util/stream/Collector;)Ljava/lang/Object; : java.util.Map<java.lang.Boolean,java.util.List<java.lang.String>>
+  details declared false usages 3 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Stream flags [abstract, public] overridden [] overridable true generic true default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
 MEMBER_SELECT @83:40 : ?
-METHOD_INVOCATION @83:40 call Collection.stream [m public] : ? () returns java.util.stream.Stream<E erasure java.lang.Object> throws [] sig java.util.Collection#stream()Ljava/util/stream/Stream; : java.util.stream.Stream<E erasure java.lang.Object>
+METHOD_INVOCATION @83:40 call Collection.stream [m public] : ? () returns java.util.stream.Stream<java.lang.String> throws [] sig java.util.Collection#stream()Ljava/util/stream/Stream; : java.util.stream.Stream<java.lang.String>
   details declared false usages 4 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Collection flags [public] overridden [] overridable true generic false default true synchronized false varargs false native false parameters [] parameterMetadata []
 MEMBER_SELECT @83:40 : ?
 IDENTIFIER @83:40 id strings edges.strings [v package] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
 TOKEN @83:40
 TOKEN @83:47
-IDENTIFIER @83:48 id stream Collection.stream [m public] : ? () returns java.util.stream.Stream<E erasure java.lang.Object> throws [] sig java.util.Collection#stream()Ljava/util/stream/Stream; : java.util.stream.Stream<E erasure java.lang.Object>
+IDENTIFIER @83:48 id stream Collection.stream [m public] : ? () returns java.util.stream.Stream<java.lang.String> throws [] sig java.util.Collection#stream()Ljava/util/stream/Stream; : java.util.stream.Stream<java.lang.String>
 TOKEN @83:48
 ARGUMENTS @83:54
 TOKEN @83:54
 TOKEN @83:55
 TOKEN @83:56
-IDENTIFIER @83:57 id collect Stream.collect [m abstract public] : ? (java.util.stream.Collector<java.lang.Object,A erasure java.lang.Object,R erasure java.lang.Object>) returns java.lang.Object throws [] sig java.util.stream.Stream#collect(Ljava/util/stream/Collector;)Ljava/lang/Object; : java.lang.Object
+IDENTIFIER @83:57 id collect Stream.collect [m abstract public] : ? (java.util.stream.Collector<java.lang.Object,A erasure java.lang.Object,R erasure java.lang.Object>) returns java.util.Map<java.lang.Boolean,java.util.List<java.lang.String>> throws [] sig java.util.stream.Stream#collect(Ljava/util/stream/Collector;)Ljava/lang/Object; : java.util.Map<java.lang.Boolean,java.util.List<java.lang.String>>
 TOKEN @83:57
 ARGUMENTS @83:64
 TOKEN @83:64
-METHOD_INVOCATION @83:65 call Collectors.partitioningBy [m static public] : ? (java.util.function.Predicate<java.lang.Object>) returns java.util.stream.Collector throws [] sig java.util.stream.Collectors#partitioningBy(Ljava/util/function/Predicate;)Ljava/util/stream/Collector; : java.util.stream.Collector
-  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Collectors flags [static, public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+METHOD_INVOCATION @83:65 call Collectors.partitioningBy [m static public] : ? (java.util.function.Predicate<java.lang.Object>) returns java.util.stream.Collector throws [] sig java.util.stream.Collectors#partitioningBy(Ljava/util/function/Predicate;)Ljava/util/stream/Collector; : java.util.stream.Collector<java.lang.String,java.lang.Object,java.util.Map<java.lang.Boolean,java.util.List<java.lang.String>>>
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Collectors flags [static, public] overridden [] overridable false generic true default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
 MEMBER_SELECT @83:65 : ?
 IDENTIFIER @83:65 id Collectors java.util.stream.Collectors [t final public] : java.util.stream.Collectors : java.util.stream.Collectors
 TOKEN @83:65
@@ -1270,7 +1270,7 @@ IDENTIFIER @83:76 id partitioningBy Collectors.partitioningBy [m static public] 
 TOKEN @83:76
 ARGUMENTS @83:90
 TOKEN @83:90
-LAMBDA_EXPRESSION @83:91 : java.util.function.Predicate<java.lang.Object>
+LAMBDA_EXPRESSION @83:91 : java.util.function.Predicate<T erasure java.lang.Object>
 VARIABLE @83:91 var test.s [v package] : java.lang.String
   details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Predicate flags [package] local true parameter true effectivelyFinal true constant null owner test java.util.function.Predicate#test(Ljava/lang/Object;)Z [abstract, public] returns boolean parameters 1 thrown 0 overridden 0 declared false usages 0 metadata 0 enclosing Predicate type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
 MODIFIERS
@@ -1309,16 +1309,16 @@ TOKEN @84:24
 IDENTIFIER @84:26 id counts edges.counts [v package] : java.util.Map<java.lang.String,java.lang.Integer> : java.util.Map<java.lang.String,java.lang.Integer>
 TOKEN @84:26
 TOKEN @84:33
-METHOD_INVOCATION @84:35 call Stream.collect [m abstract public] : ? (java.util.stream.Collector<java.lang.Object,A erasure java.lang.Object,R erasure java.lang.Object>) returns java.lang.Object throws [] sig java.util.stream.Stream#collect(Ljava/util/stream/Collector;)Ljava/lang/Object; : java.lang.Object
-  details declared false usages 3 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Stream flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+METHOD_INVOCATION @84:35 call Stream.collect [m abstract public] : ? (java.util.stream.Collector<java.lang.Object,A erasure java.lang.Object,R erasure java.lang.Object>) returns java.lang.Object throws [] sig java.util.stream.Stream#collect(Ljava/util/stream/Collector;)Ljava/lang/Object; : java.util.Map<java.lang.String,java.lang.Integer>
+  details declared false usages 3 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Stream flags [abstract, public] overridden [] overridable true generic true default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
 MEMBER_SELECT @84:35 : ?
-METHOD_INVOCATION @84:35 call Collection.stream [m public] : ? () returns java.util.stream.Stream<E erasure java.lang.Object> throws [] sig java.util.Collection#stream()Ljava/util/stream/Stream; : java.util.stream.Stream<E erasure java.lang.Object>
+METHOD_INVOCATION @84:35 call Collection.stream [m public] : ? () returns java.util.stream.Stream<java.lang.String> throws [] sig java.util.Collection#stream()Ljava/util/stream/Stream; : java.util.stream.Stream<java.lang.String>
   details declared false usages 4 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Collection flags [public] overridden [] overridable true generic false default true synchronized false varargs false native false parameters [] parameterMetadata []
 MEMBER_SELECT @84:35 : ?
 IDENTIFIER @84:35 id strings edges.strings [v package] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
 TOKEN @84:35
 TOKEN @84:42
-IDENTIFIER @84:43 id stream Collection.stream [m public] : ? () returns java.util.stream.Stream<E erasure java.lang.Object> throws [] sig java.util.Collection#stream()Ljava/util/stream/Stream; : java.util.stream.Stream<E erasure java.lang.Object>
+IDENTIFIER @84:43 id stream Collection.stream [m public] : ? () returns java.util.stream.Stream<java.lang.String> throws [] sig java.util.Collection#stream()Ljava/util/stream/Stream; : java.util.stream.Stream<java.lang.String>
 TOKEN @84:43
 ARGUMENTS @84:49
 TOKEN @84:49
@@ -1329,7 +1329,7 @@ TOKEN @84:52
 ARGUMENTS @84:59
 TOKEN @84:59
 METHOD_INVOCATION @84:60 call Collectors.toMap [m static public] : ? (java.util.function.Function<java.lang.Object,java.lang.Object>,java.util.function.Function<java.lang.Object,java.lang.Object>,java.util.function.BinaryOperator) returns java.util.stream.Collector throws [] sig java.util.stream.Collectors#toMap(Ljava/util/function/Function;Ljava/util/function/Function;Ljava/util/function/BinaryOperator;)Ljava/util/stream/Collector; : java.util.stream.Collector
-  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Collectors flags [static, public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [arg0, arg1, arg2] parameterMetadata []
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Collectors flags [static, public] overridden [] overridable false generic true default false synchronized false varargs false native false parameters [arg0, arg1, arg2] parameterMetadata []
 MEMBER_SELECT @84:60 : ?
 IDENTIFIER @84:60 id Collectors java.util.stream.Collectors [t final public] : java.util.stream.Collectors : java.util.stream.Collectors
 TOKEN @84:60
@@ -1338,8 +1338,8 @@ IDENTIFIER @84:71 id toMap Collectors.toMap [m static public] : ? (java.util.fun
 TOKEN @84:71
 ARGUMENTS @84:76
 TOKEN @84:76
-METHOD_INVOCATION @84:77 call Function.identity [m static public] : ? () returns java.util.function.Function throws [] sig java.util.function.Function#identity()Ljava/util/function/Function; : java.util.function.Function
-  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Function flags [static, public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+METHOD_INVOCATION @84:77 call Function.identity [m static public] : ? () returns java.util.function.Function throws [] sig java.util.function.Function#identity()Ljava/util/function/Function; : java.util.function.Function<!capture! erasure java.lang.Object,!capture! erasure java.lang.Object>
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Function flags [static, public] overridden [] overridable false generic true default false synchronized false varargs false native false parameters [] parameterMetadata []
 MEMBER_SELECT @84:77 : ?
 IDENTIFIER @84:77 id Function java.util.function.Function [t public interface] : java.util.function.Function : java.util.function.Function
 TOKEN @84:77
@@ -1350,7 +1350,7 @@ ARGUMENTS @84:94
 TOKEN @84:94
 TOKEN @84:95
 TOKEN @84:96
-METHOD_REFERENCE @84:98 : java.util.function.Function<java.lang.Object,java.lang.Object>
+METHOD_REFERENCE @84:98 : java.util.function.Function<T erasure java.lang.Object,U erasure java.lang.Object>
 IDENTIFIER @84:98 id String java.lang.String [t final public] : java.lang.String : java.lang.String
 TOKEN @84:98
 TOKEN @84:104
@@ -1380,27 +1380,27 @@ TOKEN @85:21
 IDENTIFIER @85:23 id longest edges.longest [v package] : java.util.Optional<java.lang.Integer> : java.util.Optional<java.lang.Integer>
 TOKEN @85:23
 TOKEN @85:31
-METHOD_INVOCATION @85:33 call Stream.max [m abstract public] : ? (java.util.Comparator<java.lang.Object>) returns java.util.Optional<T erasure java.lang.Object> throws [] sig java.util.stream.Stream#max(Ljava/util/Comparator;)Ljava/util/Optional; : java.util.Optional<T erasure java.lang.Object>
+METHOD_INVOCATION @85:33 call Stream.max [m abstract public] : ? (java.util.Comparator<java.lang.Object>) returns java.util.Optional<java.lang.Integer> throws [] sig java.util.stream.Stream#max(Ljava/util/Comparator;)Ljava/util/Optional; : java.util.Optional<java.lang.Integer>
   details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Stream flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
 MEMBER_SELECT @85:33 : ?
-METHOD_INVOCATION @85:33 call Collection.stream [m public] : ? () returns java.util.stream.Stream<E erasure java.lang.Object> throws [] sig java.util.Collection#stream()Ljava/util/stream/Stream; : java.util.stream.Stream<E erasure java.lang.Object>
+METHOD_INVOCATION @85:33 call Collection.stream [m public] : ? () returns java.util.stream.Stream<java.lang.Integer> throws [] sig java.util.Collection#stream()Ljava/util/stream/Stream; : java.util.stream.Stream<java.lang.Integer>
   details declared false usages 4 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Collection flags [public] overridden [] overridable true generic false default true synchronized false varargs false native false parameters [] parameterMetadata []
 MEMBER_SELECT @85:33 : ?
 IDENTIFIER @85:33 id lengths edges.lengths [v package] : java.util.List<java.lang.Integer> : java.util.List<java.lang.Integer>
 TOKEN @85:33
 TOKEN @85:40
-IDENTIFIER @85:41 id stream Collection.stream [m public] : ? () returns java.util.stream.Stream<E erasure java.lang.Object> throws [] sig java.util.Collection#stream()Ljava/util/stream/Stream; : java.util.stream.Stream<E erasure java.lang.Object>
+IDENTIFIER @85:41 id stream Collection.stream [m public] : ? () returns java.util.stream.Stream<java.lang.Integer> throws [] sig java.util.Collection#stream()Ljava/util/stream/Stream; : java.util.stream.Stream<java.lang.Integer>
 TOKEN @85:41
 ARGUMENTS @85:47
 TOKEN @85:47
 TOKEN @85:48
 TOKEN @85:49
-IDENTIFIER @85:50 id max Stream.max [m abstract public] : ? (java.util.Comparator<java.lang.Object>) returns java.util.Optional<T erasure java.lang.Object> throws [] sig java.util.stream.Stream#max(Ljava/util/Comparator;)Ljava/util/Optional; : java.util.Optional<T erasure java.lang.Object>
+IDENTIFIER @85:50 id max Stream.max [m abstract public] : ? (java.util.Comparator<java.lang.Object>) returns java.util.Optional<java.lang.Integer> throws [] sig java.util.stream.Stream#max(Ljava/util/Comparator;)Ljava/util/Optional; : java.util.Optional<java.lang.Integer>
 TOKEN @85:50
 ARGUMENTS @85:53
 TOKEN @85:53
-METHOD_INVOCATION @85:54 call Comparator.naturalOrder [m static public] : ? () returns java.util.Comparator throws [] sig java.util.Comparator#naturalOrder()Ljava/util/Comparator; : java.util.Comparator
-  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Comparator flags [static, public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+METHOD_INVOCATION @85:54 call Comparator.naturalOrder [m static public] : ? () returns java.util.Comparator throws [] sig java.util.Comparator#naturalOrder()Ljava/util/Comparator; : java.util.Comparator<java.lang.Integer>
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Comparator flags [static, public] overridden [] overridable false generic true default false synchronized false varargs false native false parameters [] parameterMetadata []
 MEMBER_SELECT @85:54 : ?
 IDENTIFIER @85:54 id Comparator java.util.Comparator [t public interface] : java.util.Comparator : java.util.Comparator
 TOKEN @85:54
@@ -1432,13 +1432,13 @@ TOKEN @86:24
 IDENTIFIER @86:26 id chunks edges.chunks [v package] : java.util.stream.Stream<java.util.List<java.lang.String>> : java.util.stream.Stream<java.util.List<java.lang.String>>
 TOKEN @86:26
 TOKEN @86:33
-METHOD_INVOCATION @86:35 call Stream.of [m static public] : ? (java.util.List[]) returns java.util.stream.Stream throws [] sig java.util.stream.Stream#of([Ljava/lang/Object;)Ljava/util/stream/Stream; : java.util.stream.Stream
-  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Stream flags [static, public] overridden [] overridable false generic false default false synchronized false varargs true native false parameters [arg0] parameterMetadata []
+METHOD_INVOCATION @86:35 call Stream.of [m static public] : ? (java.util.List[]) returns java.util.stream.Stream<java.util.List<java.lang.String>> throws [] sig java.util.stream.Stream#of([Ljava/lang/Object;)Ljava/util/stream/Stream; : java.util.stream.Stream<java.util.List<java.lang.String>>
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Stream flags [static, public] overridden [] overridable false generic true default false synchronized false varargs true native false parameters [arg0] parameterMetadata []
 MEMBER_SELECT @86:35 : ?
 IDENTIFIER @86:35 id Stream java.util.stream.Stream [t public interface] : java.util.stream.Stream : java.util.stream.Stream
 TOKEN @86:35
 TOKEN @86:41
-IDENTIFIER @86:42 id of Stream.of [m static public] : ? (java.util.List[]) returns java.util.stream.Stream throws [] sig java.util.stream.Stream#of([Ljava/lang/Object;)Ljava/util/stream/Stream; : java.util.stream.Stream
+IDENTIFIER @86:42 id of Stream.of [m static public] : ? (java.util.List[]) returns java.util.stream.Stream<java.util.List<java.lang.String>> throws [] sig java.util.stream.Stream#of([Ljava/lang/Object;)Ljava/util/stream/Stream; : java.util.stream.Stream<java.util.List<java.lang.String>>
 TOKEN @86:42
 ARGUMENTS @86:44
 TOKEN @86:44
@@ -1463,11 +1463,11 @@ TOKEN @87:16
 IDENTIFIER @87:18 id flat edges.flat [v package] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
 TOKEN @87:18
 TOKEN @87:23
-METHOD_INVOCATION @87:25 call Stream.collect [m abstract public] : ? (java.util.stream.Collector<java.lang.Object,A erasure java.lang.Object,R erasure java.lang.Object>) returns java.lang.Object throws [] sig java.util.stream.Stream#collect(Ljava/util/stream/Collector;)Ljava/lang/Object; : java.lang.Object
-  details declared false usages 3 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Stream flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+METHOD_INVOCATION @87:25 call Stream.collect [m abstract public] : ? (java.util.stream.Collector<java.lang.Object,A erasure java.lang.Object,R erasure java.lang.Object>) returns java.lang.Object throws [] sig java.util.stream.Stream#collect(Ljava/util/stream/Collector;)Ljava/lang/Object; : java.util.List<java.lang.String>
+  details declared false usages 3 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Stream flags [abstract, public] overridden [] overridable true generic true default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
 MEMBER_SELECT @87:25 : ?
 METHOD_INVOCATION @87:25 call Stream.flatMap [m abstract public] : ? (java.util.function.Function<java.lang.Object,java.util.stream.Stream>) returns java.util.stream.Stream<R erasure java.lang.Object> throws [] sig java.util.stream.Stream#flatMap(Ljava/util/function/Function;)Ljava/util/stream/Stream; : java.util.stream.Stream<R erasure java.lang.Object>
-  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Stream flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Stream flags [abstract, public] overridden [] overridable true generic true default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
 MEMBER_SELECT @87:25 : ?
 IDENTIFIER @87:25 id chunks edges.chunks [v package] : java.util.stream.Stream<java.util.List<java.lang.String>> : java.util.stream.Stream<java.util.List<java.lang.String>>
 TOKEN @87:25
@@ -1476,7 +1476,7 @@ IDENTIFIER @87:32 id flatMap Stream.flatMap [m abstract public] : ? (java.util.f
 TOKEN @87:32
 ARGUMENTS @87:39
 TOKEN @87:39
-METHOD_REFERENCE @87:40 : java.util.function.Function<java.lang.Object,java.util.stream.Stream>
+METHOD_REFERENCE @87:40 : java.util.function.Function<java.util.List<java.lang.String>,java.util.stream.Stream<java.lang.Object>>
 IDENTIFIER @87:40 id List java.util.List [t public interface] : java.util.List : java.util.List
 TOKEN @87:40
 TOKEN @87:44
@@ -1489,7 +1489,7 @@ TOKEN @87:54
 ARGUMENTS @87:61
 TOKEN @87:61
 METHOD_INVOCATION @87:62 call Collectors.toList [m static public] : ? () returns java.util.stream.Collector throws [] sig java.util.stream.Collectors#toList()Ljava/util/stream/Collector; : java.util.stream.Collector
-  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Collectors flags [static, public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Collectors flags [static, public] overridden [] overridable false generic true default false synchronized false varargs false native false parameters [] parameterMetadata []
 MEMBER_SELECT @87:62 : ?
 IDENTIFIER @87:62 id Collectors java.util.stream.Collectors [t final public] : java.util.stream.Collectors : java.util.stream.Collectors
 TOKEN @87:62
@@ -1593,13 +1593,13 @@ TOKEN @91:30
 IDENTIFIER @91:32 id iterator edges.iterator [v package] : java.util.Iterator<java.lang.Number> : java.util.Iterator<java.lang.Number>
 TOKEN @91:32
 TOKEN @91:41
-METHOD_INVOCATION @91:43 call List.iterator [m abstract public] : ? () returns java.util.Iterator<E erasure java.lang.Object> throws [] sig java.util.List#iterator()Ljava/util/Iterator; : java.util.Iterator<E erasure java.lang.Object>
+METHOD_INVOCATION @91:43 call List.iterator [m abstract public] : ? () returns java.util.Iterator<java.lang.Number> throws [] sig java.util.List#iterator()Ljava/util/Iterator; : java.util.Iterator<java.lang.Number>
   details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing List flags [abstract, public] overridden [Collection.iterator[], Iterable.iterator[]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
 MEMBER_SELECT @91:43 : ?
 IDENTIFIER @91:43 id numbers edges.numbers [v package] : java.util.List<java.lang.Number> : java.util.List<java.lang.Number>
 TOKEN @91:43
 TOKEN @91:50
-IDENTIFIER @91:51 id iterator List.iterator [m abstract public] : ? () returns java.util.Iterator<E erasure java.lang.Object> throws [] sig java.util.List#iterator()Ljava/util/Iterator; : java.util.Iterator<E erasure java.lang.Object>
+IDENTIFIER @91:51 id iterator List.iterator [m abstract public] : ? () returns java.util.Iterator<java.lang.Number> throws [] sig java.util.List#iterator()Ljava/util/Iterator; : java.util.Iterator<java.lang.Number>
 TOKEN @91:51
 ARGUMENTS @91:59
 TOKEN @91:59
@@ -1622,7 +1622,7 @@ TOKEN @92:34
 NEW_CLASS @92:36 new Object.<init> [m public] : ? () returns void throws [] sig java.lang.Object#<init>()V : GenericEdges$1
   details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Object flags [public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
 TOKEN @92:36
-PARAMETERIZED_TYPE @92:40 : java.util.Comparator
+PARAMETERIZED_TYPE @92:40 : java.util.Comparator<java.lang.String>
 IDENTIFIER @92:40 id Comparator Object.<init> [m public] : ? () returns void throws [] sig java.lang.Object#<init>()V : java.util.Comparator
 TOKEN @92:40
 TYPE_ARGUMENTS @92:50
@@ -1631,15 +1631,15 @@ TOKEN @92:51
 ARGUMENTS @92:52
 TOKEN @92:52
 TOKEN @92:53
-CLASS @92:55 class edges. [t package] : GenericEdges$1 super java.lang.Object interfaces [java.util.Comparator]
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing GenericEdges flags [package] members [<init>, compare] lookupToString 0 outermost GenericEdges annotation false subtypeOf [java.lang.Object] superTypes [java.lang.Object, java.util.Comparator] numerical false wrapper false raw false declaring 
+CLASS @92:55 class edges. [t package] : GenericEdges$1 super java.lang.Object interfaces [java.util.Comparator<java.lang.String>]
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing GenericEdges flags [package] members [<init>, compare] lookupToString 0 outermost GenericEdges annotation false subtypeOf [java.lang.Object] superTypes [java.lang.Object, java.util.Comparator<java.lang.String>] numerical false wrapper false raw false declaring 
 MODIFIERS
 TYPE_PARAMETERS
 LIST
 LIST
 TOKEN @92:55
 METHOD @93:7 method .compare [m public] : ? (java.lang.String,java.lang.String) returns int throws [] sig GenericEdges$1#compare(Ljava/lang/String;Ljava/lang/String;)I overrides true
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing  flags [public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [left, right] parameterMetadata []
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing  flags [public] overridden [Comparator.compare[]] overridable true generic false default false synchronized false varargs false native false parameters [left, right] parameterMetadata []
 MODIFIERS @93:7
 ANNOTATION @93:7 : java.lang.Override
 TOKEN @93:7
@@ -1654,7 +1654,7 @@ IDENTIFIER @94:18 id compare .compare [m public] : ? (java.lang.String,java.lang
 TOKEN @94:18
 TOKEN @94:25
 VARIABLE @94:26 var compare.left [v package] : java.lang.String
-  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing  flags [package] local true parameter true effectivelyFinal true constant null owner compare GenericEdges$1#compare(Ljava/lang/String;Ljava/lang/String;)I [public] returns int parameters 2 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing  type true kinds truefalsefalse other falsefalsefalsefalsetruefalse2falsefalse
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing  flags [package] local true parameter true effectivelyFinal true constant null owner compare GenericEdges$1#compare(Ljava/lang/String;Ljava/lang/String;)I [public] returns int parameters 2 thrown 0 overridden 1 declared true usages 0 metadata 0 enclosing  type true kinds truefalsefalse other falsefalsefalsefalsetruefalse2falsefalse
 MODIFIERS
 IDENTIFIER @94:26 id String java.lang.String [t final public] : java.lang.String : java.lang.String
 TOKEN @94:26
@@ -1662,7 +1662,7 @@ IDENTIFIER @94:33 id left compare.left [v package] : java.lang.String : java.lan
 TOKEN @94:33
 TOKEN @94:37
 VARIABLE @94:39 var compare.right [v package] : java.lang.String
-  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing  flags [package] local true parameter true effectivelyFinal true constant null owner compare GenericEdges$1#compare(Ljava/lang/String;Ljava/lang/String;)I [public] returns int parameters 2 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing  type true kinds truefalsefalse other falsefalsefalsefalsetruefalse2falsefalse
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing  flags [package] local true parameter true effectivelyFinal true constant null owner compare GenericEdges$1#compare(Ljava/lang/String;Ljava/lang/String;)I [public] returns int parameters 2 thrown 0 overridden 1 declared true usages 0 metadata 0 enclosing  type true kinds truefalsefalse other falsefalsefalsefalsetruefalse2falsefalse
 MODIFIERS
 IDENTIFIER @94:39 id String java.lang.String [t final public] : java.lang.String : java.lang.String
 TOKEN @94:39

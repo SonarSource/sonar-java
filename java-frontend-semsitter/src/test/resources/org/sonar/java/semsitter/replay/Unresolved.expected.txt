@@ -341,11 +341,11 @@ TOKEN @25:16
 IDENTIFIER @25:18 id names run.names [v package] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
 TOKEN @25:18
 TOKEN @25:24
-METHOD_INVOCATION @25:26 call Stream.toList [m public] : ? () returns java.util.List<T erasure java.lang.Object> throws [] sig java.util.stream.Stream#toList()Ljava/util/List; : java.util.List<T erasure java.lang.Object>
+METHOD_INVOCATION @25:26 call Stream.toList [m public] : ? () returns java.util.List<R erasure java.lang.Object> throws [] sig java.util.stream.Stream#toList()Ljava/util/List; : java.util.List<R erasure java.lang.Object>
   details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Stream flags [public] overridden [] overridable true generic false default true synchronized false varargs false native false parameters [] parameterMetadata []
 MEMBER_SELECT @25:26 : ?
 METHOD_INVOCATION @25:26 call Stream.map [m abstract public] : ? (java.util.function.Function<java.lang.Object,java.lang.Object>) returns java.util.stream.Stream<R erasure java.lang.Object> throws [] sig java.util.stream.Stream#map(Ljava/util/function/Function;)Ljava/util/stream/Stream; : java.util.stream.Stream<R erasure java.lang.Object>
-  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Stream flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Stream flags [abstract, public] overridden [] overridable true generic true default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
 MEMBER_SELECT @25:26 : ?
 METHOD_INVOCATION @25:26 call unknown : ?
 MEMBER_SELECT @25:26 : ?
@@ -362,7 +362,7 @@ IDENTIFIER @25:41 id map Stream.map [m abstract public] : ? (java.util.function.
 TOKEN @25:41
 ARGUMENTS @25:44
 TOKEN @25:44
-METHOD_REFERENCE @25:45 : java.util.function.Function<java.lang.Object,java.lang.Object>
+METHOD_REFERENCE @25:45 : java.util.function.Function<T erasure java.lang.Object,R erasure java.lang.Object>
 IDENTIFIER @25:45 id Missing unknown : ?
 TOKEN @25:45
 TOKEN @25:52
@@ -370,7 +370,7 @@ IDENTIFIER @25:54 id name unknown : ?
 TOKEN @25:54
 TOKEN @25:58
 TOKEN @25:59
-IDENTIFIER @25:60 id toList Stream.toList [m public] : ? () returns java.util.List<T erasure java.lang.Object> throws [] sig java.util.stream.Stream#toList()Ljava/util/List; : java.util.List<T erasure java.lang.Object>
+IDENTIFIER @25:60 id toList Stream.toList [m public] : ? () returns java.util.List<R erasure java.lang.Object> throws [] sig java.util.stream.Stream#toList()Ljava/util/List; : java.util.List<R erasure java.lang.Object>
 TOKEN @25:60
 ARGUMENTS @25:66
 TOKEN @25:66

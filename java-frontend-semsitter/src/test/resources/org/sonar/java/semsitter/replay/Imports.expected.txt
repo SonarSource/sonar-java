@@ -270,9 +270,9 @@ TOKEN @19:24
 IDENTIFIER @19:26 id pair Imports.pair [v package] : java.util.Map$Entry<java.lang.String,java.lang.Integer> : java.util.Map$Entry<java.lang.String,java.lang.Integer>
 TOKEN @19:26
 TOKEN @19:31
-METHOD_INVOCATION @19:33 call Map.entry [m static public] : ? (java.lang.String,java.lang.Integer) returns java.util.Map$Entry throws [] sig java.util.Map#entry(Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Map$Entry; : java.util.Map$Entry
-  details declared false usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Map flags [static, public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [arg0, arg1] parameterMetadata []
-IDENTIFIER @19:33 id entry Map.entry [m static public] : ? (java.lang.String,java.lang.Integer) returns java.util.Map$Entry throws [] sig java.util.Map#entry(Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Map$Entry; : java.util.Map$Entry
+METHOD_INVOCATION @19:33 call Map.entry [m static public] : ? (java.lang.String,java.lang.Integer) returns java.util.Map$Entry<java.lang.String,java.lang.Integer> throws [] sig java.util.Map#entry(Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Map$Entry; : java.util.Map$Entry<java.lang.String,java.lang.Integer>
+  details declared false usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Map flags [static, public] overridden [] overridable false generic true default false synchronized false varargs false native false parameters [arg0, arg1] parameterMetadata []
+IDENTIFIER @19:33 id entry Map.entry [m static public] : ? (java.lang.String,java.lang.Integer) returns java.util.Map$Entry<java.lang.String,java.lang.Integer> throws [] sig java.util.Map#entry(Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Map$Entry; : java.util.Map$Entry<java.lang.String,java.lang.Integer>
 TOKEN @19:33
 ARGUMENTS @19:38
 TOKEN @19:38
@@ -304,13 +304,13 @@ TOKEN @20:28
 IDENTIFIER @20:30 id qualifiedPair Imports.qualifiedPair [v package] : java.util.Map$Entry<java.lang.String,java.lang.Integer> : java.util.Map$Entry<java.lang.String,java.lang.Integer>
 TOKEN @20:30
 TOKEN @20:44
-METHOD_INVOCATION @20:46 call Map.entry [m static public] : ? (java.lang.String,java.lang.Integer) returns java.util.Map$Entry throws [] sig java.util.Map#entry(Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Map$Entry; : java.util.Map$Entry
-  details declared false usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Map flags [static, public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [arg0, arg1] parameterMetadata []
+METHOD_INVOCATION @20:46 call Map.entry [m static public] : ? (java.lang.String,java.lang.Integer) returns java.util.Map$Entry<java.lang.String,java.lang.Integer> throws [] sig java.util.Map#entry(Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Map$Entry; : java.util.Map$Entry<java.lang.String,java.lang.Integer>
+  details declared false usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Map flags [static, public] overridden [] overridable false generic true default false synchronized false varargs false native false parameters [arg0, arg1] parameterMetadata []
 MEMBER_SELECT @20:46 : ?
 IDENTIFIER @20:46 id Map java.util.Map [t public interface] : java.util.Map : java.util.Map
 TOKEN @20:46
 TOKEN @20:49
-IDENTIFIER @20:50 id entry Map.entry [m static public] : ? (java.lang.String,java.lang.Integer) returns java.util.Map$Entry throws [] sig java.util.Map#entry(Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Map$Entry; : java.util.Map$Entry
+IDENTIFIER @20:50 id entry Map.entry [m static public] : ? (java.lang.String,java.lang.Integer) returns java.util.Map$Entry<java.lang.String,java.lang.Integer> throws [] sig java.util.Map#entry(Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Map$Entry; : java.util.Map$Entry<java.lang.String,java.lang.Integer>
 TOKEN @20:50
 ARGUMENTS @20:55
 TOKEN @20:55
@@ -367,8 +367,8 @@ TOKEN @22:14
 IDENTIFIER @22:16 id sorted Imports.sorted [v package] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
 TOKEN @22:16
 TOKEN @22:23
-METHOD_INVOCATION @22:25 call Collections.emptyList [m static final public] : ? () returns java.util.List throws [] sig java.util.Collections#emptyList()Ljava/util/List; : java.util.List
-  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Collections flags [static, final, public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+METHOD_INVOCATION @22:25 call Collections.emptyList [m static final public] : ? () returns java.util.List throws [] sig java.util.Collections#emptyList()Ljava/util/List; : java.util.List<java.lang.String>
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Collections flags [static, final, public] overridden [] overridable false generic true default false synchronized false varargs false native false parameters [] parameterMetadata []
 IDENTIFIER @22:25 id emptyList Collections.emptyList [m static final public] : ? () returns java.util.List throws [] sig java.util.Collections#emptyList()Ljava/util/List; : java.util.List
 TOKEN @22:25
 ARGUMENTS @22:34
@@ -389,11 +389,11 @@ TOKEN @23:13
 IDENTIFIER @23:15 id fromStar Imports.fromStar [v package] : java.util.Set<java.lang.String> : java.util.Set<java.lang.String>
 TOKEN @23:15
 TOKEN @23:24
-NEW_CLASS @23:26 new HashSet.<init> [m public] : ? () returns void throws [] sig java.util.HashSet#<init>()V : java.util.HashSet
+NEW_CLASS @23:26 new HashSet.<init> [m public] : ? () returns void throws [] sig java.util.HashSet#<init>()V : java.util.HashSet<java.lang.String>
   details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing HashSet flags [public] overridden [AbstractSet.<init>[], AbstractCollection.<init>[], Object.<init>[]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
 TOKEN @23:26
-PARAMETERIZED_TYPE @23:30 : java.util.HashSet
-IDENTIFIER @23:30 id HashSet HashSet.<init> [m public] : ? () returns void throws [] sig java.util.HashSet#<init>()V : java.util.HashSet
+PARAMETERIZED_TYPE @23:30 : java.util.HashSet<java.lang.String>
+IDENTIFIER @23:30 id HashSet HashSet.<init> [m public] : ? () returns void throws [] sig java.util.HashSet#<init>()V : java.util.HashSet<java.lang.String>
 TOKEN @23:30
 TYPE_ARGUMENTS @23:37
 TOKEN @23:37
@@ -416,8 +416,8 @@ TOKEN @24:18
 IDENTIFIER @24:20 id optional Imports.optional [v package] : java.util.Optional<java.lang.String> : java.util.Optional<java.lang.String>
 TOKEN @24:20
 TOKEN @24:29
-METHOD_INVOCATION @24:31 call Optional.empty [m static public] : ? () returns java.util.Optional throws [] sig java.util.Optional#empty()Ljava/util/Optional; : java.util.Optional
-  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Optional flags [static, public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+METHOD_INVOCATION @24:31 call Optional.empty [m static public] : ? () returns java.util.Optional throws [] sig java.util.Optional#empty()Ljava/util/Optional; : java.util.Optional<java.lang.String>
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Optional flags [static, public] overridden [] overridable false generic true default false synchronized false varargs false native false parameters [] parameterMetadata []
 MEMBER_SELECT @24:31 : ?
 IDENTIFIER @24:31 id Optional java.util.Optional [t final public] : java.util.Optional : java.util.Optional
 TOKEN @24:31
@@ -537,13 +537,13 @@ TOKEN @31:37
 IDENTIFIER @31:39 id entry entries.entry [v package] : java.util.Map$Entry<java.lang.String,java.util.List<java.lang.Integer>> : java.util.Map$Entry<java.lang.String,java.util.List<java.lang.Integer>>
 TOKEN @31:39
 TOKEN @31:45
-METHOD_INVOCATION @31:47 call Map.entrySet [m abstract public] : ? () returns java.util.Set<java.util.Map$Entry<K erasure java.lang.Object,V erasure java.lang.Object>> throws [] sig java.util.Map#entrySet()Ljava/util/Set; : java.util.Set<java.util.Map$Entry<K erasure java.lang.Object,V erasure java.lang.Object>>
+METHOD_INVOCATION @31:47 call Map.entrySet [m abstract public] : ? () returns java.util.Set<java.util.Map$Entry<java.lang.String,java.util.List<java.lang.Integer>>> throws [] sig java.util.Map#entrySet()Ljava/util/Set; : java.util.Set<java.util.Map$Entry<java.lang.String,java.util.List<java.lang.Integer>>>
   details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Map flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
 MEMBER_SELECT @31:47 : ?
 IDENTIFIER @31:47 id map entries.map [v package] : java.util.Map<java.lang.String,java.util.List<java.lang.Integer>> : java.util.Map<java.lang.String,java.util.List<java.lang.Integer>>
 TOKEN @31:47
 TOKEN @31:50
-IDENTIFIER @31:51 id entrySet Map.entrySet [m abstract public] : ? () returns java.util.Set<java.util.Map$Entry<K erasure java.lang.Object,V erasure java.lang.Object>> throws [] sig java.util.Map#entrySet()Ljava/util/Set; : java.util.Set<java.util.Map$Entry<K erasure java.lang.Object,V erasure java.lang.Object>>
+IDENTIFIER @31:51 id entrySet Map.entrySet [m abstract public] : ? () returns java.util.Set<java.util.Map$Entry<java.lang.String,java.util.List<java.lang.Integer>>> throws [] sig java.util.Map#entrySet()Ljava/util/Set; : java.util.Set<java.util.Map$Entry<java.lang.String,java.util.List<java.lang.Integer>>>
 TOKEN @31:51
 ARGUMENTS @31:59
 TOKEN @31:59
@@ -555,13 +555,13 @@ EXPRESSION_STATEMENT @32:7
 METHOD_INVOCATION @32:7 call String.length [m public] : ? () returns int throws [] sig java.lang.String#length()I : int
   details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing String flags [public] overridden [CharSequence.length[]] overridable false generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
 MEMBER_SELECT @32:7 : ?
-METHOD_INVOCATION @32:7 call Entry.getKey [m abstract public] : ? () returns java.lang.Object throws [] sig java.util.Map$Entry#getKey()Ljava/lang/Object; : java.lang.Object
+METHOD_INVOCATION @32:7 call Entry.getKey [m abstract public] : ? () returns java.lang.String throws [] sig java.util.Map$Entry#getKey()Ljava/lang/Object; : java.lang.String
   details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Entry flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
 MEMBER_SELECT @32:7 : ?
 IDENTIFIER @32:7 id entry entries.entry [v package] : java.util.Map$Entry<java.lang.String,java.util.List<java.lang.Integer>> : java.util.Map$Entry<java.lang.String,java.util.List<java.lang.Integer>>
 TOKEN @32:7
 TOKEN @32:12
-IDENTIFIER @32:13 id getKey Entry.getKey [m abstract public] : ? () returns java.lang.Object throws [] sig java.util.Map$Entry#getKey()Ljava/lang/Object; : java.lang.Object
+IDENTIFIER @32:13 id getKey Entry.getKey [m abstract public] : ? () returns java.lang.String throws [] sig java.util.Map$Entry#getKey()Ljava/lang/Object; : java.lang.String
 TOKEN @32:13
 ARGUMENTS @32:19
 TOKEN @32:19
@@ -577,13 +577,13 @@ EXPRESSION_STATEMENT @33:7
 METHOD_INVOCATION @33:7 call List.size [m abstract public] : ? () returns int throws [] sig java.util.List#size()I : int
   details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing List flags [abstract, public] overridden [Collection.size[]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
 MEMBER_SELECT @33:7 : ?
-METHOD_INVOCATION @33:7 call Entry.getValue [m abstract public] : ? () returns java.lang.Object throws [] sig java.util.Map$Entry#getValue()Ljava/lang/Object; : java.lang.Object
+METHOD_INVOCATION @33:7 call Entry.getValue [m abstract public] : ? () returns java.util.List<java.lang.Integer> throws [] sig java.util.Map$Entry#getValue()Ljava/lang/Object; : java.util.List<java.lang.Integer>
   details declared false usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Entry flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
 MEMBER_SELECT @33:7 : ?
 IDENTIFIER @33:7 id entry entries.entry [v package] : java.util.Map$Entry<java.lang.String,java.util.List<java.lang.Integer>> : java.util.Map$Entry<java.lang.String,java.util.List<java.lang.Integer>>
 TOKEN @33:7
 TOKEN @33:12
-IDENTIFIER @33:13 id getValue Entry.getValue [m abstract public] : ? () returns java.lang.Object throws [] sig java.util.Map$Entry#getValue()Ljava/lang/Object; : java.lang.Object
+IDENTIFIER @33:13 id getValue Entry.getValue [m abstract public] : ? () returns java.util.List<java.lang.Integer> throws [] sig java.util.Map$Entry#getValue()Ljava/lang/Object; : java.util.List<java.lang.Integer>
 TOKEN @33:13
 ARGUMENTS @33:21
 TOKEN @33:21
@@ -626,14 +626,14 @@ TOKEN @35:41
 IDENTIFIER @35:43 id entry entries.entry [v package] : java.util.Map$Entry<java.lang.String,java.util.List<java.lang.Integer>> : java.util.Map$Entry<java.lang.String,java.util.List<java.lang.Integer>>
 TOKEN @35:43
 TOKEN @35:49
-METHOD_INVOCATION @35:51 call HashMap.entrySet [m public] : ? () returns java.util.Set<java.util.Map$Entry<K erasure java.lang.Object,V erasure java.lang.Object>> throws [] sig java.util.HashMap#entrySet()Ljava/util/Set; : java.util.Set<java.util.Map$Entry<K erasure java.lang.Object,V erasure java.lang.Object>>
+METHOD_INVOCATION @35:51 call HashMap.entrySet [m public] : ? () returns java.util.Set<java.util.Map$Entry<java.lang.String,java.util.List<java.lang.Integer>>> throws [] sig java.util.HashMap#entrySet()Ljava/util/Set; : java.util.Set<java.util.Map$Entry<java.lang.String,java.util.List<java.lang.Integer>>>
   details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing HashMap flags [public] overridden [AbstractMap.entrySet[], Map.entrySet[]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
 MEMBER_SELECT @35:51 : ?
-NEW_CLASS @35:51 new HashMap.<init> [m public] : ? (java.util.Map<java.lang.Object,java.lang.Object>) returns void throws [] sig java.util.HashMap#<init>(Ljava/util/Map;)V : java.util.HashMap
+NEW_CLASS @35:51 new HashMap.<init> [m public] : ? (java.util.Map<java.lang.String,java.util.List>) returns void throws [] sig java.util.HashMap#<init>(Ljava/util/Map;)V : java.util.HashMap<java.lang.String,java.util.List<java.lang.Integer>>
   details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing HashMap flags [public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
 TOKEN @35:51
-PARAMETERIZED_TYPE @35:55 : java.util.HashMap
-IDENTIFIER @35:55 id HashMap HashMap.<init> [m public] : ? (java.util.Map<java.lang.Object,java.lang.Object>) returns void throws [] sig java.util.HashMap#<init>(Ljava/util/Map;)V : java.util.HashMap
+PARAMETERIZED_TYPE @35:55 : java.util.HashMap<java.lang.String,java.util.List<java.lang.Integer>>
+IDENTIFIER @35:55 id HashMap HashMap.<init> [m public] : ? (java.util.Map<java.lang.String,java.util.List>) returns void throws [] sig java.util.HashMap#<init>(Ljava/util/Map;)V : java.util.HashMap
 TOKEN @35:55
 TYPE_ARGUMENTS @35:62
 TOKEN @35:62
@@ -644,7 +644,7 @@ IDENTIFIER @35:65 id map entries.map [v package] : java.util.Map<java.lang.Strin
 TOKEN @35:65
 TOKEN @35:68
 TOKEN @35:69
-IDENTIFIER @35:70 id entrySet HashMap.entrySet [m public] : ? () returns java.util.Set<java.util.Map$Entry<K erasure java.lang.Object,V erasure java.lang.Object>> throws [] sig java.util.HashMap#entrySet()Ljava/util/Set; : java.util.Set<java.util.Map$Entry<K erasure java.lang.Object,V erasure java.lang.Object>>
+IDENTIFIER @35:70 id entrySet HashMap.entrySet [m public] : ? () returns java.util.Set<java.util.Map$Entry<java.lang.String,java.util.List<java.lang.Integer>>> throws [] sig java.util.HashMap#entrySet()Ljava/util/Set; : java.util.Set<java.util.Map$Entry<java.lang.String,java.util.List<java.lang.Integer>>>
 TOKEN @35:70
 ARGUMENTS @35:78
 TOKEN @35:78
@@ -653,29 +653,29 @@ TOKEN @35:80
 BLOCK @35:82
 TOKEN @35:82
 EXPRESSION_STATEMENT @36:7
-METHOD_INVOCATION @36:7 call Entry.setValue [m abstract public] : ? (java.util.List<java.lang.Integer>) returns java.lang.Object throws [] sig java.util.Map$Entry#setValue(Ljava/lang/Object;)Ljava/lang/Object; : java.lang.Object
+METHOD_INVOCATION @36:7 call Entry.setValue [m abstract public] : ? (java.util.List<java.lang.Integer>) returns java.util.List<java.lang.Integer> throws [] sig java.util.Map$Entry#setValue(Ljava/lang/Object;)Ljava/lang/Object; : java.util.List<java.lang.Integer>
   details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Entry flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
 MEMBER_SELECT @36:7 : ?
 IDENTIFIER @36:7 id entry entries.entry [v package] : java.util.Map$Entry<java.lang.String,java.util.List<java.lang.Integer>> : java.util.Map$Entry<java.lang.String,java.util.List<java.lang.Integer>>
 TOKEN @36:7
 TOKEN @36:12
-IDENTIFIER @36:13 id setValue Entry.setValue [m abstract public] : ? (java.util.List<java.lang.Integer>) returns java.lang.Object throws [] sig java.util.Map$Entry#setValue(Ljava/lang/Object;)Ljava/lang/Object; : java.lang.Object
+IDENTIFIER @36:13 id setValue Entry.setValue [m abstract public] : ? (java.util.List<java.lang.Integer>) returns java.util.List<java.lang.Integer> throws [] sig java.util.Map$Entry#setValue(Ljava/lang/Object;)Ljava/lang/Object; : java.util.List<java.lang.Integer>
 TOKEN @36:13
 ARGUMENTS @36:21
 TOKEN @36:21
-METHOD_INVOCATION @36:22 call Collections.unmodifiableList [m static public] : ? (java.util.List<java.lang.Object>) returns java.util.List throws [] sig java.util.Collections#unmodifiableList(Ljava/util/List;)Ljava/util/List; : java.util.List
-  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Collections flags [static, public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
-IDENTIFIER @36:22 id unmodifiableList Collections.unmodifiableList [m static public] : ? (java.util.List<java.lang.Object>) returns java.util.List throws [] sig java.util.Collections#unmodifiableList(Ljava/util/List;)Ljava/util/List; : java.util.List
+METHOD_INVOCATION @36:22 call Collections.unmodifiableList [m static public] : ? (java.util.List<java.lang.Object>) returns java.util.List<java.lang.Integer> throws [] sig java.util.Collections#unmodifiableList(Ljava/util/List;)Ljava/util/List; : java.util.List<java.lang.Integer>
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Collections flags [static, public] overridden [] overridable false generic true default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+IDENTIFIER @36:22 id unmodifiableList Collections.unmodifiableList [m static public] : ? (java.util.List<java.lang.Object>) returns java.util.List<java.lang.Integer> throws [] sig java.util.Collections#unmodifiableList(Ljava/util/List;)Ljava/util/List; : java.util.List<java.lang.Integer>
 TOKEN @36:22
 ARGUMENTS @36:38
 TOKEN @36:38
-METHOD_INVOCATION @36:39 call Entry.getValue [m abstract public] : ? () returns java.lang.Object throws [] sig java.util.Map$Entry#getValue()Ljava/lang/Object; : java.lang.Object
+METHOD_INVOCATION @36:39 call Entry.getValue [m abstract public] : ? () returns java.util.List<java.lang.Integer> throws [] sig java.util.Map$Entry#getValue()Ljava/lang/Object; : java.util.List<java.lang.Integer>
   details declared false usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Entry flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
 MEMBER_SELECT @36:39 : ?
 IDENTIFIER @36:39 id entry entries.entry [v package] : java.util.Map$Entry<java.lang.String,java.util.List<java.lang.Integer>> : java.util.Map$Entry<java.lang.String,java.util.List<java.lang.Integer>>
 TOKEN @36:39
 TOKEN @36:44
-IDENTIFIER @36:45 id getValue Entry.getValue [m abstract public] : ? () returns java.lang.Object throws [] sig java.util.Map$Entry#getValue()Ljava/lang/Object; : java.lang.Object
+IDENTIFIER @36:45 id getValue Entry.getValue [m abstract public] : ? () returns java.util.List<java.lang.Integer> throws [] sig java.util.Map$Entry#getValue()Ljava/lang/Object; : java.util.List<java.lang.Integer>
 TOKEN @36:45
 ARGUMENTS @36:53
 TOKEN @36:53
