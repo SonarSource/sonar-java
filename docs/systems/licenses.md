@@ -12,8 +12,7 @@ generated:
 Run from the repository root after [toolchain setup](build.md):
 
 ```bash
-mise exec -- mvn org.codehaus.mojo:license-maven-plugin:aggregate-add-third-party --batch-mode \
-  "-Dlicense.missingFile=${PWD}/missing-dep-licenses.properties" -DuseMissingFile
+mise run lint:licenses
 mise exec -- mvn clean package -PupdateLicenses
 ```
 

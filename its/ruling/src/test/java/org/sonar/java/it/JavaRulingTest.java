@@ -44,7 +44,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import javax.annotation.Nullable;
 import org.apache.commons.lang3.StringUtils;
 import org.assertj.core.api.Fail;
 import org.junit.AfterClass;
@@ -69,6 +68,7 @@ public class JavaRulingTest {
 
   private static final int LOGS_NUMBER_LINES = 200;
   private static final Logger LOG = LoggerFactory.getLogger(JavaRulingTest.class);
+  private static final Path PERFORMANCE_DIRECTORY = Paths.get("target", "performance");
 
   private static final String INCREMENTAL_ANALYSIS_KEY = "sonar.java.skipUnchanged";
   private static final String SONAR_CACHING_ENABLED_KEY = "sonar.analysisCache.enabled";
@@ -93,9 +93,10 @@ public class JavaRulingTest {
   );
 
   @ClassRule
-  public static TemporaryFolder tmpDumpOldFolder = new TemporaryFolder();
+  public static final TemporaryFolder TEMPORARY_FOLDER = new TemporaryFolder();
 
   private static Path effectiveDumpOldFolder;
+  private static Path performanceMeasurementsFolder;
 
   public static boolean isCommunityEditionTestsOnly() {
     return "true".equals(System.getProperty("communityEditionTestsOnly"));
@@ -115,6 +116,11 @@ public class JavaRulingTest {
     } else {
       orchestratorBuilder.setEdition(Edition.ENTERPRISE_LW)
         .activateLicense();
+      String githubToken = System.getenv("GITHUB_TOKEN");
+      if (StringUtils.isNotBlank(githubToken)) {
+        // The license loader otherwise prefers github.token from the Orchestrator configuration.
+        orchestratorBuilder.setOrchestratorProperty("github.token", githubToken);
+      }
     }
     return orchestratorBuilder.build();
   }
@@ -155,12 +161,14 @@ public class JavaRulingTest {
 
     prepareDumpOldFolder();
 
-    Files.createDirectories(Paths.get("target", "performance"));
+    performanceMeasurementsFolder = TEMPORARY_FOLDER.newFolder("performance").toPath();
   }
 
   @AfterClass
   public static void afterAllAnalysis() throws IOException {
-    PerformanceStatistics.generate(Paths.get("target","performance"));
+    if (performanceMeasurementsFolder != null) {
+      PerformanceStatistics.generateFromAnalyses(PERFORMANCE_DIRECTORY, performanceMeasurementsFolder);
+    }
   }
 
   private static void prepareDumpOldFolder() throws Exception {
@@ -168,7 +176,7 @@ public class JavaRulingTest {
     if (SUBSET_OF_ENABLED_RULES.isEmpty()) {
       effectiveDumpOldFolder = allRulesFolder.toAbsolutePath();
     } else {
-      effectiveDumpOldFolder = tmpDumpOldFolder.getRoot().toPath().toAbsolutePath();
+      effectiveDumpOldFolder = TEMPORARY_FOLDER.newFolder("expected").toPath().toAbsolutePath();
       Files.list(allRulesFolder)
         .filter(p -> p.toFile().isDirectory())
         .forEach(srcProjectDir -> copyDumpSubset(srcProjectDir, effectiveDumpOldFolder.resolve(srcProjectDir.getFileName())));
@@ -433,24 +441,20 @@ public class JavaRulingTest {
   }
 
   private static MavenBuild test_project(String projectName) throws IOException {
-    return test_project(projectName, null, projectName);
-  }
-
-  private static MavenBuild test_project(String projectKey, @Nullable String path, String projectName) throws IOException {
-    String pomLocation = "../sources/" + (path != null ? path + "/" : "") + projectName + "/pom.xml";
-    File pomFile = FileLocation.of(pomLocation).getFile().getCanonicalFile();
-    prepareProject(projectKey, projectName);
-    MavenBuild mavenBuild = MavenBuild.create().setPom(pomFile).setCleanPackageSonarGoals().addArgument("-DskipTests");
-    mavenBuild.setProperty("sonar.projectKey", projectKey);
-    return mavenBuild;
+    prepareProject(projectName, projectName);
+    return test_existing_project(projectName, projectName);
   }
 
   private static MavenBuild test_existing_project(String projectKey, String projectName) throws IOException {
     String pomLocation = "../sources/" + projectName + "/pom.xml";
     File pomFile = FileLocation.of(pomLocation).getFile().getCanonicalFile();
-    MavenBuild mavenBuild = MavenBuild.create().setPom(pomFile).setCleanPackageSonarGoals().addArgument("-DskipTests");
-    mavenBuild.setProperty("sonar.projectKey", projectKey);
-    return mavenBuild;
+    MavenBuild build = MavenBuild.create().setPom(pomFile).setCleanPackageSonarGoals()
+      .addArgument("-DskipTests")
+      .setProperty("sonar.projectKey", projectKey);
+    if (System.getenv("CI") == null) {
+      build.addArgument("-Ddevelocity.scan.disabled=true");
+    }
+    return build;
   }
 
   private static void prepareProject(String projectKey, String projectName) {
@@ -467,11 +471,12 @@ public class JavaRulingTest {
   }
 
   private static BuildResult executeBuildWithCommonProperties(Build<?> build, String projectName, boolean buildQuietly) throws IOException {
+    Path performanceMeasurement = Files.createTempDirectory(performanceMeasurementsFolder, projectName + "-")
+      .resolve(PerformanceStatistics.MEASUREMENT_FILE);
     build.setProperty("sonar.scanner.skipJreProvisioning", "true");
     build.setProperty("sonar.cpd.exclusions", "**/*")
       .setProperty("sonar.java.performance.measure", "true")
-      .setProperty("sonar.java.performance.measure.path",
-        Paths.get("target/performance/sonar.java.performance.measure.json").toAbsolutePath().toString())
+      .setProperty("sonar.java.performance.measure.path", performanceMeasurement.toAbsolutePath().toString())
       .setProperty("sonar.import_unknown_files", "true")
       .setProperty("sonar.skipPackageDesign", "true")
       .setProperty("sonar.lits.dump.old", effectiveDumpOldFolder.resolve(projectName).toString())

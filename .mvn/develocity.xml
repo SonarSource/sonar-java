@@ -2,6 +2,11 @@
   <server>
     <url>https://develocity.sonar.build</url>
   </server>
+  <buildScan>
+    <publishing>
+      <onlyIf><![CDATA[env['CI'] != null]]></onlyIf>
+    </publishing>
+  </buildScan>
   <buildCache>
     <local>
       <storeEnabled>#{env['CI'] == null}</storeEnabled>

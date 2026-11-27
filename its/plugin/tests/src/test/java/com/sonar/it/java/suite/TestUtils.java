@@ -20,8 +20,10 @@ import com.google.common.collect.Iterables;
 import com.sonar.orchestrator.build.BuildResult;
 import com.sonar.orchestrator.build.MavenBuild;
 import com.sonar.orchestrator.build.SonarScanner;
+import com.sonar.orchestrator.container.Edition;
 import com.sonar.orchestrator.container.Server;
 import com.sonar.orchestrator.junit4.OrchestratorRule;
+import com.sonar.orchestrator.junit4.OrchestratorRuleBuilder;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
@@ -38,6 +40,9 @@ import static com.sonar.orchestrator.container.Server.ADMIN_LOGIN;
 import static com.sonar.orchestrator.container.Server.ADMIN_PASSWORD;
 
 public class TestUtils {
+  // Match the scanner version used by Orchestrator's MavenBuild goal helpers.
+  static final String MAVEN_SCANNER_GOAL = "org.sonarsource.scanner.maven:sonar-maven-plugin:4.0.0.4121:sonar";
+
   private static final File home;
 
   static {
@@ -101,8 +106,24 @@ public class TestUtils {
   }
 
   public static MavenBuild createMavenBuild() {
-    return MavenBuild.create()
+    MavenBuild build = MavenBuild.create()
       .setProperty("sonar.scanner.skipJreProvisioning", "true");
+    if (System.getenv("CI") == null) {
+      build.addArgument("-Ddevelocity.scan.disabled=true");
+    }
+    return build;
+  }
+
+  public static OrchestratorRuleBuilder licensedEnterpriseOrchestratorBuilder() {
+    OrchestratorRuleBuilder builder = OrchestratorRule.builderEnv()
+      .setEdition(Edition.ENTERPRISE_LW)
+      .activateLicense();
+    String githubToken = System.getenv("GITHUB_TOKEN");
+    if (githubToken != null && !githubToken.isBlank()) {
+      // The license loader otherwise prefers github.token from the Orchestrator configuration.
+      builder.setOrchestratorProperty("github.token", githubToken);
+    }
+    return builder;
   }
 
 

@@ -17,6 +17,7 @@
     <surefire.argLine>-server</surefire.argLine>
     <maven.test.redirectTestOutputToFile>false</maven.test.redirectTestOutputToFile>
     <maven.deploy.skip>true</maven.deploy.skip>
+    <ruling.test>org.sonar.java.it.JavaRulingTest</ruling.test>
   </properties>
 
   <dependencies>
@@ -102,32 +103,27 @@
     </profile>
     <profile>
       <id>without-sonarqube-project</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-surefire-plugin</artifactId>
-            <configuration>
-              <test>!org.sonar.java.it.JavaRulingTest#sonarqube_server</test>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
+      <properties>
+        <ruling.test>!org.sonar.java.it.JavaRulingTest#sonarqube_server</ruling.test>
+      </properties>
     </profile>
     <profile>
       <id>only-sonarqube-project</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-surefire-plugin</artifactId>
-            <configuration>
-              <test>org.sonar.java.it.JavaRulingTest#sonarqube_server</test>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
+      <properties>
+        <ruling.test>org.sonar.java.it.JavaRulingTest#sonarqube_server</ruling.test>
+      </properties>
     </profile>
   </profiles>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <test>${ruling.test}</test>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 
 </project>

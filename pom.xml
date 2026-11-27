@@ -111,6 +111,8 @@
     <mockito-core.version>5.24.0</mockito-core.version>
     <test-java-agent-directory>${project.build.directory}/test-java-agent-libs</test-java-agent-directory>
     <jacoco-agent-jar>org.jacoco.agent-${version.jacoco.plugin}-runtime.jar</jacoco-agent-jar>
+    <jacoco.skip>false</jacoco.skip>
+    <jacoco-agent-arg>-javaagent:"${test-java-agent-directory}/${jacoco-agent-jar}=destfile=${project.build.directory}/jacoco.exec"</jacoco-agent-arg>
     <mockito-agent-jar>mockito-core-${mockito-core.version}.jar</mockito-agent-jar>
 
     <!-- Keep direct logging dependencies aligned with the versions provided by the Plugin API. -->
@@ -432,6 +434,7 @@
               <goal>copy</goal>
             </goals>
             <configuration>
+              <skip>${jacoco.skip}</skip>
               <artifactItems>
                 <artifactItem>
                   <groupId>org.jacoco</groupId>
@@ -441,6 +444,17 @@
                   <outputDirectory>${test-java-agent-directory}</outputDirectory>
                   <destFileName>${jacoco-agent-jar}</destFileName>
                 </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+          <execution>
+            <id>download-mockito-agent</id>
+            <phase>process-test-resources</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
                 <artifactItem>
                   <groupId>org.mockito</groupId>
                   <artifactId>mockito-core</artifactId>
@@ -461,10 +475,25 @@
           <environmentVariables>
             <M2_REPO>${settings.localRepository}</M2_REPO>
           </environmentVariables>
-          <argLine> -Dnet.bytebuddy.experimental=true -javaagent:"${test-java-agent-directory}/${jacoco-agent-jar}=destfile=${project.build.directory}/jacoco.exec" -javaagent:"${test-java-agent-directory}/${mockito-agent-jar}" </argLine>
+          <argLine> -Dnet.bytebuddy.experimental=true ${jacoco-agent-arg} -javaagent:"${test-java-agent-directory}/${mockito-agent-jar}" </argLine>
         </configuration>
       </plugin>
     </plugins>
   </build>
+
+  <profiles>
+    <profile>
+      <id>skip-coverage</id>
+      <activation>
+        <property>
+          <name>jacoco.skip</name>
+          <value>true</value>
+        </property>
+      </activation>
+      <properties>
+        <jacoco-agent-arg></jacoco-agent-arg>
+      </properties>
+    </profile>
+  </profiles>
 
 </project>
