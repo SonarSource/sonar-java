@@ -28,7 +28,7 @@ import org.sonar.api.config.Configuration;
 public final class SemSitterFlag {
 
   public static final String ENABLED_PROPERTY = "sonar.java.internal.semsitter.enabled";
-  static final boolean DEFAULT = false;
+  static final boolean DEFAULT = true;
 
   private SemSitterFlag() {
   }

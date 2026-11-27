@@ -21,6 +21,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,9 +31,9 @@ import org.sonar.java.model.JParserProvider;
 import org.sonar.plugins.java.api.JavaVersion;
 
 /**
- * Offers the SemSitter frontend when the analysis is allowed to use it: a SemSitter executable is known and
- * {@link SemSitterFlag} is on, that is when SonarQube Cloud sent {@value SemSitterFlag#ENABLED_PROPERTY}. Once chosen,
- * the SemSitter frontend never hands files to another frontend.
+ * Offers the SemSitter frontend when the analysis is allowed to use it: a SemSitter executable is known, from
+ * {@value #EXECUTABLE_PROPERTY}, {@value #EXECUTABLE_ENVIRONMENT} or the server bundled for the Linux performance-validation
+ * runners, and {@link SemSitterFlag} is on. Once chosen, the SemSitter frontend never hands files to another frontend.
  */
 public final class SemSitterParserProvider implements JParserProvider {
 
@@ -43,27 +44,29 @@ public final class SemSitterParserProvider implements JParserProvider {
 
   private final UnaryOperator<String> environment;
   private final DocumentTranslator translator;
+  private final Supplier<Optional<Path>> bundledServer;
   private volatile boolean enabled;
   private final AtomicReference<Path> executable = new AtomicReference<>();
 
   public SemSitterParserProvider() {
-    this(System::getenv, SemSitterTranslator::translate);
+    this(System::getenv, SemSitterTranslator::translate, BundledServer::extract);
   }
 
-  SemSitterParserProvider(UnaryOperator<String> environment, DocumentTranslator translator) {
+  SemSitterParserProvider(UnaryOperator<String> environment, DocumentTranslator translator, Supplier<Optional<Path>> bundledServer) {
     this.environment = environment;
     this.translator = translator;
+    this.bundledServer = bundledServer;
   }
 
   @Override
   public void configure(Configuration configuration) {
     enabled = false;
     executable.set(null);
-    Optional<String> path = configuredExecutable(configuration);
-    if (path.isEmpty()) {
+    Path server = configuredExecutable(configuration).map(Path::of).or(bundledServer).orElse(null);
+    if (server == null) {
       return;
     }
-    executable.set(Path.of(path.get()));
+    executable.set(server);
     enabled = SemSitterFlag.isEnabled(configuration);
     if (enabled) {
       LOG.info("The Java analyzer will use the SemSitter frontend.");

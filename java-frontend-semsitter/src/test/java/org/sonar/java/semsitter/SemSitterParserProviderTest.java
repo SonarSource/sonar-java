@@ -20,6 +20,7 @@ import java.io.File;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.UnaryOperator;
 import org.junit.jupiter.api.Test;
 import org.sonar.api.config.Configuration;
@@ -109,6 +110,24 @@ class SemSitterParserProviderTest {
   }
 
   @Test
+  void bundled_server_enables_the_frontend() {
+    SemSitterParserProvider provider = new SemSitterParserProvider(Map.<String, String>of()::get, translator, () -> Optional.of(Path.of("bundled-server")));
+
+    provider.configure(settings(Map.of()));
+
+    assertThat(provider.isEnabled()).isTrue();
+  }
+
+  @Test
+  void bundled_server_respects_the_property_turning_the_frontend_off() {
+    SemSitterParserProvider provider = new SemSitterParserProvider(Map.<String, String>of()::get, translator, () -> Optional.of(Path.of("bundled-server")));
+
+    provider.configure(settings(Map.of(ENABLED, "false")));
+
+    assertThat(provider.isEnabled()).isFalse();
+  }
+
+  @Test
   void created_parser_is_the_semsitter_parser() {
     SemSitterParserProvider provider = provider(Map.of());
     provider.configure(settings(Map.of(EXECUTABLE, Path.of("semsitter").toString(), ENABLED, "true")));
@@ -120,7 +139,7 @@ class SemSitterParserProviderTest {
 
   private SemSitterParserProvider provider(Map<String, String> environment) {
     UnaryOperator<String> lookup = environment::get;
-    return new SemSitterParserProvider(lookup, translator);
+    return new SemSitterParserProvider(lookup, translator, Optional::empty);
   }
 
   private static Configuration settings(Map<String, String> properties) {

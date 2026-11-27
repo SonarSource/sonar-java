@@ -31,8 +31,8 @@ class SemSitterFlagTest {
   }
 
   @Test
-  void absent_property_keeps_the_default_frontend() {
-    assertThat(SemSitterFlag.isEnabled(configuration(Map.of()))).isEqualTo(SemSitterFlag.DEFAULT).isFalse();
+  void absent_property_gives_the_flag_default() {
+    assertThat(SemSitterFlag.isEnabled(configuration(Map.of()))).isEqualTo(SemSitterFlag.DEFAULT).isTrue();
   }
 
   @Test
