@@ -130,12 +130,12 @@ TOKEN @9:53
 LIST
 LIST
 TOKEN @9:55
-ANNOTATION_TYPE @11:3 class TypeSyntax.Tagged [t static package interface] : TypeSyntax$Tagged super java.lang.Object interfaces [java.lang.annotation.Annotation]
-  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing TypeSyntax flags [static, package, interface] members [] lookupToString 0 outermost TypeSyntax annotation true subtypeOf [java.lang.Object, java.lang.annotation.Annotation] superTypes [java.lang.Object, java.lang.annotation.Annotation] numerical false wrapper false raw false declaring Tagged
+ANNOTATION_TYPE @11:3 class TypeSyntax.Tagged [t static package interface] : TypeSyntax$Tagged @java.lang.annotation.Target super java.lang.Object interfaces [java.lang.annotation.Annotation]
+  details declared true usages 2 metadata [java.lang.annotation.Target(value={ElementType.TYPE_USE})] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [java.lang.annotation.Target tree true values 1 annotated true] typeArguments [] enclosing TypeSyntax flags [static, package, interface] members [] lookupToString 0 outermost TypeSyntax annotation true subtypeOf [java.lang.Object, java.lang.annotation.Annotation] superTypes [java.lang.Object, java.lang.annotation.Annotation] numerical false wrapper false raw false declaring Tagged
 MODIFIERS @11:3
 ANNOTATION @11:3 : java.lang.annotation.Target
 TOKEN @11:3
-IDENTIFIER @11:4 id Target java.lang.annotation.Target [t public interface] : java.lang.annotation.Target : java.lang.annotation.Target
+IDENTIFIER @11:4 id Target java.lang.annotation.Target [t public interface] : java.lang.annotation.Target @java.lang.annotation.Documented,java.lang.annotation.Retention,java.lang.annotation.Target : java.lang.annotation.Target
 TOKEN @11:4
 ARGUMENTS @11:10
 TOKEN @11:10
@@ -148,7 +148,7 @@ TOKEN @11:23
 TOKEN @11:31
 TOKEN @12:3
 TOKEN @12:4
-IDENTIFIER @12:14 id Tagged TypeSyntax.Tagged [t static package interface] : TypeSyntax$Tagged : TypeSyntax$Tagged
+IDENTIFIER @12:14 id Tagged TypeSyntax.Tagged [t static package interface] : TypeSyntax$Tagged @java.lang.annotation.Target : TypeSyntax$Tagged
 TOKEN @12:14
 TYPE_PARAMETERS
 LIST
@@ -156,7 +156,7 @@ LIST
 TOKEN @12:21
 TOKEN @13:3
 VARIABLE @15:3 var TypeSyntax.upper [v package] : java.util.List<java.lang.Number>
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing TypeSyntax flags [package] local false parameter false effectivelyFinal false constant null
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [[]] enclosing TypeSyntax flags [package] local false parameter false effectivelyFinal false constant null
 MODIFIERS
 PARAMETERIZED_TYPE @15:3 : java.util.List<java.lang.Number>
 IDENTIFIER @15:3 id List java.util.List [t public interface] : java.util.List<java.lang.Number> : java.util.List<java.lang.Number>
@@ -173,7 +173,7 @@ IDENTIFIER @15:26 id upper TypeSyntax.upper [v package] : java.util.List<java.la
 TOKEN @15:26
 TOKEN @15:31
 VARIABLE @16:3 var TypeSyntax.lower [v package] : java.util.List<java.lang.Object>
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing TypeSyntax flags [package] local false parameter false effectivelyFinal false constant null
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [[]] enclosing TypeSyntax flags [package] local false parameter false effectivelyFinal false constant null
 MODIFIERS
 PARAMETERIZED_TYPE @16:3 : java.util.List<java.lang.Object>
 IDENTIFIER @16:3 id List java.util.List [t public interface] : java.util.List<java.lang.Object> : java.util.List<java.lang.Object>
@@ -183,14 +183,14 @@ TOKEN @16:7
 SUPER_WILDCARD @16:8
 TOKEN @16:8
 TOKEN @16:10
-IDENTIFIER @16:16 id Integer java.lang.Integer [t final public] : java.lang.Integer : java.lang.Integer
+IDENTIFIER @16:16 id Integer java.lang.Integer [t final public] : java.lang.Integer @jdk.internal.ValueBased : java.lang.Integer
 TOKEN @16:16
 TOKEN @16:23
 IDENTIFIER @16:25 id lower TypeSyntax.lower [v package] : java.util.List<java.lang.Object> : java.util.List<java.lang.Object>
 TOKEN @16:25
 TOKEN @16:30
 VARIABLE @17:3 var TypeSyntax.unbounded [v package] : java.util.List<java.lang.Object>
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing TypeSyntax flags [package] local false parameter false effectivelyFinal false constant null
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [[]] enclosing TypeSyntax flags [package] local false parameter false effectivelyFinal false constant null
 MODIFIERS
 PARAMETERIZED_TYPE @17:3 : java.util.List<java.lang.Object>
 IDENTIFIER @17:3 id List java.util.List [t public interface] : java.util.List<java.lang.Object> : java.util.List<java.lang.Object>
@@ -204,7 +204,7 @@ IDENTIFIER @17:11 id unbounded TypeSyntax.unbounded [v package] : java.util.List
 TOKEN @17:11
 TOKEN @17:20
 VARIABLE @18:3 var TypeSyntax.nested [v package] : java.util.Map<K erasure java.lang.Object,java.util.List<V erasure java.lang.Number>>
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing TypeSyntax flags [package] local false parameter false effectivelyFinal false constant null
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [[], []] enclosing TypeSyntax flags [package] local false parameter false effectivelyFinal false constant null
 MODIFIERS
 PARAMETERIZED_TYPE @18:3 : java.util.Map<K erasure java.lang.Object,java.util.List<V erasure java.lang.Number>>
 IDENTIFIER @18:3 id Map java.util.Map [t public interface] : java.util.Map<K erasure java.lang.Object,java.util.List<V erasure java.lang.Number>> : java.util.Map<K erasure java.lang.Object,java.util.List<V erasure java.lang.Number>>
@@ -227,7 +227,7 @@ IDENTIFIER @18:19 id nested TypeSyntax.nested [v package] : java.util.Map<K eras
 TOKEN @18:19
 TOKEN @18:25
 VARIABLE @19:3 var TypeSyntax.arrayOfLists [v package] : java.util.List[]
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing TypeSyntax flags [package] local false parameter false effectivelyFinal false constant null
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing TypeSyntax flags [package] local false parameter false effectivelyFinal false constant null
 MODIFIERS
 ARRAY_TYPE @19:3 : java.util.List[]
 PARAMETERIZED_TYPE @19:3 : java.util.List<java.lang.String>
@@ -244,7 +244,7 @@ IDENTIFIER @19:18 id arrayOfLists TypeSyntax.arrayOfLists [v package] : java.uti
 TOKEN @19:18
 TOKEN @19:30
 VARIABLE @20:3 var TypeSyntax.qualified [v package] : java.util.Set<java.lang.String>
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing TypeSyntax flags [package] local false parameter false effectivelyFinal false constant null
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [[]] enclosing TypeSyntax flags [package] local false parameter false effectivelyFinal false constant null
 MODIFIERS
 PARAMETERIZED_TYPE @20:3 : java.util.Set<java.lang.String>
 MEMBER_SELECT @20:3 : java.util.Set<java.lang.String>
@@ -273,21 +273,21 @@ TOKEN @20:33
 IDENTIFIER @20:35 id qualified TypeSyntax.qualified [v package] : java.util.Set<java.lang.String> : java.util.Set<java.lang.String>
 TOKEN @20:35
 TOKEN @20:44
-VARIABLE @21:3 var TypeSyntax.annotated [v package] : java.lang.String
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing TypeSyntax flags [package] local false parameter false effectivelyFinal false constant null
+VARIABLE @21:3 var TypeSyntax.annotated [v package] : java.lang.String @TypeSyntax$Tagged
+  details declared true usages 0 metadata [TypeSyntax$Tagged()] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [TypeSyntax$Tagged tree true values 0 annotated true] typeArguments [] enclosing TypeSyntax flags [package] local false parameter false effectivelyFinal false constant null
 MODIFIERS @21:3
 ANNOTATION @21:3 : TypeSyntax$Tagged
 TOKEN @21:3
-IDENTIFIER @21:4 id Tagged TypeSyntax.Tagged [t static package interface] : TypeSyntax$Tagged : TypeSyntax$Tagged
+IDENTIFIER @21:4 id Tagged TypeSyntax.Tagged [t static package interface] : TypeSyntax$Tagged @java.lang.annotation.Target : TypeSyntax$Tagged
 TOKEN @21:4
 ARGUMENTS
 IDENTIFIER @21:11 id String java.lang.String [t final public] : java.lang.String : java.lang.String
 TOKEN @21:11
-IDENTIFIER @21:18 id annotated TypeSyntax.annotated [v package] : java.lang.String : java.lang.String
+IDENTIFIER @21:18 id annotated TypeSyntax.annotated [v package] : java.lang.String @TypeSyntax$Tagged : java.lang.String
 TOKEN @21:18
 TOKEN @21:27
 VARIABLE @22:3 var TypeSyntax.annotatedArgument [v package] : java.util.List<java.lang.String>
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing TypeSyntax flags [package] local false parameter false effectivelyFinal false constant null
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [[TypeSyntax$Tagged tree true values 0 annotated true]] enclosing TypeSyntax flags [package] local false parameter false effectivelyFinal false constant null
 MODIFIERS
 PARAMETERIZED_TYPE @22:3 : java.util.List<java.lang.String>
 IDENTIFIER @22:3 id List java.util.List [t public interface] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
@@ -297,7 +297,7 @@ TOKEN @22:7
 IDENTIFIER @22:8 id String java.lang.String [t final public] : java.lang.String : java.lang.String
 ANNOTATION @22:8 : TypeSyntax$Tagged
 TOKEN @22:8
-IDENTIFIER @22:9 id Tagged TypeSyntax.Tagged [t static package interface] : TypeSyntax$Tagged : TypeSyntax$Tagged
+IDENTIFIER @22:9 id Tagged TypeSyntax.Tagged [t static package interface] : TypeSyntax$Tagged @java.lang.annotation.Target : TypeSyntax$Tagged
 TOKEN @22:9
 ARGUMENTS
 TOKEN @22:16
@@ -306,7 +306,7 @@ IDENTIFIER @22:24 id annotatedArgument TypeSyntax.annotatedArgument [v package] 
 TOKEN @22:24
 TOKEN @22:41
 VARIABLE @23:3 var TypeSyntax.entry [v package] : java.util.Map$Entry<K erasure java.lang.Object,V erasure java.lang.Number>
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing TypeSyntax flags [package] local false parameter false effectivelyFinal false constant null
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [[], []] enclosing TypeSyntax flags [package] local false parameter false effectivelyFinal false constant null
 MODIFIERS
 PARAMETERIZED_TYPE @23:3 : java.util.Map$Entry<K erasure java.lang.Object,V erasure java.lang.Number>
 MEMBER_SELECT @23:3 : java.util.Map$Entry<K erasure java.lang.Object,V erasure java.lang.Number>
@@ -327,7 +327,7 @@ IDENTIFIER @23:19 id entry TypeSyntax.entry [v package] : java.util.Map$Entry<K 
 TOKEN @23:19
 TOKEN @23:24
 METHOD @25:3 method TypeSyntax.bounded [m package] : ? (T erasure java.util.Collection) returns T erasure java.util.Collection throws [] sig TypeSyntax#bounded(Ljava/util/Collection;)Ljava/util/Collection; overrides false
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing TypeSyntax flags [package] overridden [] overridable true generic true default false synchronized false varargs false native false parameters [input] parameterMetadata []
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing TypeSyntax flags [package] overridden [] overridable true generic true default false synchronized false varargs false native false parameters [input] parameterMetadata []
 MODIFIERS
 TYPE_PARAMETERS @25:3
 TOKEN @25:3
@@ -357,7 +357,7 @@ IDENTIFIER @25:54 id bounded TypeSyntax.bounded [m package] : ? (T erasure java.
 TOKEN @25:54
 TOKEN @25:61
 VARIABLE @25:62 var bounded.input [v package] : T erasure java.util.Collection
-  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing TypeSyntax flags [package] local true parameter true effectivelyFinal true constant null owner bounded TypeSyntax#bounded(Ljava/util/Collection;)Ljava/util/Collection; [package] returns T erasure java.util.Collection parameters 1 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing TypeSyntax type true kinds truefalsefalse other falsefalsefalsefalsetruetrue1falsefalse
+  details declared true usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing TypeSyntax flags [package] local true parameter true effectivelyFinal true constant null owner bounded TypeSyntax#bounded(Ljava/util/Collection;)Ljava/util/Collection; [package] returns T erasure java.util.Collection parameters 1 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing TypeSyntax type true kinds truefalsefalse other falsefalsefalsefalsetruetrue1falsefalse
 MODIFIERS
 IDENTIFIER @25:62 id T bounded.T [t package] : T erasure java.util.Collection : T erasure java.util.Collection
 TOKEN @25:62
@@ -373,7 +373,7 @@ TOKEN @26:12
 TOKEN @26:17
 TOKEN @27:3
 METHOD @29:3 method TypeSyntax.pair [m package] : ? (A erasure java.lang.Object,B erasure java.lang.Object) returns java.util.Map<A erasure java.lang.Object,B erasure java.lang.Object> throws [] sig TypeSyntax#pair(Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Map; overrides false
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing TypeSyntax flags [package] overridden [] overridable true generic true default false synchronized false varargs false native false parameters [a, b] parameterMetadata []
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [[], []] enclosing TypeSyntax flags [package] overridden [] overridable true generic true default false synchronized false varargs false native false parameters [a, b] parameterMetadata [[] nullability NO_ANNOTATION/VARIABLE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [], [] nullability NO_ANNOTATION/VARIABLE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups []]
 MODIFIERS
 TYPE_PARAMETERS @29:3
 TOKEN @29:3
@@ -400,7 +400,7 @@ IDENTIFIER @29:20 id pair TypeSyntax.pair [m package] : ? (A erasure java.lang.O
 TOKEN @29:20
 TOKEN @29:24
 VARIABLE @29:25 var pair.a [v package] : A erasure java.lang.Object
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing TypeSyntax flags [package] local true parameter true effectivelyFinal true constant null owner pair TypeSyntax#pair(Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Map; [package] returns java.util.Map<A erasure java.lang.Object,B erasure java.lang.Object> parameters 2 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing TypeSyntax type true kinds truefalsefalse other falsefalsefalsefalsetruetrue2falsefalse
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing TypeSyntax flags [package] local true parameter true effectivelyFinal true constant null owner pair TypeSyntax#pair(Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Map; [package] returns java.util.Map<A erasure java.lang.Object,B erasure java.lang.Object> parameters 2 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing TypeSyntax type true kinds truefalsefalse other falsefalsefalsefalsetruetrue2falsefalse
 MODIFIERS
 IDENTIFIER @29:25 id A pair.A [t package] : A erasure java.lang.Object : A erasure java.lang.Object
 TOKEN @29:25
@@ -408,7 +408,7 @@ IDENTIFIER @29:27 id a pair.a [v package] : A erasure java.lang.Object : A erasu
 TOKEN @29:27
 TOKEN @29:28
 VARIABLE @29:30 var pair.b [v package] : B erasure java.lang.Object
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing TypeSyntax flags [package] local true parameter true effectivelyFinal true constant null owner pair TypeSyntax#pair(Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Map; [package] returns java.util.Map<A erasure java.lang.Object,B erasure java.lang.Object> parameters 2 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing TypeSyntax type true kinds truefalsefalse other falsefalsefalsefalsetruetrue2falsefalse
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing TypeSyntax flags [package] local true parameter true effectivelyFinal true constant null owner pair TypeSyntax#pair(Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Map; [package] returns java.util.Map<A erasure java.lang.Object,B erasure java.lang.Object> parameters 2 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing TypeSyntax type true kinds truefalsefalse other falsefalsefalsefalsetruetrue2falsefalse
 MODIFIERS
 IDENTIFIER @29:30 id B pair.B [t package] : B erasure java.lang.Object : B erasure java.lang.Object
 TOKEN @29:30
@@ -424,7 +424,7 @@ TOKEN @30:12
 TOKEN @30:16
 TOKEN @31:3
 METHOD @33:3 method TypeSyntax.multiCatch [m package] : ? () returns void throws [] sig TypeSyntax#multiCatch()V overrides false
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing TypeSyntax flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing TypeSyntax flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
 MODIFIERS
 TYPE_PARAMETERS
 PRIMITIVE_TYPE @33:3 : void
@@ -442,7 +442,7 @@ TOKEN @34:9
 THROW_STATEMENT @35:7
 TOKEN @35:7
 NEW_CLASS @35:13 new IOException.<init> [m public] : ? () returns void throws [] sig java.io.IOException#<init>()V : java.io.IOException
-  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing IOException flags [public] overridden [Exception.<init>[], Throwable.<init>[], Object.<init>[]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+  details declared false usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing IOException flags [public] overridden [Exception.<init>[], Throwable.<init>[], Object.<init>[jdk.internal.vm.annotation.IntrinsicCandidate tree false values 0 annotated true]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
 TOKEN @35:13
 IDENTIFIER @35:17 id IOException IOException.<init> [m public] : ? () returns void throws [] sig java.io.IOException#<init>()V : java.io.IOException
 TOKEN @35:17
@@ -455,7 +455,7 @@ CATCH @36:7
 TOKEN @36:7
 TOKEN @36:13
 VARIABLE @36:14 var multiCatch.e [v final package] : java.lang.Exception
-  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing TypeSyntax flags [final, package] local true parameter false effectivelyFinal true constant null owner multiCatch TypeSyntax#multiCatch()V [package] returns void parameters 0 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing TypeSyntax type true kinds truefalsefalse other falsefalsefalsefalsetruefalse0falsefalse
+  details declared true usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing TypeSyntax flags [final, package] local true parameter false effectivelyFinal true constant null owner multiCatch TypeSyntax#multiCatch()V [package] returns void parameters 0 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing TypeSyntax type true kinds truefalsefalse other falsefalsefalsefalsetruefalse0falsefalse
 MODIFIERS
 UNION_TYPE @36:14
 LIST @36:14
@@ -471,7 +471,7 @@ BLOCK @36:48
 TOKEN @36:48
 EXPRESSION_STATEMENT @37:7
 METHOD_INVOCATION @37:7 call Throwable.printStackTrace [m public] : ? () returns void throws [] sig java.lang.Throwable#printStackTrace()V : void
-  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Throwable flags [public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+  details declared false usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Throwable flags [public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
 MEMBER_SELECT @37:7 : ?
 IDENTIFIER @37:7 id e multiCatch.e [v final package] : java.lang.Exception : java.lang.Exception
 TOKEN @37:7
@@ -485,7 +485,7 @@ TOKEN @37:26
 TOKEN @38:5
 TOKEN @39:3
 METHOD @41:3 method TypeSyntax.arrayReturn [m package] : ? () returns int[] throws [] sig TypeSyntax#arrayReturn()[I overrides false
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing TypeSyntax flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing TypeSyntax flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
 MODIFIERS
 TYPE_PARAMETERS
 ARRAY_TYPE @41:3 : int[][]
@@ -509,7 +509,7 @@ TOKEN @42:12
 TOKEN @42:16
 TOKEN @43:3
 METHOD @45:3 method TypeSyntax.varargs [m package] : ? (java.util.List[]) returns void throws [] sig TypeSyntax#varargs([Ljava/util/List;)V overrides false
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing TypeSyntax flags [package] overridden [] overridable true generic false default false synchronized false varargs true native false parameters [lists] parameterMetadata []
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing TypeSyntax flags [package] overridden [] overridable true generic false default false synchronized false varargs true native false parameters [lists] parameterMetadata []
 MODIFIERS
 TYPE_PARAMETERS
 PRIMITIVE_TYPE @45:3 : void
@@ -518,7 +518,7 @@ IDENTIFIER @45:8 id varargs TypeSyntax.varargs [m package] : ? (java.util.List[]
 TOKEN @45:8
 TOKEN @45:15
 VARIABLE @45:16 var varargs.lists [v package] : java.util.List[]
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing TypeSyntax flags [package] local true parameter true effectivelyFinal true constant null owner varargs TypeSyntax#varargs([Ljava/util/List;)V [package] returns void parameters 1 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing TypeSyntax type true kinds truefalsefalse other falsefalsetruefalsetruefalse1falsefalse
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing TypeSyntax flags [package] local true parameter true effectivelyFinal true constant null owner varargs TypeSyntax#varargs([Ljava/util/List;)V [package] returns void parameters 1 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing TypeSyntax type true kinds truefalsefalse other falsefalsetruefalsetruefalse1falsefalse
 MODIFIERS
 ARRAY_TYPE @45:16 : java.util.List[]
 PARAMETERIZED_TYPE @45:16 : java.util.List<java.lang.Number>

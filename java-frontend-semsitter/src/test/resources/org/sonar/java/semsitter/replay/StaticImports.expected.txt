@@ -133,7 +133,7 @@ LIST
 LIST
 TOKEN @10:21
 METHOD @11:3 method StaticImports.area [m package] : ? (double) returns double throws [] sig StaticImports#area(D)D overrides false
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing StaticImports flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [radius] parameterMetadata []
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing StaticImports flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [radius] parameterMetadata []
 MODIFIERS
 TYPE_PARAMETERS
 PRIMITIVE_TYPE @11:3 : double
@@ -142,7 +142,7 @@ IDENTIFIER @11:10 id area StaticImports.area [m package] : ? (double) returns do
 TOKEN @11:10
 TOKEN @11:14
 VARIABLE @11:15 var area.radius [v package] : double
-  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing StaticImports flags [package] local true parameter true effectivelyFinal true constant null owner area StaticImports#area(D)D [package] returns double parameters 1 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing StaticImports type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+  details declared true usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing StaticImports flags [package] local true parameter true effectivelyFinal true constant null owner area StaticImports#area(D)D [package] returns double parameters 1 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing StaticImports type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
 MODIFIERS
 PRIMITIVE_TYPE @11:15 : double
 TOKEN @11:15
@@ -157,9 +157,9 @@ MULTIPLY @12:12 : double
 IDENTIFIER @12:12 id PI Math.PI [v static final public] : double : double = 3.141592653589793
 TOKEN @12:12
 TOKEN @12:15
-METHOD_INVOCATION @12:17 call Math.pow [m static public] : ? (double,double) returns double throws [] sig java.lang.Math#pow(DD)D : double
-  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Math flags [static, public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [arg0, arg1] parameterMetadata []
-IDENTIFIER @12:17 id pow Math.pow [m static public] : ? (double,double) returns double throws [] sig java.lang.Math#pow(DD)D : double
+METHOD_INVOCATION @12:17 call Math.pow [m static public] : ? @jdk.internal.vm.annotation.IntrinsicCandidate (double,double) returns double throws [] sig java.lang.Math#pow(DD)D : double
+  details declared false usages 1 metadata [jdk.internal.vm.annotation.IntrinsicCandidate()] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [jdk.internal.vm.annotation.IntrinsicCandidate tree false values 0 annotated true] typeArguments [] enclosing Math flags [static, public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [arg0, arg1] parameterMetadata []
+IDENTIFIER @12:17 id pow Math.pow [m static public] : ? @jdk.internal.vm.annotation.IntrinsicCandidate (double,double) returns double throws [] sig java.lang.Math#pow(DD)D : double
 TOKEN @12:17
 ARGUMENTS @12:20
 TOKEN @12:20
@@ -172,7 +172,7 @@ TOKEN @12:30
 TOKEN @12:31
 TOKEN @13:3
 METHOD @15:3 method StaticImports.timeout [m package] : ? () returns long throws [] sig StaticImports#timeout()J overrides false
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing StaticImports flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing StaticImports flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
 MODIFIERS
 TYPE_PARAMETERS
 PRIMITIVE_TYPE @15:3 : long
@@ -184,7 +184,7 @@ TOKEN @15:16
 BLOCK @15:18
 TOKEN @15:18
 VARIABLE @16:5 var timeout.unit [v package] : java.util.concurrent.TimeUnit
-  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing StaticImports flags [package] local true parameter false effectivelyFinal true constant null owner timeout StaticImports#timeout()J [package] returns long parameters 0 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing StaticImports type true kinds truefalsefalse other falsefalsefalsefalsetruefalse0falsefalse
+  details declared true usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing StaticImports flags [package] local true parameter false effectivelyFinal true constant null owner timeout StaticImports#timeout()J [package] returns long parameters 0 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing StaticImports type true kinds truefalsefalse other falsefalsefalsefalsetruefalse0falsefalse
 MODIFIERS
 IDENTIFIER @16:5 id TimeUnit java.util.concurrent.TimeUnit [t final public enum] : java.util.concurrent.TimeUnit : java.util.concurrent.TimeUnit
 TOKEN @16:5
@@ -197,7 +197,7 @@ TOKEN @16:28
 RETURN_STATEMENT @17:5
 TOKEN @17:5
 METHOD_INVOCATION @17:12 call TimeUnit.toMillis [m public] : ? (long) returns long throws [] sig java.util.concurrent.TimeUnit#toMillis(J)J : long
-  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing TimeUnit flags [public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+  details declared false usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing TimeUnit flags [public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
 MEMBER_SELECT @17:12 : ?
 IDENTIFIER @17:12 id unit timeout.unit [v package] : java.util.concurrent.TimeUnit : java.util.concurrent.TimeUnit
 TOKEN @17:12
@@ -206,18 +206,18 @@ IDENTIFIER @17:17 id toMillis TimeUnit.toMillis [m public] : ? (long) returns lo
 TOKEN @17:17
 ARGUMENTS @17:25
 TOKEN @17:25
-METHOD_INVOCATION @17:26 call Math.max [m static public] : ? (int,int) returns int throws [] sig java.lang.Math#max(II)I : int
-  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Math flags [static, public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [arg0, arg1] parameterMetadata []
-IDENTIFIER @17:26 id max Math.max [m static public] : ? (int,int) returns int throws [] sig java.lang.Math#max(II)I : int
+METHOD_INVOCATION @17:26 call Math.max [m static public] : ? @jdk.internal.vm.annotation.IntrinsicCandidate (int,int) returns int throws [] sig java.lang.Math#max(II)I : int
+  details declared false usages 1 metadata [jdk.internal.vm.annotation.IntrinsicCandidate()] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [jdk.internal.vm.annotation.IntrinsicCandidate tree false values 0 annotated true] typeArguments [] enclosing Math flags [static, public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [arg0, arg1] parameterMetadata []
+IDENTIFIER @17:26 id max Math.max [m static public] : ? @jdk.internal.vm.annotation.IntrinsicCandidate (int,int) returns int throws [] sig java.lang.Math#max(II)I : int
 TOKEN @17:26
 ARGUMENTS @17:29
 TOKEN @17:29
 INT_LITERAL @17:30 : int = 1
 TOKEN @17:30
 TOKEN @17:31
-METHOD_INVOCATION @17:33 call Math.abs [m static public] : ? (int) returns int throws [] sig java.lang.Math#abs(I)I : int
-  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Math flags [static, public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
-IDENTIFIER @17:33 id abs Math.abs [m static public] : ? (int) returns int throws [] sig java.lang.Math#abs(I)I : int
+METHOD_INVOCATION @17:33 call Math.abs [m static public] : ? @jdk.internal.vm.annotation.IntrinsicCandidate (int) returns int throws [] sig java.lang.Math#abs(I)I : int
+  details declared false usages 1 metadata [jdk.internal.vm.annotation.IntrinsicCandidate()] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [jdk.internal.vm.annotation.IntrinsicCandidate tree false values 0 annotated true] typeArguments [] enclosing Math flags [static, public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+IDENTIFIER @17:33 id abs Math.abs [m static public] : ? @jdk.internal.vm.annotation.IntrinsicCandidate (int) returns int throws [] sig java.lang.Math#abs(I)I : int
 TOKEN @17:33
 ARGUMENTS @17:36
 TOKEN @17:36
@@ -231,7 +231,7 @@ TOKEN @17:41
 TOKEN @17:42
 TOKEN @18:3
 METHOD @20:3 method StaticImports.key [m package] : ? (java.util.Map$Entry<java.lang.String,java.lang.Integer>) returns java.lang.String throws [] sig StaticImports#key(Ljava/util/Map$Entry;)Ljava/lang/String; overrides false
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing StaticImports flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [entry] parameterMetadata []
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing StaticImports flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [entry] parameterMetadata []
 MODIFIERS
 TYPE_PARAMETERS
 IDENTIFIER @20:3 id String java.lang.String [t final public] : java.lang.String : java.lang.String
@@ -240,7 +240,7 @@ IDENTIFIER @20:10 id key StaticImports.key [m package] : ? (java.util.Map$Entry<
 TOKEN @20:10
 TOKEN @20:13
 VARIABLE @20:14 var key.entry [v package] : java.util.Map$Entry<java.lang.String,java.lang.Integer>
-  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing StaticImports flags [package] local true parameter true effectivelyFinal true constant null owner key StaticImports#key(Ljava/util/Map$Entry;)Ljava/lang/String; [package] returns java.lang.String parameters 1 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing StaticImports type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+  details declared true usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [[], []] enclosing StaticImports flags [package] local true parameter true effectivelyFinal true constant null owner key StaticImports#key(Ljava/util/Map$Entry;)Ljava/lang/String; [package] returns java.lang.String parameters 1 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing StaticImports type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
 MODIFIERS
 PARAMETERIZED_TYPE @20:14 : java.util.Map$Entry<java.lang.String,java.lang.Integer>
 IDENTIFIER @20:14 id Entry java.util.Entry [t static public interface] : java.util.Map$Entry<java.lang.String,java.lang.Integer> : java.util.Map$Entry<java.lang.String,java.lang.Integer>
@@ -250,7 +250,7 @@ TOKEN @20:19
 IDENTIFIER @20:20 id String java.lang.String [t final public] : java.lang.String : java.lang.String
 TOKEN @20:20
 TOKEN @20:26
-IDENTIFIER @20:28 id Integer java.lang.Integer [t final public] : java.lang.Integer : java.lang.Integer
+IDENTIFIER @20:28 id Integer java.lang.Integer [t final public] : java.lang.Integer @jdk.internal.ValueBased : java.lang.Integer
 TOKEN @20:28
 TOKEN @20:35
 IDENTIFIER @20:37 id entry key.entry [v package] : java.util.Map$Entry<java.lang.String,java.lang.Integer> : java.util.Map$Entry<java.lang.String,java.lang.Integer>
@@ -262,7 +262,7 @@ RETURN_STATEMENT @21:5
 TOKEN @21:5
 PLUS @21:12 : java.lang.String
 METHOD_INVOCATION @21:12 call Entry.getKey [m abstract public] : ? () returns java.lang.String throws [] sig java.util.Map$Entry#getKey()Ljava/lang/Object; : java.lang.String
-  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Entry flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+  details declared false usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Entry flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
 MEMBER_SELECT @21:12 : ?
 IDENTIFIER @21:12 id entry key.entry [v package] : java.util.Map$Entry<java.lang.String,java.lang.Integer> : java.util.Map$Entry<java.lang.String,java.lang.Integer>
 TOKEN @21:12
@@ -278,7 +278,7 @@ TOKEN @21:29
 TOKEN @21:30
 TOKEN @22:3
 METHOD @24:3 method StaticImports.category [m package] : ? () returns java.util.Locale$Category throws [] sig StaticImports#category()Ljava/util/Locale$Category; overrides false
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing StaticImports flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing StaticImports flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
 MODIFIERS
 TYPE_PARAMETERS
 MEMBER_SELECT @24:3 : java.util.Locale$Category
@@ -300,7 +300,7 @@ TOKEN @25:12
 TOKEN @25:18
 TOKEN @26:3
 METHOD @28:3 method StaticImports.sum [m package] : ? (java.util.Map<java.lang.String,java.lang.Integer>) returns int throws [] sig StaticImports#sum(Ljava/util/Map;)I overrides false
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing StaticImports flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [map] parameterMetadata []
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing StaticImports flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [map] parameterMetadata []
 MODIFIERS
 TYPE_PARAMETERS
 PRIMITIVE_TYPE @28:3 : int
@@ -309,7 +309,7 @@ IDENTIFIER @28:7 id sum StaticImports.sum [m package] : ? (java.util.Map<java.la
 TOKEN @28:7
 TOKEN @28:10
 VARIABLE @28:11 var sum.map [v package] : java.util.Map<java.lang.String,java.lang.Integer>
-  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing StaticImports flags [package] local true parameter true effectivelyFinal true constant null owner sum StaticImports#sum(Ljava/util/Map;)I [package] returns int parameters 1 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing StaticImports type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+  details declared true usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [[], []] enclosing StaticImports flags [package] local true parameter true effectivelyFinal true constant null owner sum StaticImports#sum(Ljava/util/Map;)I [package] returns int parameters 1 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing StaticImports type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
 MODIFIERS
 PARAMETERIZED_TYPE @28:11 : java.util.Map<java.lang.String,java.lang.Integer>
 IDENTIFIER @28:11 id Map java.util.Map [t public interface] : java.util.Map<java.lang.String,java.lang.Integer> : java.util.Map<java.lang.String,java.lang.Integer>
@@ -319,7 +319,7 @@ TOKEN @28:14
 IDENTIFIER @28:15 id String java.lang.String [t final public] : java.lang.String : java.lang.String
 TOKEN @28:15
 TOKEN @28:21
-IDENTIFIER @28:23 id Integer java.lang.Integer [t final public] : java.lang.Integer : java.lang.Integer
+IDENTIFIER @28:23 id Integer java.lang.Integer [t final public] : java.lang.Integer @jdk.internal.ValueBased : java.lang.Integer
 TOKEN @28:23
 TOKEN @28:30
 IDENTIFIER @28:32 id map sum.map [v package] : java.util.Map<java.lang.String,java.lang.Integer> : java.util.Map<java.lang.String,java.lang.Integer>
@@ -328,7 +328,7 @@ TOKEN @28:35
 BLOCK @28:37
 TOKEN @28:37
 VARIABLE @29:5 var sum.total [v package] : int
-  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing StaticImports flags [package] local true parameter false effectivelyFinal false constant null owner sum StaticImports#sum(Ljava/util/Map;)I [package] returns int parameters 1 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing StaticImports type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+  details declared true usages 2 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing StaticImports flags [package] local true parameter false effectivelyFinal false constant null owner sum StaticImports#sum(Ljava/util/Map;)I [package] returns int parameters 1 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing StaticImports type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
 MODIFIERS
 PRIMITIVE_TYPE @29:5 : int
 TOKEN @29:5
@@ -342,7 +342,7 @@ FOR_EACH_STATEMENT @30:5
 TOKEN @30:5
 TOKEN @30:9
 VARIABLE @30:10 var sum.entry [v package] : java.util.Map$Entry<java.lang.String,java.lang.Integer>
-  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing StaticImports flags [package] local true parameter false effectivelyFinal true constant null owner sum StaticImports#sum(Ljava/util/Map;)I [package] returns int parameters 1 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing StaticImports type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+  details declared true usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [[], []] enclosing StaticImports flags [package] local true parameter false effectivelyFinal true constant null owner sum StaticImports#sum(Ljava/util/Map;)I [package] returns int parameters 1 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing StaticImports type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
 MODIFIERS
 PARAMETERIZED_TYPE @30:10 : java.util.Map$Entry<java.lang.String,java.lang.Integer>
 IDENTIFIER @30:10 id Entry java.util.Entry [t static public interface] : java.util.Map$Entry<java.lang.String,java.lang.Integer> : java.util.Map$Entry<java.lang.String,java.lang.Integer>
@@ -352,14 +352,14 @@ TOKEN @30:15
 IDENTIFIER @30:16 id String java.lang.String [t final public] : java.lang.String : java.lang.String
 TOKEN @30:16
 TOKEN @30:22
-IDENTIFIER @30:24 id Integer java.lang.Integer [t final public] : java.lang.Integer : java.lang.Integer
+IDENTIFIER @30:24 id Integer java.lang.Integer [t final public] : java.lang.Integer @jdk.internal.ValueBased : java.lang.Integer
 TOKEN @30:24
 TOKEN @30:31
 IDENTIFIER @30:33 id entry sum.entry [v package] : java.util.Map$Entry<java.lang.String,java.lang.Integer> : java.util.Map$Entry<java.lang.String,java.lang.Integer>
 TOKEN @30:33
 TOKEN @30:39
 METHOD_INVOCATION @30:41 call Map.entrySet [m abstract public] : ? () returns java.util.Set<java.util.Map$Entry<java.lang.String,java.lang.Integer>> throws [] sig java.util.Map#entrySet()Ljava/util/Set; : java.util.Set<java.util.Map$Entry<java.lang.String,java.lang.Integer>>
-  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Map flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+  details declared false usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Map flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
 MEMBER_SELECT @30:41 : ?
 IDENTIFIER @30:41 id map sum.map [v package] : java.util.Map<java.lang.String,java.lang.Integer> : java.util.Map<java.lang.String,java.lang.Integer>
 TOKEN @30:41
@@ -378,7 +378,7 @@ IDENTIFIER @31:7 id total sum.total [v package] : int : int
 TOKEN @31:7
 TOKEN @31:13
 METHOD_INVOCATION @31:16 call Entry.getValue [m abstract public] : ? () returns java.lang.Integer throws [] sig java.util.Map$Entry#getValue()Ljava/lang/Object; : java.lang.Integer
-  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Entry flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+  details declared false usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Entry flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
 MEMBER_SELECT @31:16 : ?
 IDENTIFIER @31:16 id entry sum.entry [v package] : java.util.Map$Entry<java.lang.String,java.lang.Integer> : java.util.Map$Entry<java.lang.String,java.lang.Integer>
 TOKEN @31:16
@@ -397,7 +397,7 @@ IDENTIFIER @33:12 id total sum.total [v package] : int : int
 TOKEN @33:12
 TOKEN @33:18
 METHOD_INVOCATION @33:20 call Enum.ordinal [m final public] : ? () returns int throws [] sig java.lang.Enum#ordinal()I : int
-  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Enum flags [final, public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+  details declared false usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Enum flags [final, public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
 MEMBER_SELECT @33:20 : ?
 IDENTIFIER @33:20 id SECONDS TimeUnit.SECONDS [v static final public enum] : java.util.concurrent.TimeUnit : java.util.concurrent.TimeUnit
 TOKEN @33:20

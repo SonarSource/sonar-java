@@ -26,6 +26,7 @@ import org.sonar.java.model.Symbols;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
@@ -201,7 +202,7 @@ final class JVariableSymbol extends JSymbol implements Symbol.VariableSymbol {
 
     @Override
     public SymbolMetadata metadata() {
-      return Symbols.EMPTY_METADATA;
+      return new PlaceholderMetadata(owner);
     }
 
     @Override
@@ -212,6 +213,56 @@ final class JVariableSymbol extends JSymbol implements Symbol.VariableSymbol {
     @Override
     public boolean isFinal() {
       return false;
+    }
+  }
+  /** A parameter no source declares carries no annotation of its own: its nullability is the default its method, class or package sets. */
+  private static final class PlaceholderMetadata implements SymbolMetadata {
+    private final Symbol owner;
+
+    PlaceholderMetadata(Symbol owner) {
+      this.owner = owner;
+    }
+
+    @Override
+    public boolean isAnnotatedWith(String fullyQualifiedName) {
+      return false;
+    }
+
+    @Nullable
+    @Override
+    public List<AnnotationValue> valuesForAnnotation(String fullyQualifiedNameOfAnnotation) {
+      return null;
+    }
+
+    @Override
+    public List<AnnotationInstance> annotations() {
+      return Collections.emptyList();
+    }
+
+    @Override
+    public List<AnnotationInstance> symbolAnnotations() {
+      return Collections.emptyList();
+    }
+
+    @Override
+    public NullabilityData nullabilityData() {
+      return nullabilityData(NullabilityTarget.PARAMETER);
+    }
+
+    @Override
+    public NullabilityData nullabilityData(NullabilityTarget target) {
+      return owner.isUnknown() ? JSymbolMetadata.unknownNullabilityAt(NullabilityLevel.VARIABLE) : owner.metadata().nullabilityData(target);
+    }
+
+    @Nullable
+    @Override
+    public AnnotationTree findAnnotationTree(AnnotationInstance annotationInstance) {
+      return null;
+    }
+
+    @Override
+    public SymbolMetadata[] parametersMetadata() {
+      return new SymbolMetadata[0];
     }
   }
 }

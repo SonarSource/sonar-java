@@ -102,7 +102,7 @@ TOKEN @6:112
 LIST
 TOKEN @6:114
 VARIABLE @8:3 var Declarations.serialVersionUID [v static final private] : long
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Declarations flags [static, final, private] local false parameter false effectivelyFinal true constant 1
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Declarations flags [static, final, private] local false parameter false effectivelyFinal true constant 1
 MODIFIERS @8:3
 TOKEN @8:3
 TOKEN @8:11
@@ -116,7 +116,7 @@ LONG_LITERAL @8:48 : long = 1
 TOKEN @8:48
 TOKEN @8:50
 VARIABLE @9:3 var Declarations.counter [v protected volatile] : int
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Declarations flags [protected, volatile] local false parameter false effectivelyFinal false constant null
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Declarations flags [protected, volatile] local false parameter false effectivelyFinal false constant null
 MODIFIERS @9:3
 TOKEN @9:3
 TOKEN @9:13
@@ -127,7 +127,7 @@ IDENTIFIER @9:36 id counter Declarations.counter [v protected volatile] : int : 
 TOKEN @9:36
 TOKEN @9:43
 VARIABLE @10:3 var Declarations.names [v package] : java.util.List<java.lang.String>
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Declarations flags [package] local false parameter false effectivelyFinal false constant null
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [[]] enclosing Declarations flags [package] local false parameter false effectivelyFinal false constant null
 MODIFIERS
 PARAMETERIZED_TYPE @10:3 : java.util.List<java.lang.String>
 IDENTIFIER @10:3 id List java.util.List [t public interface] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
@@ -141,7 +141,7 @@ IDENTIFIER @10:16 id names Declarations.names [v package] : java.util.List<java.
 TOKEN @10:16
 TOKEN @10:21
 VARIABLE @11:3 var Declarations.index [v package] : java.util.Map<java.lang.String,java.util.List<T erasure java.lang.Comparable>>
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Declarations flags [package] local false parameter false effectivelyFinal false constant null
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [[], []] enclosing Declarations flags [package] local false parameter false effectivelyFinal false constant null
 MODIFIERS
 PARAMETERIZED_TYPE @11:3 : java.util.Map<java.lang.String,java.util.List<T erasure java.lang.Comparable>>
 IDENTIFIER @11:3 id Map java.util.Map [t public interface] : java.util.Map<java.lang.String,java.util.List<T erasure java.lang.Comparable>> : java.util.Map<java.lang.String,java.util.List<T erasure java.lang.Comparable>>
@@ -164,7 +164,7 @@ IDENTIFIER @11:24 id index Declarations.index [v package] : java.util.Map<java.l
 TOKEN @11:24
 TOKEN @11:29
 VARIABLE @12:3 var Declarations.values [v package] : int[]
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Declarations flags [package] local false parameter false effectivelyFinal false constant null
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Declarations flags [package] local false parameter false effectivelyFinal false constant null
 MODIFIERS
 ARRAY_TYPE @12:3 : int[]
 PRIMITIVE_TYPE @12:3 : int
@@ -175,7 +175,7 @@ IDENTIFIER @12:9 id values Declarations.values [v package] : int[] : int[]
 TOKEN @12:9
 TOKEN @12:15
 VARIABLE @13:3 var Declarations.grid [v package] : java.lang.String[][]
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Declarations flags [package] local false parameter false effectivelyFinal false constant null
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Declarations flags [package] local false parameter false effectivelyFinal false constant null
 MODIFIERS
 ARRAY_TYPE @13:3 : java.lang.String[][]
 ARRAY_TYPE @13:3 : java.lang.String[]
@@ -189,7 +189,7 @@ IDENTIFIER @13:14 id grid Declarations.grid [v package] : java.lang.String[][] :
 TOKEN @13:14
 TOKEN @13:18
 VARIABLE @14:3 var Declarations.current [v package] : T erasure java.lang.Comparable
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Declarations flags [package] local false parameter false effectivelyFinal false constant null
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Declarations flags [package] local false parameter false effectivelyFinal false constant null
 MODIFIERS
 IDENTIFIER @14:3 id T Declarations.T [t package] : T erasure java.lang.Comparable : T erasure java.lang.Comparable
 TOKEN @14:3
@@ -197,7 +197,7 @@ IDENTIFIER @14:5 id current Declarations.current [v package] : T erasure java.la
 TOKEN @14:5
 TOKEN @14:12
 CONSTRUCTOR @16:3 method Declarations.<init> [m public] : ? () returns void throws [] sig Declarations#<init>()V overrides false
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Declarations flags [public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Declarations flags [public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
 MODIFIERS @16:3
 TOKEN @16:3
 TYPE_PARAMETERS
@@ -209,7 +209,7 @@ BLOCK @16:25
 TOKEN @16:25
 TOKEN @17:3
 CONSTRUCTOR @19:3 method Declarations.<init> [m protected] : ? (T erasure java.lang.Comparable) returns void throws [] sig Declarations#<init>(Ljava/lang/Comparable;)V overrides false
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Declarations flags [protected] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [first] parameterMetadata []
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Declarations flags [protected] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [first] parameterMetadata []
 MODIFIERS @19:3
 TOKEN @19:3
 TYPE_PARAMETERS
@@ -217,7 +217,7 @@ IDENTIFIER @19:13 id Declarations Declarations.<init> [m protected] : ? (T erasu
 TOKEN @19:13
 TOKEN @19:25
 VARIABLE @19:26 var <init>.first [v package] : T erasure java.lang.Comparable
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Declarations flags [package] local true parameter true effectivelyFinal true constant null owner <init> Declarations#<init>(Ljava/lang/Comparable;)V [protected] returns void parameters 1 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Declarations type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Declarations flags [package] local true parameter true effectivelyFinal true constant null owner <init> Declarations#<init>(Ljava/lang/Comparable;)V [protected] returns void parameters 1 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Declarations type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
 MODIFIERS
 IDENTIFIER @19:26 id T Declarations.T [t package] : T erasure java.lang.Comparable : T erasure java.lang.Comparable
 TOKEN @19:26
@@ -228,7 +228,7 @@ BLOCK @19:35
 TOKEN @19:35
 TOKEN @20:3
 METHOD @22:3 method Declarations.run [m abstract public] : ? () returns void throws [java.lang.Exception] sig Declarations#run()V overrides false
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Declarations flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Declarations flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
 MODIFIERS @22:3
 TOKEN @22:3
 TOKEN @22:10
@@ -245,7 +245,7 @@ IDENTIFIER @22:37 id Exception java.lang.Exception [t public] : java.lang.Except
 TOKEN @22:37
 TOKEN @22:46
 METHOD @24:3 method Declarations.convert [m final public] : ? (T erasure java.lang.Comparable,java.lang.Class<R erasure java.lang.Object>) returns R erasure java.lang.Object throws [] sig Declarations#convert(Ljava/lang/Comparable;Ljava/lang/Class;)Ljava/lang/Object; overrides false
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Declarations flags [final, public] overridden [] overridable false generic true default false synchronized true varargs false native false parameters [input, target] parameterMetadata []
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Declarations flags [final, public] overridden [] overridable false generic true default false synchronized true varargs false native false parameters [input, target] parameterMetadata []
 MODIFIERS @24:3
 TOKEN @24:3
 TOKEN @24:10
@@ -262,7 +262,7 @@ IDENTIFIER @24:35 id convert Declarations.convert [m final public] : ? (T erasur
 TOKEN @24:35
 TOKEN @24:42
 VARIABLE @24:43 var convert.input [v package] : T erasure java.lang.Comparable
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Declarations flags [package] local true parameter true effectivelyFinal true constant null owner convert Declarations#convert(Ljava/lang/Comparable;Ljava/lang/Class;)Ljava/lang/Object; [final, public] returns R erasure java.lang.Object parameters 2 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Declarations type true kinds truefalsefalse other falsetruefalsefalsefalsetrue2falsefalse
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Declarations flags [package] local true parameter true effectivelyFinal true constant null owner convert Declarations#convert(Ljava/lang/Comparable;Ljava/lang/Class;)Ljava/lang/Object; [final, public] returns R erasure java.lang.Object parameters 2 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Declarations type true kinds truefalsefalse other falsetruefalsefalsefalsetrue2falsefalse
 MODIFIERS
 IDENTIFIER @24:43 id T Declarations.T [t package] : T erasure java.lang.Comparable : T erasure java.lang.Comparable
 TOKEN @24:43
@@ -270,7 +270,7 @@ IDENTIFIER @24:45 id input convert.input [v package] : T erasure java.lang.Compa
 TOKEN @24:45
 TOKEN @24:50
 VARIABLE @24:52 var convert.target [v package] : java.lang.Class<R erasure java.lang.Object>
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Declarations flags [package] local true parameter true effectivelyFinal true constant null owner convert Declarations#convert(Ljava/lang/Comparable;Ljava/lang/Class;)Ljava/lang/Object; [final, public] returns R erasure java.lang.Object parameters 2 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Declarations type true kinds truefalsefalse other falsetruefalsefalsefalsetrue2falsefalse
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [[]] enclosing Declarations flags [package] local true parameter true effectivelyFinal true constant null owner convert Declarations#convert(Ljava/lang/Comparable;Ljava/lang/Class;)Ljava/lang/Object; [final, public] returns R erasure java.lang.Object parameters 2 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Declarations type true kinds truefalsefalse other falsetruefalsefalsefalsetrue2falsefalse
 MODIFIERS
 PARAMETERIZED_TYPE @24:52 : java.lang.Class<R erasure java.lang.Object>
 IDENTIFIER @24:52 id Class java.lang.Class [t final public] : java.lang.Class<R erasure java.lang.Object> : java.lang.Class<R erasure java.lang.Object>
@@ -292,7 +292,7 @@ TOKEN @25:12
 TOKEN @25:16
 TOKEN @26:3
 METHOD @28:3 method Declarations.nativeCall [m static package] : ? () returns void throws [] sig Declarations#nativeCall()V overrides false
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Declarations flags [static, package] overridden [] overridable false generic false default false synchronized false varargs false native true parameters [] parameterMetadata []
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Declarations flags [static, package] overridden [] overridable false generic false default false synchronized false varargs false native true parameters [] parameterMetadata []
 MODIFIERS @28:3
 TOKEN @28:3
 TOKEN @28:10
@@ -304,22 +304,22 @@ TOKEN @28:22
 TOKEN @28:32
 TOKEN @28:33
 TOKEN @28:34
-METHOD @30:3 method Declarations.legacy [m package deprecated] : ? (java.lang.String[]) returns void throws [] sig Declarations#legacy([Ljava/lang/String;)V overrides false
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Declarations flags [package, deprecated] overridden [] overridable true generic false default false synchronized false varargs true native false parameters [args] parameterMetadata []
+METHOD @30:3 method Declarations.legacy [m package deprecated] : ? @java.lang.Deprecated (java.lang.String[]) returns void throws [] sig Declarations#legacy([Ljava/lang/String;)V overrides false
+  details declared true usages 0 metadata [java.lang.Deprecated()] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [java.lang.Deprecated tree true values 0 annotated true] typeArguments [] enclosing Declarations flags [package, deprecated] overridden [] overridable true generic false default false synchronized false varargs true native false parameters [args] parameterMetadata []
 MODIFIERS @30:3
 ANNOTATION @30:3 : java.lang.Deprecated
 TOKEN @30:3
-IDENTIFIER @30:4 id Deprecated java.lang.Deprecated [t public interface] : java.lang.Deprecated : java.lang.Deprecated
+IDENTIFIER @30:4 id Deprecated java.lang.Deprecated [t public interface] : java.lang.Deprecated @java.lang.annotation.Documented,java.lang.annotation.Retention,java.lang.annotation.Target : java.lang.Deprecated
 TOKEN @30:4
 ARGUMENTS
 TYPE_PARAMETERS
 PRIMITIVE_TYPE @31:3 : void
 TOKEN @31:3
-IDENTIFIER @31:8 id legacy Declarations.legacy [m package deprecated] : ? (java.lang.String[]) returns void throws [] sig Declarations#legacy([Ljava/lang/String;)V : void
+IDENTIFIER @31:8 id legacy Declarations.legacy [m package deprecated] : ? @java.lang.Deprecated (java.lang.String[]) returns void throws [] sig Declarations#legacy([Ljava/lang/String;)V : void
 TOKEN @31:8
 TOKEN @31:14
 VARIABLE @31:15 var legacy.args [v package] : java.lang.String[]
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Declarations flags [package] local true parameter true effectivelyFinal true constant null owner legacy Declarations#legacy([Ljava/lang/String;)V [package, deprecated] returns void parameters 1 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Declarations type true kinds truefalsefalse other falsefalsetruefalsetruefalse1falsefalse
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Declarations flags [package] local true parameter true effectivelyFinal true constant null owner legacy Declarations#legacy([Ljava/lang/String;)V [package, deprecated] returns void parameters 1 thrown 0 overridden 0 declared true usages 0 metadata 1 enclosing Declarations type true kinds truefalsefalse other falsefalsetruefalsetruefalse1falsefalse
 MODIFIERS
 ARRAY_TYPE @31:15 : java.lang.String[]
 IDENTIFIER @31:15 id String java.lang.String [t final public] : java.lang.String : java.lang.String
@@ -331,23 +331,23 @@ TOKEN @31:29
 BLOCK @31:31
 TOKEN @31:31
 TOKEN @32:3
-METHOD @34:3 method Declarations.compareTo [m public] : ? (Declarations) returns int throws [] sig Declarations#compareTo(LDeclarations;)I overrides true
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Declarations flags [public] overridden [Comparable.compareTo[]] overridable true generic false default false synchronized false varargs false native false parameters [other] parameterMetadata []
+METHOD @34:3 method Declarations.compareTo [m public] : ? @java.lang.Override (Declarations) returns int throws [] sig Declarations#compareTo(LDeclarations;)I overrides true
+  details declared true usages 0 metadata [java.lang.Override()] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [java.lang.Override tree true values 0 annotated true] typeArguments [] enclosing Declarations flags [public] overridden [Comparable.compareTo[]] overridable true generic false default false synchronized false varargs false native false parameters [other] parameterMetadata []
 MODIFIERS @34:3
 ANNOTATION @34:3 : java.lang.Override
 TOKEN @34:3
-IDENTIFIER @34:4 id Override java.lang.Override [t public interface] : java.lang.Override : java.lang.Override
+IDENTIFIER @34:4 id Override java.lang.Override [t public interface] : java.lang.Override @java.lang.annotation.Retention,java.lang.annotation.Target : java.lang.Override
 TOKEN @34:4
 ARGUMENTS
 TOKEN @35:3
 TYPE_PARAMETERS
 PRIMITIVE_TYPE @35:10 : int
 TOKEN @35:10
-IDENTIFIER @35:14 id compareTo Declarations.compareTo [m public] : ? (Declarations) returns int throws [] sig Declarations#compareTo(LDeclarations;)I : int
+IDENTIFIER @35:14 id compareTo Declarations.compareTo [m public] : ? @java.lang.Override (Declarations) returns int throws [] sig Declarations#compareTo(LDeclarations;)I : int
 TOKEN @35:14
 TOKEN @35:23
 VARIABLE @35:24 var compareTo.other [v package] : Declarations
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Declarations flags [package] local true parameter true effectivelyFinal true constant null owner compareTo Declarations#compareTo(LDeclarations;)I [public] returns int parameters 1 thrown 0 overridden 1 declared true usages 0 metadata 0 enclosing Declarations type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [[]] enclosing Declarations flags [package] local true parameter true effectivelyFinal true constant null owner compareTo Declarations#compareTo(LDeclarations;)I [public] returns int parameters 1 thrown 0 overridden 1 declared true usages 0 metadata 1 enclosing Declarations type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
 MODIFIERS
 PARAMETERIZED_TYPE @35:24 : Declarations
 IDENTIFIER @35:24 id Declarations .Declarations [t abstract public] : Declarations : Declarations
@@ -379,7 +379,7 @@ LIST
 LIST
 TOKEN @39:22
 METHOD @40:5 method Listener.onEvent [m abstract public] : ? (java.lang.String) returns void throws [] sig Declarations$Listener#onEvent(Ljava/lang/String;)V overrides false
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Listener flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [event] parameterMetadata []
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Listener flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [event] parameterMetadata []
 MODIFIERS
 TYPE_PARAMETERS
 PRIMITIVE_TYPE @40:5 : void
@@ -388,7 +388,7 @@ IDENTIFIER @40:10 id onEvent Listener.onEvent [m abstract public] : ? (java.lang
 TOKEN @40:10
 TOKEN @40:17
 VARIABLE @40:18 var onEvent.event [v package] : java.lang.String
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Listener flags [package] local true parameter true effectivelyFinal true constant null owner onEvent Declarations$Listener#onEvent(Ljava/lang/String;)V [abstract, public] returns void parameters 1 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Listener type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Listener flags [package] local true parameter true effectivelyFinal true constant null owner onEvent Declarations$Listener#onEvent(Ljava/lang/String;)V [abstract, public] returns void parameters 1 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Listener type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
 MODIFIERS
 IDENTIFIER @40:18 id String java.lang.String [t final public] : java.lang.String : java.lang.String
 TOKEN @40:18
@@ -397,7 +397,7 @@ TOKEN @40:25
 TOKEN @40:30
 TOKEN @40:31
 METHOD @42:5 method Listener.close [m public] : ? () returns void throws [] sig Declarations$Listener#close()V overrides false
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Listener flags [public] overridden [] overridable true generic false default true synchronized false varargs false native false parameters [] parameterMetadata []
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Listener flags [public] overridden [] overridable true generic false default true synchronized false varargs false native false parameters [] parameterMetadata []
 MODIFIERS @42:5
 TOKEN @42:5
 TYPE_PARAMETERS
@@ -411,7 +411,7 @@ BLOCK @42:26
 TOKEN @42:26
 TOKEN @43:5
 METHOD @45:5 method Listener.none [m static public] : ? () returns Declarations$Listener throws [] sig Declarations$Listener#none()LDeclarations$Listener; overrides false
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Listener flags [static, public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Listener flags [static, public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
 MODIFIERS @45:5
 TOKEN @45:5
 TYPE_PARAMETERS
@@ -441,34 +441,34 @@ LIST
 LIST
 TOKEN @50:14
 ENUM_CONSTANT @51:5 var Level.LOW [v static final public enum] : Declarations$Level
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Level flags [static, final, public, enum] local false parameter false effectivelyFinal true constant null
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Level flags [static, final, public, enum] local false parameter false effectivelyFinal true constant null
 MODIFIERS
 NEW_CLASS @51:5 new Level.<init> [m private] : ? () returns void throws [] sig Declarations$Level#<init>(Ljava/lang/String;I)V : ?
-  details declared false usages 3 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Level flags [private] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+  details declared false usages 3 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Level flags [private] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
 IDENTIFIER @51:5 id LOW Level.<init> [m private] : ? () returns void throws [] sig Declarations$Level#<init>(Ljava/lang/String;I)V : Declarations$Level
 TOKEN @51:5
 ARGUMENTS
 TOKEN @51:8
 ENUM_CONSTANT @51:10 var Level.MEDIUM [v static final public enum] : Declarations$Level
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Level flags [static, final, public, enum] local false parameter false effectivelyFinal true constant null
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Level flags [static, final, public, enum] local false parameter false effectivelyFinal true constant null
 MODIFIERS
 NEW_CLASS @51:10 new Level.<init> [m private] : ? () returns void throws [] sig Declarations$Level#<init>(Ljava/lang/String;I)V : ?
-  details declared false usages 3 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Level flags [private] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+  details declared false usages 3 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Level flags [private] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
 IDENTIFIER @51:10 id MEDIUM Level.<init> [m private] : ? () returns void throws [] sig Declarations$Level#<init>(Ljava/lang/String;I)V : Declarations$Level
 TOKEN @51:10
 ARGUMENTS
 TOKEN @51:16
 ENUM_CONSTANT @51:18 var Level.HIGH [v static final public enum] : Declarations$Level
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Level flags [static, final, public, enum] local false parameter false effectivelyFinal true constant null
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Level flags [static, final, public, enum] local false parameter false effectivelyFinal true constant null
 MODIFIERS
 NEW_CLASS @51:18 new Level.<init> [m private] : ? () returns void throws [] sig Declarations$Level#<init>(Ljava/lang/String;I)V : ?
-  details declared false usages 3 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Level flags [private] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+  details declared false usages 3 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Level flags [private] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
 IDENTIFIER @51:18 id HIGH Level.<init> [m private] : ? () returns void throws [] sig Declarations$Level#<init>(Ljava/lang/String;I)V : Declarations$Level
 TOKEN @51:18
 ARGUMENTS
 TOKEN @51:22
 METHOD @53:5 method Level.next [m package] : ? () returns Declarations$Level throws [] sig Declarations$Level#next()LDeclarations$Level; overrides false
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Level flags [package] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Level flags [package] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
 MODIFIERS
 TYPE_PARAMETERS
 IDENTIFIER @53:5 id Level Declarations.Level [t static final package enum] : Declarations$Level : Declarations$Level
@@ -495,7 +495,7 @@ TOKEN @58:10
 TYPE_PARAMETERS
 TOKEN @58:15
 VARIABLE @58:16 var Point.x [v package] : int
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Point flags [package] local false parameter false effectivelyFinal false constant null
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Point flags [package] local false parameter false effectivelyFinal false constant null
 MODIFIERS
 PRIMITIVE_TYPE @58:16 : int
 TOKEN @58:16
@@ -503,7 +503,7 @@ IDENTIFIER @58:20 id x Point.x [v package] : int : int
 TOKEN @58:20
 TOKEN @58:21
 VARIABLE @58:23 var Point.y [v package] : int
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Point flags [package] local false parameter false effectivelyFinal false constant null
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Point flags [package] local false parameter false effectivelyFinal false constant null
 MODIFIERS
 PRIMITIVE_TYPE @58:23 : int
 TOKEN @58:23
@@ -517,7 +517,7 @@ TOKEN @58:41
 LIST
 TOKEN @58:54
 CONSTRUCTOR @59:5 method Point.<init> [m package] : ? (int,int) returns void throws [] sig Declarations$Point#<init>(II)V overrides false
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Point flags [package] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [arg0, arg1] parameterMetadata []
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Point flags [package] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [arg0, arg1] parameterMetadata []
 MODIFIERS
 TYPE_PARAMETERS
 IDENTIFIER @59:5 id Point Point.<init> [m package] : ? (int,int) returns void throws [] sig Declarations$Point#<init>(II)V : void
@@ -526,7 +526,7 @@ BLOCK @59:11
 TOKEN @59:11
 TOKEN @60:5
 METHOD @62:5 method Point.origin [m static package] : ? () returns Declarations$Point throws [] sig Declarations$Point#origin()LDeclarations$Point; overrides false
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Point flags [static, package] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Point flags [static, package] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
 MODIFIERS @62:5
 TOKEN @62:5
 TYPE_PARAMETERS
@@ -557,7 +557,7 @@ LIST
 LIST
 TOKEN @67:21
 METHOD @68:5 method Marker.value [m abstract public] : ? () returns java.lang.String throws [] sig Declarations$Marker#value()Ljava/lang/String; overrides false
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Marker flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Marker flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
 MODIFIERS
 TYPE_PARAMETERS
 IDENTIFIER @68:5 id String java.lang.String [t final public] : java.lang.String : java.lang.String
@@ -571,7 +571,7 @@ STRING_LITERAL @68:28 : java.lang.String =
 TOKEN @68:28
 TOKEN @68:30
 METHOD @70:5 method Marker.priority [m abstract public] : ? () returns int throws [] sig Declarations$Marker#priority()I overrides false
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Marker flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Marker flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
 MODIFIERS
 TYPE_PARAMETERS
 PRIMITIVE_TYPE @70:5 : int
@@ -612,19 +612,19 @@ TOKEN @75:5
 INITIALIZER @77:5
 TOKEN @77:5
 TOKEN @78:5
-METHOD @80:5 method Nested.run [m public] : ? () returns void throws [] sig Declarations$Nested#run()V overrides true
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Nested flags [public] overridden [Declarations.run[]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+METHOD @80:5 method Nested.run [m public] : ? @java.lang.Override () returns void throws [] sig Declarations$Nested#run()V overrides true
+  details declared true usages 0 metadata [java.lang.Override()] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [java.lang.Override tree true values 0 annotated true] typeArguments [] enclosing Nested flags [public] overridden [Declarations.run[]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
 MODIFIERS @80:5
 ANNOTATION @80:5 : java.lang.Override
 TOKEN @80:5
-IDENTIFIER @80:6 id Override java.lang.Override [t public interface] : java.lang.Override : java.lang.Override
+IDENTIFIER @80:6 id Override java.lang.Override [t public interface] : java.lang.Override @java.lang.annotation.Retention,java.lang.annotation.Target : java.lang.Override
 TOKEN @80:6
 ARGUMENTS
 TOKEN @81:5
 TYPE_PARAMETERS
 PRIMITIVE_TYPE @81:12 : void
 TOKEN @81:12
-IDENTIFIER @81:17 id run Nested.run [m public] : ? () returns void throws [] sig Declarations$Nested#run()V : void
+IDENTIFIER @81:17 id run Nested.run [m public] : ? @java.lang.Override () returns void throws [] sig Declarations$Nested#run()V : void
 TOKEN @81:17
 TOKEN @81:20
 TOKEN @81:21
@@ -658,7 +658,7 @@ TOKEN @88:10
 TYPE_PARAMETERS
 TOKEN @88:16
 VARIABLE @88:17 var Circle.radius [v package] : double
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Circle flags [package] local false parameter false effectivelyFinal false constant null
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Circle flags [package] local false parameter false effectivelyFinal false constant null
 MODIFIERS
 PRIMITIVE_TYPE @88:17 : double
 TOKEN @88:17

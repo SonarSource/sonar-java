@@ -15,7 +15,7 @@ TOKEN @1:23
 MODULE @3:1
 ANNOTATION @3:1 : java.lang.Deprecated
 TOKEN @3:1
-IDENTIFIER @3:2 id Deprecated java.lang.Deprecated [t public interface] : java.lang.Deprecated : java.lang.Deprecated
+IDENTIFIER @3:2 id Deprecated java.lang.Deprecated [t public interface] : java.lang.Deprecated @java.lang.annotation.Documented,java.lang.annotation.Retention,java.lang.annotation.Target : java.lang.Deprecated
 TOKEN @3:2
 ARGUMENTS
 TOKEN @4:1
@@ -150,7 +150,7 @@ TOKEN @13:16
 IDENTIFIER @13:17 id lang .java.lang [p package] : ? : ?
 TOKEN @13:17
 TOKEN @13:21
-IDENTIFIER @13:22 id Runnable java.lang.Runnable [t public interface] : java.lang.Runnable : java.lang.Runnable
+IDENTIFIER @13:22 id Runnable java.lang.Runnable [t public interface] : java.lang.Runnable @java.lang.FunctionalInterface : java.lang.Runnable
 TOKEN @13:22
 TOKEN @13:31
 LIST @13:36

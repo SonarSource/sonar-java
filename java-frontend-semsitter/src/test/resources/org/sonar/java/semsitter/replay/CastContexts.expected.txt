@@ -122,7 +122,7 @@ LIST
 LIST
 TOKEN @10:20
 VARIABLE @12:3 var CastContexts.LIMIT [v static final package] : int
-  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [static, final, package] local false parameter false effectivelyFinal true constant null
+  details declared true usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [static, final, package] local false parameter false effectivelyFinal true constant null
 MODIFIERS @12:3
 TOKEN @12:3
 TOKEN @12:10
@@ -132,7 +132,7 @@ IDENTIFIER @12:20 id LIMIT CastContexts.LIMIT [v static final package] : int : i
 TOKEN @12:20
 TOKEN @12:25
 VARIABLE @13:3 var CastContexts.target [v package] : java.lang.Object
-  details declared true usages 4 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local false parameter false effectivelyFinal false constant null
+  details declared true usages 4 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local false parameter false effectivelyFinal false constant null
 MODIFIERS
 IDENTIFIER @13:3 id Object java.lang.Object [t public] : java.lang.Object : java.lang.Object
 TOKEN @13:3
@@ -189,7 +189,7 @@ TOKEN @22:14
 TOKEN @22:19
 TOKEN @23:3
 METHOD @25:3 method CastContexts.returned [m package] : ? (java.lang.String) returns java.lang.Object throws [] sig CastContexts#returned(Ljava/lang/String;)Ljava/lang/Object; overrides false
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [s] parameterMetadata []
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [s] parameterMetadata []
 MODIFIERS
 TYPE_PARAMETERS
 IDENTIFIER @25:3 id Object java.lang.Object [t public] : java.lang.Object : java.lang.Object
@@ -198,7 +198,7 @@ IDENTIFIER @25:10 id returned CastContexts.returned [m package] : ? (java.lang.S
 TOKEN @25:10
 TOKEN @25:18
 VARIABLE @25:19 var returned.s [v package] : java.lang.String
-  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local true parameter true effectivelyFinal true constant null owner returned CastContexts#returned(Ljava/lang/String;)Ljava/lang/Object; [package] returns java.lang.Object parameters 1 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+  details declared true usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local true parameter true effectivelyFinal true constant null owner returned CastContexts#returned(Ljava/lang/String;)Ljava/lang/Object; [package] returns java.lang.Object parameters 1 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
 MODIFIERS
 IDENTIFIER @25:19 id String java.lang.String [t final public] : java.lang.String : java.lang.String
 TOKEN @25:19
@@ -220,7 +220,7 @@ TOKEN @26:21
 TOKEN @26:22
 TOKEN @27:3
 METHOD @29:3 method CastContexts.returnedParenthesized [m package] : ? (java.lang.String) returns java.lang.Object throws [] sig CastContexts#returnedParenthesized(Ljava/lang/String;)Ljava/lang/Object; overrides false
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [s] parameterMetadata []
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [s] parameterMetadata []
 MODIFIERS
 TYPE_PARAMETERS
 IDENTIFIER @29:3 id Object java.lang.Object [t public] : java.lang.Object : java.lang.Object
@@ -229,7 +229,7 @@ IDENTIFIER @29:10 id returnedParenthesized CastContexts.returnedParenthesized [m
 TOKEN @29:10
 TOKEN @29:31
 VARIABLE @29:32 var returnedParenthesized.s [v package] : java.lang.String
-  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local true parameter true effectivelyFinal true constant null owner returnedParenthesized CastContexts#returnedParenthesized(Ljava/lang/String;)Ljava/lang/Object; [package] returns java.lang.Object parameters 1 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+  details declared true usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local true parameter true effectivelyFinal true constant null owner returnedParenthesized CastContexts#returnedParenthesized(Ljava/lang/String;)Ljava/lang/Object; [package] returns java.lang.Object parameters 1 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
 MODIFIERS
 IDENTIFIER @29:32 id String java.lang.String [t final public] : java.lang.String : java.lang.String
 TOKEN @29:32
@@ -254,7 +254,7 @@ TOKEN @30:23
 TOKEN @30:24
 TOKEN @31:3
 METHOD @33:3 method CastContexts.assigned [m package] : ? (java.lang.String,char,byte,short,int,long) returns void throws [] sig CastContexts#assigned(Ljava/lang/String;CBSIJ)V overrides false
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [s, c, b, sh, i, l] parameterMetadata []
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [s, c, b, sh, i, l] parameterMetadata []
 MODIFIERS
 TYPE_PARAMETERS
 PRIMITIVE_TYPE @33:3 : void
@@ -263,7 +263,7 @@ IDENTIFIER @33:8 id assigned CastContexts.assigned [m package] : ? (java.lang.St
 TOKEN @33:8
 TOKEN @33:16
 VARIABLE @33:17 var assigned.s [v package] : java.lang.String
-  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local true parameter true effectivelyFinal true constant null owner assigned CastContexts#assigned(Ljava/lang/String;CBSIJ)V [package] returns void parameters 6 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse6falsefalse
+  details declared true usages 2 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local true parameter true effectivelyFinal true constant null owner assigned CastContexts#assigned(Ljava/lang/String;CBSIJ)V [package] returns void parameters 6 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse6falsefalse
 MODIFIERS
 IDENTIFIER @33:17 id String java.lang.String [t final public] : java.lang.String : java.lang.String
 TOKEN @33:17
@@ -271,7 +271,7 @@ IDENTIFIER @33:24 id s assigned.s [v package] : java.lang.String : java.lang.Str
 TOKEN @33:24
 TOKEN @33:25
 VARIABLE @33:27 var assigned.c [v package] : char
-  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local true parameter true effectivelyFinal true constant null owner assigned CastContexts#assigned(Ljava/lang/String;CBSIJ)V [package] returns void parameters 6 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse6falsefalse
+  details declared true usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local true parameter true effectivelyFinal true constant null owner assigned CastContexts#assigned(Ljava/lang/String;CBSIJ)V [package] returns void parameters 6 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse6falsefalse
 MODIFIERS
 PRIMITIVE_TYPE @33:27 : char
 TOKEN @33:27
@@ -279,7 +279,7 @@ IDENTIFIER @33:32 id c assigned.c [v package] : char : char
 TOKEN @33:32
 TOKEN @33:33
 VARIABLE @33:35 var assigned.b [v package] : byte
-  details declared true usages 3 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local true parameter true effectivelyFinal true constant null owner assigned CastContexts#assigned(Ljava/lang/String;CBSIJ)V [package] returns void parameters 6 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse6falsefalse
+  details declared true usages 3 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local true parameter true effectivelyFinal true constant null owner assigned CastContexts#assigned(Ljava/lang/String;CBSIJ)V [package] returns void parameters 6 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse6falsefalse
 MODIFIERS
 PRIMITIVE_TYPE @33:35 : byte
 TOKEN @33:35
@@ -287,7 +287,7 @@ IDENTIFIER @33:40 id b assigned.b [v package] : byte : byte
 TOKEN @33:40
 TOKEN @33:41
 VARIABLE @33:43 var assigned.sh [v package] : short
-  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local true parameter true effectivelyFinal true constant null owner assigned CastContexts#assigned(Ljava/lang/String;CBSIJ)V [package] returns void parameters 6 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse6falsefalse
+  details declared true usages 2 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local true parameter true effectivelyFinal true constant null owner assigned CastContexts#assigned(Ljava/lang/String;CBSIJ)V [package] returns void parameters 6 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse6falsefalse
 MODIFIERS
 PRIMITIVE_TYPE @33:43 : short
 TOKEN @33:43
@@ -295,7 +295,7 @@ IDENTIFIER @33:49 id sh assigned.sh [v package] : short : short
 TOKEN @33:49
 TOKEN @33:51
 VARIABLE @33:53 var assigned.i [v package] : int
-  details declared true usages 4 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local true parameter true effectivelyFinal true constant null owner assigned CastContexts#assigned(Ljava/lang/String;CBSIJ)V [package] returns void parameters 6 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse6falsefalse
+  details declared true usages 4 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local true parameter true effectivelyFinal true constant null owner assigned CastContexts#assigned(Ljava/lang/String;CBSIJ)V [package] returns void parameters 6 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse6falsefalse
 MODIFIERS
 PRIMITIVE_TYPE @33:53 : int
 TOKEN @33:53
@@ -303,7 +303,7 @@ IDENTIFIER @33:57 id i assigned.i [v package] : int : int
 TOKEN @33:57
 TOKEN @33:58
 VARIABLE @33:60 var assigned.l [v package] : long
-  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local true parameter true effectivelyFinal true constant null owner assigned CastContexts#assigned(Ljava/lang/String;CBSIJ)V [package] returns void parameters 6 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse6falsefalse
+  details declared true usages 2 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local true parameter true effectivelyFinal true constant null owner assigned CastContexts#assigned(Ljava/lang/String;CBSIJ)V [package] returns void parameters 6 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse6falsefalse
 MODIFIERS
 PRIMITIVE_TYPE @33:60 : long
 TOKEN @33:60
@@ -344,7 +344,7 @@ TOKEN @35:24
 TOKEN @35:25
 TOKEN @35:26
 VARIABLE @36:5 var assigned.fromChar [v package] : int
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local true parameter false effectivelyFinal true constant null owner assigned CastContexts#assigned(Ljava/lang/String;CBSIJ)V [package] returns void parameters 6 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse6falsefalse
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local true parameter false effectivelyFinal true constant null owner assigned CastContexts#assigned(Ljava/lang/String;CBSIJ)V [package] returns void parameters 6 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse6falsefalse
 MODIFIERS
 PRIMITIVE_TYPE @36:5 : int
 TOKEN @36:5
@@ -361,7 +361,7 @@ IDENTIFIER @36:26 id c assigned.c [v package] : char : char
 TOKEN @36:26
 TOKEN @36:27
 VARIABLE @37:5 var assigned.toChar [v package] : char
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local true parameter false effectivelyFinal true constant null owner assigned CastContexts#assigned(Ljava/lang/String;CBSIJ)V [package] returns void parameters 6 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse6falsefalse
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local true parameter false effectivelyFinal true constant null owner assigned CastContexts#assigned(Ljava/lang/String;CBSIJ)V [package] returns void parameters 6 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse6falsefalse
 MODIFIERS
 PRIMITIVE_TYPE @37:5 : char
 TOKEN @37:5
@@ -378,7 +378,7 @@ IDENTIFIER @37:26 id i assigned.i [v package] : int : int
 TOKEN @37:26
 TOKEN @37:27
 VARIABLE @38:5 var assigned.shifted [v package] : long
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local true parameter false effectivelyFinal true constant null owner assigned CastContexts#assigned(Ljava/lang/String;CBSIJ)V [package] returns void parameters 6 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse6falsefalse
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local true parameter false effectivelyFinal true constant null owner assigned CastContexts#assigned(Ljava/lang/String;CBSIJ)V [package] returns void parameters 6 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse6falsefalse
 MODIFIERS
 PRIMITIVE_TYPE @38:5 : long
 TOKEN @38:5
@@ -399,7 +399,7 @@ INT_LITERAL @38:32 : int = 2
 TOKEN @38:32
 TOKEN @38:33
 VARIABLE @39:5 var assigned.shiftedInt [v package] : int
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local true parameter false effectivelyFinal true constant null owner assigned CastContexts#assigned(Ljava/lang/String;CBSIJ)V [package] returns void parameters 6 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse6falsefalse
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local true parameter false effectivelyFinal true constant null owner assigned CastContexts#assigned(Ljava/lang/String;CBSIJ)V [package] returns void parameters 6 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse6falsefalse
 MODIFIERS
 PRIMITIVE_TYPE @39:5 : int
 TOKEN @39:5
@@ -420,7 +420,7 @@ IDENTIFIER @39:33 id sh assigned.sh [v package] : short : short
 TOKEN @39:33
 TOKEN @39:35
 VARIABLE @40:5 var assigned.sum [v package] : long
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local true parameter false effectivelyFinal true constant null owner assigned CastContexts#assigned(Ljava/lang/String;CBSIJ)V [package] returns void parameters 6 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse6falsefalse
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local true parameter false effectivelyFinal true constant null owner assigned CastContexts#assigned(Ljava/lang/String;CBSIJ)V [package] returns void parameters 6 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse6falsefalse
 MODIFIERS
 PRIMITIVE_TYPE @40:5 : long
 TOKEN @40:5
@@ -441,7 +441,7 @@ IDENTIFIER @40:27 id l assigned.l [v package] : long : long
 TOKEN @40:27
 TOKEN @40:28
 VARIABLE @41:5 var assigned.bytes [v package] : int
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local true parameter false effectivelyFinal true constant null owner assigned CastContexts#assigned(Ljava/lang/String;CBSIJ)V [package] returns void parameters 6 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse6falsefalse
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local true parameter false effectivelyFinal true constant null owner assigned CastContexts#assigned(Ljava/lang/String;CBSIJ)V [package] returns void parameters 6 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse6falsefalse
 MODIFIERS
 PRIMITIVE_TYPE @41:5 : int
 TOKEN @41:5
@@ -468,7 +468,7 @@ IDENTIFIER @41:33 id sh assigned.sh [v package] : short : short
 TOKEN @41:33
 TOKEN @41:35
 VARIABLE @42:5 var assigned.fraction [v package] : double
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local true parameter false effectivelyFinal true constant null owner assigned CastContexts#assigned(Ljava/lang/String;CBSIJ)V [package] returns void parameters 6 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse6falsefalse
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local true parameter false effectivelyFinal true constant null owner assigned CastContexts#assigned(Ljava/lang/String;CBSIJ)V [package] returns void parameters 6 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse6falsefalse
 MODIFIERS
 PRIMITIVE_TYPE @42:5 : double
 TOKEN @42:5
@@ -489,7 +489,7 @@ IDENTIFIER @42:36 id l assigned.l [v package] : long : long
 TOKEN @42:36
 TOKEN @42:37
 VARIABLE @43:5 var assigned.elements [v package] : java.lang.Object[]
-  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local true parameter false effectivelyFinal true constant null owner assigned CastContexts#assigned(Ljava/lang/String;CBSIJ)V [package] returns void parameters 6 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse6falsefalse
+  details declared true usages 2 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local true parameter false effectivelyFinal true constant null owner assigned CastContexts#assigned(Ljava/lang/String;CBSIJ)V [package] returns void parameters 6 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse6falsefalse
 MODIFIERS
 ARRAY_TYPE @43:5 : java.lang.Object[]
 IDENTIFIER @43:5 id Object java.lang.Object [t public] : java.lang.Object : java.lang.Object
@@ -511,7 +511,7 @@ TOKEN @43:37
 LIST
 TOKEN @43:38
 VARIABLE @44:5 var assigned.first [v package] : java.lang.String
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local true parameter false effectivelyFinal true constant null owner assigned CastContexts#assigned(Ljava/lang/String;CBSIJ)V [package] returns void parameters 6 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse6falsefalse
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local true parameter false effectivelyFinal true constant null owner assigned CastContexts#assigned(Ljava/lang/String;CBSIJ)V [package] returns void parameters 6 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse6falsefalse
 MODIFIERS
 IDENTIFIER @44:5 id String java.lang.String [t final public] : java.lang.String : java.lang.String
 TOKEN @44:5
@@ -540,7 +540,7 @@ TOKEN @44:42
 TOKEN @44:43
 TOKEN @44:44
 VARIABLE @45:5 var assigned.direct [v package] : java.lang.Object
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local true parameter false effectivelyFinal true constant null owner assigned CastContexts#assigned(Ljava/lang/String;CBSIJ)V [package] returns void parameters 6 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse6falsefalse
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local true parameter false effectivelyFinal true constant null owner assigned CastContexts#assigned(Ljava/lang/String;CBSIJ)V [package] returns void parameters 6 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse6falsefalse
 MODIFIERS
 IDENTIFIER @45:5 id Object java.lang.Object [t public] : java.lang.Object : java.lang.Object
 TOKEN @45:5
@@ -569,9 +569,9 @@ TOKEN @45:43
 TOKEN @45:44
 TOKEN @45:45
 VARIABLE @46:5 var assigned.boxed [v package] : java.lang.Integer
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local true parameter false effectivelyFinal true constant null owner assigned CastContexts#assigned(Ljava/lang/String;CBSIJ)V [package] returns void parameters 6 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse6falsefalse
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local true parameter false effectivelyFinal true constant null owner assigned CastContexts#assigned(Ljava/lang/String;CBSIJ)V [package] returns void parameters 6 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse6falsefalse
 MODIFIERS
-IDENTIFIER @46:5 id Integer java.lang.Integer [t final public] : java.lang.Integer : java.lang.Integer
+IDENTIFIER @46:5 id Integer java.lang.Integer [t final public] : java.lang.Integer @jdk.internal.ValueBased : java.lang.Integer
 TOKEN @46:5
 IDENTIFIER @46:13 id boxed assigned.boxed [v package] : java.lang.Integer : java.lang.Integer
 TOKEN @46:13
@@ -587,7 +587,7 @@ TOKEN @46:27
 TOKEN @46:28
 TOKEN @47:3
 METHOD @49:3 method CastContexts.arguments [m package] : ? (java.lang.String,java.util.List<java.lang.Object>) returns void throws [] sig CastContexts#arguments(Ljava/lang/String;Ljava/util/List;)V overrides false
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [s, list] parameterMetadata []
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [s, list] parameterMetadata []
 MODIFIERS
 TYPE_PARAMETERS
 PRIMITIVE_TYPE @49:3 : void
@@ -596,7 +596,7 @@ IDENTIFIER @49:8 id arguments CastContexts.arguments [m package] : ? (java.lang.
 TOKEN @49:8
 TOKEN @49:17
 VARIABLE @49:18 var arguments.s [v package] : java.lang.String
-  details declared true usages 7 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local true parameter true effectivelyFinal true constant null owner arguments CastContexts#arguments(Ljava/lang/String;Ljava/util/List;)V [package] returns void parameters 2 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse2falsefalse
+  details declared true usages 7 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local true parameter true effectivelyFinal true constant null owner arguments CastContexts#arguments(Ljava/lang/String;Ljava/util/List;)V [package] returns void parameters 2 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse2falsefalse
 MODIFIERS
 IDENTIFIER @49:18 id String java.lang.String [t final public] : java.lang.String : java.lang.String
 TOKEN @49:18
@@ -604,7 +604,7 @@ IDENTIFIER @49:25 id s arguments.s [v package] : java.lang.String : java.lang.St
 TOKEN @49:25
 TOKEN @49:26
 VARIABLE @49:28 var arguments.list [v package] : java.util.List<java.lang.Object>
-  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local true parameter true effectivelyFinal true constant null owner arguments CastContexts#arguments(Ljava/lang/String;Ljava/util/List;)V [package] returns void parameters 2 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse2falsefalse
+  details declared true usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [[]] enclosing CastContexts flags [package] local true parameter true effectivelyFinal true constant null owner arguments CastContexts#arguments(Ljava/lang/String;Ljava/util/List;)V [package] returns void parameters 2 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse2falsefalse
 MODIFIERS
 PARAMETERIZED_TYPE @49:28 : java.util.List<java.lang.Object>
 IDENTIFIER @49:28 id List java.util.List [t public interface] : java.util.List<java.lang.Object> : java.util.List<java.lang.Object>
@@ -621,7 +621,7 @@ BLOCK @49:47
 TOKEN @49:47
 EXPRESSION_STATEMENT @50:5
 METHOD_INVOCATION @50:5 call List.add [m abstract public] : ? (java.lang.Object) returns boolean throws [] sig java.util.List#add(Ljava/lang/Object;)Z : boolean
-  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing List flags [abstract, public] overridden [Collection.add[]] overridable true generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+  details declared false usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing List flags [abstract, public] overridden [Collection.add[]] overridable true generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
 MEMBER_SELECT @50:5 : ?
 IDENTIFIER @50:5 id list arguments.list [v package] : java.util.List<java.lang.Object> : java.util.List<java.lang.Object>
 TOKEN @50:5
@@ -642,7 +642,7 @@ TOKEN @50:24
 TOKEN @50:25
 EXPRESSION_STATEMENT @51:5
 METHOD_INVOCATION @51:5 call CastContexts.take [m package] : ? (java.lang.Object) returns void throws [] sig CastContexts#take(Ljava/lang/Object;)V : void
-  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [o] parameterMetadata []
+  details declared true usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [o] parameterMetadata []
 IDENTIFIER @51:5 id take CastContexts.take [m package] : ? (java.lang.Object) returns void throws [] sig CastContexts#take(Ljava/lang/Object;)V : void
 TOKEN @51:5
 ARGUMENTS @51:9
@@ -659,7 +659,7 @@ TOKEN @51:20
 TOKEN @51:21
 EXPRESSION_STATEMENT @52:5
 METHOD_INVOCATION @52:5 call CastContexts.overloaded [m package] : ? (java.lang.Object) returns void throws [] sig CastContexts#overloaded(Ljava/lang/Object;)V : void
-  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [o] parameterMetadata []
+  details declared true usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [o] parameterMetadata []
 IDENTIFIER @52:5 id overloaded CastContexts.overloaded [m package] : ? (java.lang.Object) returns void throws [] sig CastContexts#overloaded(Ljava/lang/Object;)V : void
 TOKEN @52:5
 ARGUMENTS @52:15
@@ -676,7 +676,7 @@ TOKEN @52:26
 TOKEN @52:27
 EXPRESSION_STATEMENT @53:5
 METHOD_INVOCATION @53:5 call CastContexts.varargs [m package] : ? (java.lang.Object[]) returns void throws [] sig CastContexts#varargs([Ljava/lang/Object;)V : void
-  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] overridden [] overridable true generic false default false synchronized false varargs true native false parameters [values] parameterMetadata []
+  details declared true usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] overridden [] overridable true generic false default false synchronized false varargs true native false parameters [values] parameterMetadata []
 IDENTIFIER @53:5 id varargs CastContexts.varargs [m package] : ? (java.lang.Object[]) returns void throws [] sig CastContexts#varargs([Ljava/lang/Object;)V : void
 TOKEN @53:5
 ARGUMENTS @53:12
@@ -693,7 +693,7 @@ TOKEN @53:23
 TOKEN @53:24
 EXPRESSION_STATEMENT @54:5
 NEW_CLASS @54:5 new Holder.<init> [m package] : ? (java.lang.Object) returns void throws [] sig CastContexts$Holder#<init>(Ljava/lang/Object;)V : CastContexts$Holder
-  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Holder flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [o] parameterMetadata []
+  details declared true usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Holder flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [o] parameterMetadata []
 TOKEN @54:5
 IDENTIFIER @54:9 id Holder Holder.<init> [m package] : ? (java.lang.Object) returns void throws [] sig CastContexts$Holder#<init>(Ljava/lang/Object;)V : CastContexts$Holder
 TOKEN @54:9
@@ -710,10 +710,10 @@ TOKEN @54:25
 TOKEN @54:26
 TOKEN @54:27
 VARIABLE @55:5 var arguments.supplier [v package] : java.util.function.Supplier<java.lang.Object>
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local true parameter false effectivelyFinal true constant null owner arguments CastContexts#arguments(Ljava/lang/String;Ljava/util/List;)V [package] returns void parameters 2 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse2falsefalse
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [[]] enclosing CastContexts flags [package] local true parameter false effectivelyFinal true constant null owner arguments CastContexts#arguments(Ljava/lang/String;Ljava/util/List;)V [package] returns void parameters 2 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse2falsefalse
 MODIFIERS
 PARAMETERIZED_TYPE @55:5 : java.util.function.Supplier<java.lang.Object>
-IDENTIFIER @55:5 id Supplier java.util.function.Supplier [t public interface] : java.util.function.Supplier<java.lang.Object> : java.util.function.Supplier<java.lang.Object>
+IDENTIFIER @55:5 id Supplier java.util.function.Supplier [t public interface] : java.util.function.Supplier<java.lang.Object> @java.lang.FunctionalInterface : java.util.function.Supplier<java.lang.Object>
 TOKEN @55:5
 TYPE_ARGUMENTS @55:13
 TOKEN @55:13
@@ -737,10 +737,10 @@ IDENTIFIER @55:48 id s arguments.s [v package] : java.lang.String : java.lang.St
 TOKEN @55:48
 TOKEN @55:49
 VARIABLE @56:5 var arguments.function [v package] : java.util.function.Function<java.lang.String,java.lang.Object>
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local true parameter false effectivelyFinal true constant null owner arguments CastContexts#arguments(Ljava/lang/String;Ljava/util/List;)V [package] returns void parameters 2 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse2falsefalse
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [[], []] enclosing CastContexts flags [package] local true parameter false effectivelyFinal true constant null owner arguments CastContexts#arguments(Ljava/lang/String;Ljava/util/List;)V [package] returns void parameters 2 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse2falsefalse
 MODIFIERS
 PARAMETERIZED_TYPE @56:5 : java.util.function.Function<java.lang.String,java.lang.Object>
-IDENTIFIER @56:5 id Function java.util.function.Function [t public interface] : java.util.function.Function<java.lang.String,java.lang.Object> : java.util.function.Function<java.lang.String,java.lang.Object>
+IDENTIFIER @56:5 id Function java.util.function.Function [t public interface] : java.util.function.Function<java.lang.String,java.lang.Object> @java.lang.FunctionalInterface : java.util.function.Function<java.lang.String,java.lang.Object>
 TOKEN @56:5
 TYPE_ARGUMENTS @56:13
 TOKEN @56:13
@@ -778,7 +778,7 @@ TOKEN @58:5
 TOKEN @58:6
 EXPRESSION_STATEMENT @59:5
 METHOD_INVOCATION @59:5 call CastContexts.run [m package] : ? (java.util.function.Supplier<java.lang.Object>) returns void throws [] sig CastContexts#run(Ljava/util/function/Supplier;)V : void
-  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [supplier] parameterMetadata []
+  details declared true usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [supplier] parameterMetadata []
 IDENTIFIER @59:5 id run CastContexts.run [m package] : ? (java.util.function.Supplier<java.lang.Object>) returns void throws [] sig CastContexts#run(Ljava/util/function/Supplier;)V : void
 TOKEN @59:5
 ARGUMENTS @59:8
@@ -799,7 +799,7 @@ TOKEN @59:25
 TOKEN @59:26
 TOKEN @60:3
 METHOD @62:3 method CastContexts.take [m package] : ? (java.lang.Object) returns void throws [] sig CastContexts#take(Ljava/lang/Object;)V overrides false
-  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [o] parameterMetadata []
+  details declared true usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [o] parameterMetadata []
 MODIFIERS
 TYPE_PARAMETERS
 PRIMITIVE_TYPE @62:3 : void
@@ -808,7 +808,7 @@ IDENTIFIER @62:8 id take CastContexts.take [m package] : ? (java.lang.Object) re
 TOKEN @62:8
 TOKEN @62:12
 VARIABLE @62:13 var take.o [v package] : java.lang.Object
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local true parameter true effectivelyFinal true constant null owner take CastContexts#take(Ljava/lang/Object;)V [package] returns void parameters 1 thrown 0 overridden 0 declared true usages 1 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local true parameter true effectivelyFinal true constant null owner take CastContexts#take(Ljava/lang/Object;)V [package] returns void parameters 1 thrown 0 overridden 0 declared true usages 1 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
 MODIFIERS
 IDENTIFIER @62:13 id Object java.lang.Object [t public] : java.lang.Object : java.lang.Object
 TOKEN @62:13
@@ -819,7 +819,7 @@ BLOCK @62:23
 TOKEN @62:23
 TOKEN @63:3
 METHOD @65:3 method CastContexts.overloaded [m package] : ? (java.lang.Object) returns void throws [] sig CastContexts#overloaded(Ljava/lang/Object;)V overrides false
-  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [o] parameterMetadata []
+  details declared true usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [o] parameterMetadata []
 MODIFIERS
 TYPE_PARAMETERS
 PRIMITIVE_TYPE @65:3 : void
@@ -828,7 +828,7 @@ IDENTIFIER @65:8 id overloaded CastContexts.overloaded [m package] : ? (java.lan
 TOKEN @65:8
 TOKEN @65:18
 VARIABLE @65:19 var overloaded.o [v package] : java.lang.Object
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local true parameter true effectivelyFinal true constant null owner overloaded CastContexts#overloaded(Ljava/lang/Object;)V [package] returns void parameters 1 thrown 0 overridden 0 declared true usages 1 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local true parameter true effectivelyFinal true constant null owner overloaded CastContexts#overloaded(Ljava/lang/Object;)V [package] returns void parameters 1 thrown 0 overridden 0 declared true usages 1 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
 MODIFIERS
 IDENTIFIER @65:19 id Object java.lang.Object [t public] : java.lang.Object : java.lang.Object
 TOKEN @65:19
@@ -839,7 +839,7 @@ BLOCK @65:29
 TOKEN @65:29
 TOKEN @66:3
 METHOD @68:3 method CastContexts.overloaded [m package] : ? (java.lang.String) returns void throws [] sig CastContexts#overloaded(Ljava/lang/String;)V overrides false
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [s] parameterMetadata []
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [s] parameterMetadata []
 MODIFIERS
 TYPE_PARAMETERS
 PRIMITIVE_TYPE @68:3 : void
@@ -848,7 +848,7 @@ IDENTIFIER @68:8 id overloaded CastContexts.overloaded [m package] : ? (java.lan
 TOKEN @68:8
 TOKEN @68:18
 VARIABLE @68:19 var overloaded.s [v package] : java.lang.String
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local true parameter true effectivelyFinal true constant null owner overloaded CastContexts#overloaded(Ljava/lang/String;)V [package] returns void parameters 1 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local true parameter true effectivelyFinal true constant null owner overloaded CastContexts#overloaded(Ljava/lang/String;)V [package] returns void parameters 1 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
 MODIFIERS
 IDENTIFIER @68:19 id String java.lang.String [t final public] : java.lang.String : java.lang.String
 TOKEN @68:19
@@ -859,7 +859,7 @@ BLOCK @68:29
 TOKEN @68:29
 TOKEN @69:3
 METHOD @71:3 method CastContexts.varargs [m package] : ? (java.lang.Object[]) returns void throws [] sig CastContexts#varargs([Ljava/lang/Object;)V overrides false
-  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] overridden [] overridable true generic false default false synchronized false varargs true native false parameters [values] parameterMetadata []
+  details declared true usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] overridden [] overridable true generic false default false synchronized false varargs true native false parameters [values] parameterMetadata []
 MODIFIERS
 TYPE_PARAMETERS
 PRIMITIVE_TYPE @71:3 : void
@@ -868,7 +868,7 @@ IDENTIFIER @71:8 id varargs CastContexts.varargs [m package] : ? (java.lang.Obje
 TOKEN @71:8
 TOKEN @71:15
 VARIABLE @71:16 var varargs.values [v package] : java.lang.Object[]
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local true parameter true effectivelyFinal true constant null owner varargs CastContexts#varargs([Ljava/lang/Object;)V [package] returns void parameters 1 thrown 0 overridden 0 declared true usages 1 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsetruefalsetruefalse1falsefalse
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local true parameter true effectivelyFinal true constant null owner varargs CastContexts#varargs([Ljava/lang/Object;)V [package] returns void parameters 1 thrown 0 overridden 0 declared true usages 1 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsetruefalsetruefalse1falsefalse
 MODIFIERS
 ARRAY_TYPE @71:16 : java.lang.Object[]
 IDENTIFIER @71:16 id Object java.lang.Object [t public] : java.lang.Object : java.lang.Object
@@ -881,7 +881,7 @@ BLOCK @71:34
 TOKEN @71:34
 TOKEN @72:3
 METHOD @74:3 method CastContexts.run [m package] : ? (java.util.function.Supplier<java.lang.Object>) returns void throws [] sig CastContexts#run(Ljava/util/function/Supplier;)V overrides false
-  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [supplier] parameterMetadata []
+  details declared true usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [supplier] parameterMetadata []
 MODIFIERS
 TYPE_PARAMETERS
 PRIMITIVE_TYPE @74:3 : void
@@ -890,10 +890,10 @@ IDENTIFIER @74:8 id run CastContexts.run [m package] : ? (java.util.function.Sup
 TOKEN @74:8
 TOKEN @74:11
 VARIABLE @74:12 var run.supplier [v package] : java.util.function.Supplier<java.lang.Object>
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local true parameter true effectivelyFinal true constant null owner run CastContexts#run(Ljava/util/function/Supplier;)V [package] returns void parameters 1 thrown 0 overridden 0 declared true usages 1 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [[]] enclosing CastContexts flags [package] local true parameter true effectivelyFinal true constant null owner run CastContexts#run(Ljava/util/function/Supplier;)V [package] returns void parameters 1 thrown 0 overridden 0 declared true usages 1 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
 MODIFIERS
 PARAMETERIZED_TYPE @74:12 : java.util.function.Supplier<java.lang.Object>
-IDENTIFIER @74:12 id Supplier java.util.function.Supplier [t public interface] : java.util.function.Supplier<java.lang.Object> : java.util.function.Supplier<java.lang.Object>
+IDENTIFIER @74:12 id Supplier java.util.function.Supplier [t public interface] : java.util.function.Supplier<java.lang.Object> @java.lang.FunctionalInterface : java.util.function.Supplier<java.lang.Object>
 TOKEN @74:12
 TYPE_ARGUMENTS @74:20
 TOKEN @74:20
@@ -918,14 +918,14 @@ LIST
 LIST
 TOKEN @77:23
 CONSTRUCTOR @78:5 method Holder.<init> [m package] : ? (java.lang.Object) returns void throws [] sig CastContexts$Holder#<init>(Ljava/lang/Object;)V overrides false
-  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Holder flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [o] parameterMetadata []
+  details declared true usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Holder flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [o] parameterMetadata []
 MODIFIERS
 TYPE_PARAMETERS
 IDENTIFIER @78:5 id Holder Holder.<init> [m package] : ? (java.lang.Object) returns void throws [] sig CastContexts$Holder#<init>(Ljava/lang/Object;)V : void
 TOKEN @78:5
 TOKEN @78:11
 VARIABLE @78:12 var <init>.o [v package] : java.lang.Object
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Holder flags [package] local true parameter true effectivelyFinal true constant null owner <init> CastContexts$Holder#<init>(Ljava/lang/Object;)V [package] returns void parameters 1 thrown 0 overridden 0 declared true usages 1 metadata 0 enclosing Holder type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Holder flags [package] local true parameter true effectivelyFinal true constant null owner <init> CastContexts$Holder#<init>(Ljava/lang/Object;)V [package] returns void parameters 1 thrown 0 overridden 0 declared true usages 1 metadata 0 enclosing Holder type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
 MODIFIERS
 IDENTIFIER @78:12 id Object java.lang.Object [t public] : java.lang.Object : java.lang.Object
 TOKEN @78:12
@@ -937,7 +937,7 @@ TOKEN @78:22
 TOKEN @79:5
 TOKEN @80:3
 METHOD @82:3 method CastContexts.masked [m package] : ? () returns void throws [java.io.IOException] sig CastContexts#masked()V overrides false
-  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+  details declared true usages 0 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
 MODIFIERS
 TYPE_PARAMETERS
 PRIMITIVE_TYPE @82:3 : void
@@ -959,7 +959,7 @@ TOKEN @83:9
 THROW_STATEMENT @84:7
 TOKEN @84:7
 NEW_CLASS @84:13 new FileNotFoundException.<init> [m public] : ? () returns void throws [] sig java.io.FileNotFoundException#<init>()V : java.io.FileNotFoundException
-  details declared false usages 3 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing FileNotFoundException flags [public] overridden [IOException.<init>[], Exception.<init>[], Throwable.<init>[], Object.<init>[]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+  details declared false usages 3 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing FileNotFoundException flags [public] overridden [IOException.<init>[], Exception.<init>[], Throwable.<init>[], Object.<init>[jdk.internal.vm.annotation.IntrinsicCandidate tree false values 0 annotated true]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
 TOKEN @84:13
 IDENTIFIER @84:17 id FileNotFoundException FileNotFoundException.<init> [m public] : ? () returns void throws [] sig java.io.FileNotFoundException#<init>()V : java.io.FileNotFoundException
 TOKEN @84:17
@@ -972,7 +972,7 @@ CATCH @85:7
 TOKEN @85:7
 TOKEN @85:13
 VARIABLE @85:14 var masked.e [v package] : java.io.FileNotFoundException
-  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local true parameter false effectivelyFinal true constant null owner masked CastContexts#masked()V [package] returns void parameters 0 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse0falsefalse
+  details declared true usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local true parameter false effectivelyFinal true constant null owner masked CastContexts#masked()V [package] returns void parameters 0 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse0falsefalse
 MODIFIERS
 IDENTIFIER @85:14 id FileNotFoundException java.io.FileNotFoundException [t public] : java.io.FileNotFoundException : java.io.FileNotFoundException
 TOKEN @85:14
@@ -983,7 +983,7 @@ BLOCK @85:39
 TOKEN @85:39
 EXPRESSION_STATEMENT @86:7
 METHOD_INVOCATION @86:7 call Throwable.printStackTrace [m public] : ? () returns void throws [] sig java.lang.Throwable#printStackTrace()V : void
-  details declared false usages 8 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Throwable flags [public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+  details declared false usages 8 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Throwable flags [public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
 MEMBER_SELECT @86:7 : ?
 IDENTIFIER @86:7 id e masked.e [v package] : java.io.FileNotFoundException : java.io.FileNotFoundException
 TOKEN @86:7
@@ -999,7 +999,7 @@ CATCH @87:7
 TOKEN @87:7
 TOKEN @87:13
 VARIABLE @87:14 var masked.e [v package] : java.io.IOException
-  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local true parameter false effectivelyFinal true constant null owner masked CastContexts#masked()V [package] returns void parameters 0 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse0falsefalse
+  details declared true usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local true parameter false effectivelyFinal true constant null owner masked CastContexts#masked()V [package] returns void parameters 0 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse0falsefalse
 MODIFIERS
 IDENTIFIER @87:14 id IOException java.io.IOException [t public] : java.io.IOException : java.io.IOException
 TOKEN @87:14
@@ -1010,7 +1010,7 @@ BLOCK @87:29
 TOKEN @87:29
 EXPRESSION_STATEMENT @88:7
 METHOD_INVOCATION @88:7 call Throwable.printStackTrace [m public] : ? () returns void throws [] sig java.lang.Throwable#printStackTrace()V : void
-  details declared false usages 8 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Throwable flags [public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+  details declared false usages 8 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Throwable flags [public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
 MEMBER_SELECT @88:7 : ?
 IDENTIFIER @88:7 id e masked.e [v package] : java.io.IOException : java.io.IOException
 TOKEN @88:7
@@ -1027,7 +1027,7 @@ TOKEN @90:5
 TOKEN @90:9
 LIST @90:10
 VARIABLE @90:10 var masked.reader [v final package] : java.io.Reader
-  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [final, package] local true parameter false effectivelyFinal true constant null owner masked CastContexts#masked()V [package] returns void parameters 0 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse0falsefalse
+  details declared true usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [final, package] local true parameter false effectivelyFinal true constant null owner masked CastContexts#masked()V [package] returns void parameters 0 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse0falsefalse
 MODIFIERS
 IDENTIFIER @90:10 id Reader java.io.Reader [t abstract public] : java.io.Reader : java.io.Reader
 TOKEN @90:10
@@ -1035,7 +1035,7 @@ IDENTIFIER @90:17 id reader masked.reader [v final package] : java.io.Reader : j
 TOKEN @90:17
 TOKEN @90:24
 NEW_CLASS @90:26 new FileReader.<init> [m public] : ? (java.lang.String) returns void throws [java.io.FileNotFoundException] sig java.io.FileReader#<init>(Ljava/lang/String;)V : java.io.FileReader
-  details declared false usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing FileReader flags [public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+  details declared false usages 2 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing FileReader flags [public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
 TOKEN @90:26
 IDENTIFIER @90:30 id FileReader FileReader.<init> [m public] : ? (java.lang.String) returns void throws [java.io.FileNotFoundException] sig java.io.FileReader#<init>(Ljava/lang/String;)V : java.io.FileReader
 TOKEN @90:30
@@ -1049,7 +1049,7 @@ BLOCK @90:47
 TOKEN @90:47
 EXPRESSION_STATEMENT @91:7
 METHOD_INVOCATION @91:7 call Reader.read [m public] : ? () returns int throws [java.io.IOException] sig java.io.Reader#read()I : int
-  details declared false usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Reader flags [public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+  details declared false usages 2 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Reader flags [public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
 MEMBER_SELECT @91:7 : ?
 IDENTIFIER @91:7 id reader masked.reader [v final package] : java.io.Reader : java.io.Reader
 TOKEN @91:7
@@ -1065,7 +1065,7 @@ CATCH @92:7
 TOKEN @92:7
 TOKEN @92:13
 VARIABLE @92:14 var masked.e [v package] : java.io.FileNotFoundException
-  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local true parameter false effectivelyFinal true constant null owner masked CastContexts#masked()V [package] returns void parameters 0 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse0falsefalse
+  details declared true usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local true parameter false effectivelyFinal true constant null owner masked CastContexts#masked()V [package] returns void parameters 0 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse0falsefalse
 MODIFIERS
 IDENTIFIER @92:14 id FileNotFoundException java.io.FileNotFoundException [t public] : java.io.FileNotFoundException : java.io.FileNotFoundException
 TOKEN @92:14
@@ -1076,7 +1076,7 @@ BLOCK @92:39
 TOKEN @92:39
 EXPRESSION_STATEMENT @93:7
 METHOD_INVOCATION @93:7 call Throwable.printStackTrace [m public] : ? () returns void throws [] sig java.lang.Throwable#printStackTrace()V : void
-  details declared false usages 8 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Throwable flags [public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+  details declared false usages 8 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Throwable flags [public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
 MEMBER_SELECT @93:7 : ?
 IDENTIFIER @93:7 id e masked.e [v package] : java.io.FileNotFoundException : java.io.FileNotFoundException
 TOKEN @93:7
@@ -1092,7 +1092,7 @@ CATCH @94:7
 TOKEN @94:7
 TOKEN @94:13
 VARIABLE @94:14 var masked.e [v package] : java.io.IOException
-  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local true parameter false effectivelyFinal true constant null owner masked CastContexts#masked()V [package] returns void parameters 0 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse0falsefalse
+  details declared true usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local true parameter false effectivelyFinal true constant null owner masked CastContexts#masked()V [package] returns void parameters 0 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse0falsefalse
 MODIFIERS
 IDENTIFIER @94:14 id IOException java.io.IOException [t public] : java.io.IOException : java.io.IOException
 TOKEN @94:14
@@ -1103,7 +1103,7 @@ BLOCK @94:29
 TOKEN @94:29
 EXPRESSION_STATEMENT @95:7
 METHOD_INVOCATION @95:7 call Throwable.printStackTrace [m public] : ? () returns void throws [] sig java.lang.Throwable#printStackTrace()V : void
-  details declared false usages 8 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Throwable flags [public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+  details declared false usages 8 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Throwable flags [public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
 MEMBER_SELECT @95:7 : ?
 IDENTIFIER @95:7 id e masked.e [v package] : java.io.IOException : java.io.IOException
 TOKEN @95:7
@@ -1120,7 +1120,7 @@ TOKEN @97:5
 TOKEN @97:9
 LIST @97:10
 VARIABLE @97:10 var masked.closeable [v final package] : java.io.Closeable
-  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [final, package] local true parameter false effectivelyFinal true constant null owner masked CastContexts#masked()V [package] returns void parameters 0 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse0falsefalse
+  details declared true usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [final, package] local true parameter false effectivelyFinal true constant null owner masked CastContexts#masked()V [package] returns void parameters 0 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse0falsefalse
 MODIFIERS
 IDENTIFIER @97:10 id Closeable java.io.Closeable [t public interface] : java.io.Closeable : java.io.Closeable
 TOKEN @97:10
@@ -1139,7 +1139,7 @@ BLOCK @98:8
 TOKEN @98:8
 EXPRESSION_STATEMENT @99:7
 METHOD_INVOCATION @99:7 call Closeable.close [m abstract public] : ? () returns void throws [java.io.IOException] sig java.io.Closeable#close()V : void
-  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Closeable flags [abstract, public] overridden [AutoCloseable.close[]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+  details declared false usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Closeable flags [abstract, public] overridden [AutoCloseable.close[]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
 MEMBER_SELECT @99:7 : ?
 IDENTIFIER @99:7 id closeable masked.closeable [v final package] : java.io.Closeable : java.io.Closeable
 TOKEN @99:7
@@ -1155,7 +1155,7 @@ CATCH @100:7
 TOKEN @100:7
 TOKEN @100:13
 VARIABLE @100:14 var masked.e [v package] : java.io.IOException
-  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local true parameter false effectivelyFinal true constant null owner masked CastContexts#masked()V [package] returns void parameters 0 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse0falsefalse
+  details declared true usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local true parameter false effectivelyFinal true constant null owner masked CastContexts#masked()V [package] returns void parameters 0 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse0falsefalse
 MODIFIERS
 IDENTIFIER @100:14 id IOException java.io.IOException [t public] : java.io.IOException : java.io.IOException
 TOKEN @100:14
@@ -1166,7 +1166,7 @@ BLOCK @100:29
 TOKEN @100:29
 EXPRESSION_STATEMENT @101:7
 METHOD_INVOCATION @101:7 call Throwable.printStackTrace [m public] : ? () returns void throws [] sig java.lang.Throwable#printStackTrace()V : void
-  details declared false usages 8 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Throwable flags [public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+  details declared false usages 8 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Throwable flags [public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
 MEMBER_SELECT @101:7 : ?
 IDENTIFIER @101:7 id e masked.e [v package] : java.io.IOException : java.io.IOException
 TOKEN @101:7
@@ -1189,7 +1189,7 @@ TOKEN @104:11
 THROW_STATEMENT @105:9
 TOKEN @105:9
 NEW_CLASS @105:15 new FileNotFoundException.<init> [m public] : ? () returns void throws [] sig java.io.FileNotFoundException#<init>()V : java.io.FileNotFoundException
-  details declared false usages 3 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing FileNotFoundException flags [public] overridden [IOException.<init>[], Exception.<init>[], Throwable.<init>[], Object.<init>[]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+  details declared false usages 3 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing FileNotFoundException flags [public] overridden [IOException.<init>[], Exception.<init>[], Throwable.<init>[], Object.<init>[jdk.internal.vm.annotation.IntrinsicCandidate tree false values 0 annotated true]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
 TOKEN @105:15
 IDENTIFIER @105:19 id FileNotFoundException FileNotFoundException.<init> [m public] : ? () returns void throws [] sig java.io.FileNotFoundException#<init>()V : java.io.FileNotFoundException
 TOKEN @105:19
@@ -1215,7 +1215,7 @@ CATCH @109:7
 TOKEN @109:7
 TOKEN @109:13
 VARIABLE @109:14 var masked.e [v final package] : java.lang.Exception
-  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [final, package] local true parameter false effectivelyFinal true constant null owner masked CastContexts#masked()V [package] returns void parameters 0 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse0falsefalse
+  details declared true usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [final, package] local true parameter false effectivelyFinal true constant null owner masked CastContexts#masked()V [package] returns void parameters 0 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse0falsefalse
 MODIFIERS
 UNION_TYPE @109:14
 LIST @109:14
@@ -1231,7 +1231,7 @@ BLOCK @109:63
 TOKEN @109:63
 EXPRESSION_STATEMENT @110:7
 METHOD_INVOCATION @110:7 call Throwable.printStackTrace [m public] : ? () returns void throws [] sig java.lang.Throwable#printStackTrace()V : void
-  details declared false usages 8 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Throwable flags [public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+  details declared false usages 8 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Throwable flags [public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
 MEMBER_SELECT @110:7 : ?
 IDENTIFIER @110:7 id e masked.e [v final package] : java.lang.Exception : java.lang.Exception
 TOKEN @110:7
@@ -1247,7 +1247,7 @@ CATCH @111:7
 TOKEN @111:7
 TOKEN @111:13
 VARIABLE @111:14 var masked.e [v package] : java.io.IOException
-  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local true parameter false effectivelyFinal true constant null owner masked CastContexts#masked()V [package] returns void parameters 0 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse0falsefalse
+  details declared true usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local true parameter false effectivelyFinal true constant null owner masked CastContexts#masked()V [package] returns void parameters 0 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse0falsefalse
 MODIFIERS
 IDENTIFIER @111:14 id IOException java.io.IOException [t public] : java.io.IOException : java.io.IOException
 TOKEN @111:14
@@ -1258,7 +1258,7 @@ BLOCK @111:29
 TOKEN @111:29
 EXPRESSION_STATEMENT @112:7
 METHOD_INVOCATION @112:7 call Throwable.printStackTrace [m public] : ? () returns void throws [] sig java.lang.Throwable#printStackTrace()V : void
-  details declared false usages 8 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Throwable flags [public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+  details declared false usages 8 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Throwable flags [public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
 MEMBER_SELECT @112:7 : ?
 IDENTIFIER @112:7 id e masked.e [v package] : java.io.IOException : java.io.IOException
 TOKEN @112:7
@@ -1271,7 +1271,7 @@ TOKEN @112:25
 TOKEN @112:26
 TOKEN @113:5
 VARIABLE @114:5 var masked.shared [v package] : java.io.Reader
-  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local true parameter false effectivelyFinal true constant null owner masked CastContexts#masked()V [package] returns void parameters 0 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse0falsefalse
+  details declared true usages 2 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local true parameter false effectivelyFinal true constant null owner masked CastContexts#masked()V [package] returns void parameters 0 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse0falsefalse
 MODIFIERS
 IDENTIFIER @114:5 id Reader java.io.Reader [t abstract public] : java.io.Reader : java.io.Reader
 TOKEN @114:5
@@ -1279,7 +1279,7 @@ IDENTIFIER @114:12 id shared masked.shared [v package] : java.io.Reader : java.i
 TOKEN @114:12
 TOKEN @114:19
 NEW_CLASS @114:21 new FileReader.<init> [m public] : ? (java.lang.String) returns void throws [java.io.FileNotFoundException] sig java.io.FileReader#<init>(Ljava/lang/String;)V : java.io.FileReader
-  details declared false usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing FileReader flags [public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+  details declared false usages 2 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing FileReader flags [public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
 TOKEN @114:21
 IDENTIFIER @114:25 id FileReader FileReader.<init> [m public] : ? (java.lang.String) returns void throws [java.io.FileNotFoundException] sig java.io.FileReader#<init>(Ljava/lang/String;)V : java.io.FileReader
 TOKEN @114:25
@@ -1300,7 +1300,7 @@ BLOCK @115:18
 TOKEN @115:18
 EXPRESSION_STATEMENT @116:7
 METHOD_INVOCATION @116:7 call Reader.read [m public] : ? () returns int throws [java.io.IOException] sig java.io.Reader#read()I : int
-  details declared false usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Reader flags [public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+  details declared false usages 2 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Reader flags [public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
 MEMBER_SELECT @116:7 : ?
 IDENTIFIER @116:7 id shared masked.shared [v package] : java.io.Reader : java.io.Reader
 TOKEN @116:7
@@ -1327,7 +1327,7 @@ TOKEN @119:27
 THROW_STATEMENT @120:9
 TOKEN @120:9
 NEW_CLASS @120:15 new FileNotFoundException.<init> [m public] : ? () returns void throws [] sig java.io.FileNotFoundException#<init>()V : java.io.FileNotFoundException
-  details declared false usages 3 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing FileNotFoundException flags [public] overridden [IOException.<init>[], Exception.<init>[], Throwable.<init>[], Object.<init>[]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+  details declared false usages 3 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing FileNotFoundException flags [public] overridden [IOException.<init>[], Exception.<init>[], Throwable.<init>[], Object.<init>[jdk.internal.vm.annotation.IntrinsicCandidate tree false values 0 annotated true]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
 TOKEN @120:15
 IDENTIFIER @120:19 id FileNotFoundException FileNotFoundException.<init> [m public] : ? () returns void throws [] sig java.io.FileNotFoundException#<init>()V : java.io.FileNotFoundException
 TOKEN @120:19
@@ -1341,7 +1341,7 @@ CATCH @122:7
 TOKEN @122:7
 TOKEN @122:13
 VARIABLE @122:14 var masked.e [v package] : java.io.FileNotFoundException
-  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local true parameter false effectivelyFinal true constant null owner masked CastContexts#masked()V [package] returns void parameters 0 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse0falsefalse
+  details declared true usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local true parameter false effectivelyFinal true constant null owner masked CastContexts#masked()V [package] returns void parameters 0 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse0falsefalse
 MODIFIERS
 IDENTIFIER @122:14 id FileNotFoundException java.io.FileNotFoundException [t public] : java.io.FileNotFoundException : java.io.FileNotFoundException
 TOKEN @122:14
@@ -1360,7 +1360,7 @@ CATCH @124:7
 TOKEN @124:7
 TOKEN @124:13
 VARIABLE @124:14 var masked.e [v package] : java.io.IOException
-  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local true parameter false effectivelyFinal true constant null owner masked CastContexts#masked()V [package] returns void parameters 0 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse0falsefalse
+  details declared true usages 1 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing CastContexts flags [package] local true parameter false effectivelyFinal true constant null owner masked CastContexts#masked()V [package] returns void parameters 0 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing CastContexts type true kinds truefalsefalse other falsefalsefalsefalsetruefalse0falsefalse
 MODIFIERS
 IDENTIFIER @124:14 id IOException java.io.IOException [t public] : java.io.IOException : java.io.IOException
 TOKEN @124:14
@@ -1371,7 +1371,7 @@ BLOCK @124:29
 TOKEN @124:29
 EXPRESSION_STATEMENT @125:7
 METHOD_INVOCATION @125:7 call Throwable.printStackTrace [m public] : ? () returns void throws [] sig java.lang.Throwable#printStackTrace()V : void
-  details declared false usages 8 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Throwable flags [public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+  details declared false usages 8 metadata [] nullability NO_ANNOTATION/PACKAGE nonNull false nullable false strongNullable false strict falsefalsefalse meta false source null tree false lookups [] typeArguments [] enclosing Throwable flags [public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
 MEMBER_SELECT @125:7 : ?
 IDENTIFIER @125:7 id e masked.e [v package] : java.io.IOException : java.io.IOException
 TOKEN @125:7
